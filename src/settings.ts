@@ -1,29 +1,11 @@
-import { Notice, PluginSettingTab, Setting, App, Platform } from "obsidian";
-import type SRPlugin from "src/main";
+import { Platform } from "obsidian";
 import { t } from "src/lang/helpers";
 // import { pathMatchesPattern } from "src/utils/fs";
-import { TabStructure, createTabs } from "./gui/tabs";
-import { setDebugParser } from "./parser";
-import { addignoreSetting } from "./settings/ignoreSetting";
-import { addMultiClozeSetting } from "./settings/multiClozeSetting";
 
 // https://github.com/martin-jw/obsidian-recall/blob/main/src/settings.ts
-
 import { algorithms } from "./algorithms/algorithms_switch";
-import { addResponseFloatBarSetting } from "src/settings/responseBarSetting";
 import { DataLocation } from "./dataStore/dataLocation";
-import { addDataLocationSettings } from "./settings/locationSetting";
-import {
-    DEFAULT_responseOptionBtnsText,
-    addAlgorithmSetting,
-    addAlgorithmSpecificDisplaySetting,
-    addResponseButtonTextSetting,
-} from "./settings/algorithmSetting";
-import { addUntrackSetting, addTrackedNoteToDecksSetting } from "./settings/trackSetting";
-import { buildDonation } from "./settings/donation";
-import { addburySiblingSetting } from "./settings/burySiblingSetting";
-import { addcardBlockIDSetting } from "./settings/cardBlockIDSetting";
-import { addmixQueueSetting } from "./settings/mixQueueSetting";
+import { DEFAULT_responseOptionBtnsText } from "./settings/algorithmSetting";
 import { pathMatchesPattern } from "src/utils/fs";
 
 export interface SRSettings {
@@ -81,6 +63,9 @@ export interface SRSettings {
     flashcardHardText: string;
     reviewButtonDelay: number;
     openViewInNewTab: boolean;
+    useNewSidebarDesign: boolean;
+    sidebarDateFormat: string;
+    sidebarShowRelativeDays: boolean;
 
     // algorithm
     algorithm: string;
@@ -168,6 +153,9 @@ export const DEFAULT_SETTINGS: SRSettings = {
     flashcardHardText: t("HARD"),
     reviewButtonDelay: 0,
     openViewInNewTab: false,
+    useNewSidebarDesign: false,
+    sidebarDateFormat: "ddd MMM DD.YY",
+    sidebarShowRelativeDays: true,
 
     // algorithm
     baseEase: 250,

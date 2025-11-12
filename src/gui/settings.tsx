@@ -6,20 +6,15 @@ import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
 import { setDebugParser } from "src/parser";
 import { DEFAULT_SETTINGS } from "src/settings";
-
-import { addignoreSetting } from "src/settings/ignoreSetting";
 import { addMultiClozeSetting } from "src/settings/multiClozeSetting";
-
-import { algorithms } from "src/algorithms/algorithms_switch";
 import { addResponseFloatBarSetting } from "src/settings/responseBarSetting";
-import { DataLocation } from "src/dataStore/dataLocation";
 import { addDataLocationSettings } from "src/settings/locationSetting";
 import {
     addAlgorithmSetting,
     addAlgorithmSpecificDisplaySetting,
     addResponseButtonTextSetting,
 } from "src/settings/algorithmSetting";
-import { addUntrackSetting, addTrackedNoteToDecksSetting } from "src/settings/trackSetting";
+import { addTrackedNoteToDecksSetting, addUntrackSetting } from "src/settings/trackSetting";
 import { buildDonation } from "src/settings/donation";
 import { addburySiblingSetting } from "src/settings/burySiblingSetting";
 import { addcardBlockIDSetting } from "src/settings/cardBlockIDSetting";
@@ -756,8 +751,83 @@ export class SRSettingTab extends PluginSettingTab {
         containerEl.createEl("h3", { text: t("GROUP_FLASHCARDS_NOTES") });
         addResponseButtonTextSetting(newSettingEl(containerEl), this.plugin);
 
+        containerEl.createEl("h3", { text: t("EXPERIMENTAL") });
+        new Setting(containerEl)
+            .setName(t("NEW_DESIGN"))
+            .setDesc(t("NEW_DESIGN_DESC"))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.data.settings.useNewSidebarDesign)
+                    .onChange(async (value) => {
+                        this.plugin.data.settings.useNewSidebarDesign = value;
+                        await this.plugin.savePluginData();
+                        const leaves = this.app.workspace.getLeavesOfType("review-queue-list-view");
+                        leaves.forEach((leaf) => {
+                            if (leaf.view && "redraw" in leaf.view) {
+                                (leaf.view as { redraw: () => void }).redraw();
+                            }
+                        });
+                    }),
+            );
+
+        const dateFormatSetting = new Setting(containerEl)
+            .setName(t("SIDEBAR_DATE_FORMAT"))
+            .setDesc(t("SIDEBAR_DATE_FORMAT_DESC"))
+            .addText((text) =>
+                text
+                    .setPlaceholder(DEFAULT_SETTINGS.sidebarDateFormat)
+                    .setValue(this.plugin.data.settings.sidebarDateFormat)
+                    .onChange(async (value) => {
+                        this.plugin.data.settings.sidebarDateFormat =
+                            value || DEFAULT_SETTINGS.sidebarDateFormat;
+                        await this.plugin.savePluginData();
+                        this.updateDateFormatPreview(dateFormatSetting.descEl, value);
+                        const leaves = this.app.workspace.getLeavesOfType("review-queue-list-view");
+                        leaves.forEach((leaf) => {
+                            if (leaf.view && "redraw" in leaf.view) {
+                                (leaf.view as { redraw: () => void }).redraw();
+                            }
+                        });
+                    }),
+            )
+            .addExtraButton((button) => {
+                button
+                    .setIcon("reset")
+                    .setTooltip(t("RESET_DEFAULT"))
+                    .onClick(async () => {
+                        this.plugin.data.settings.sidebarDateFormat =
+                            DEFAULT_SETTINGS.sidebarDateFormat;
+                        await this.plugin.savePluginData();
+                        this.display();
+                    });
+            });
+
+        this.updateDateFormatPreview(
+            dateFormatSetting.descEl,
+            this.plugin.data.settings.sidebarDateFormat,
+        );
+
+        new Setting(containerEl)
+            .setName(t("SIDEBAR_SHOW_RELATIVE_DAYS"))
+            .setDesc(t("SIDEBAR_SHOW_RELATIVE_DAYS_DESC"))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.data.settings.sidebarShowRelativeDays)
+                    .onChange(async (value) => {
+                        this.plugin.data.settings.sidebarShowRelativeDays = value;
+                        await this.plugin.savePluginData();
+                        const leaves = this.app.workspace.getLeavesOfType("review-queue-list-view");
+                        leaves.forEach((leaf) => {
+                            if (leaf.view && "redraw" in leaf.view) {
+                                (leaf.view as { redraw: () => void }).redraw();
+                            }
+                        });
+                    }),
+            );
+
         return;
 
+        // TODO: Remove unused code?
         new Setting(containerEl)
             .setName(t("FLASHCARD_EASY_LABEL"))
             .setDesc(t("FLASHCARD_EASY_DESC"))
@@ -866,8 +936,9 @@ export class SRSettingTab extends PluginSettingTab {
 
         const issue_url =
             "https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/issues";
-        newSettingEl(containerEl).createEl("p").innerHTML =
-            t("POST_ISSUE_MODIFIED_PLUGIN", { issue_url });
+        newSettingEl(containerEl).createEl("p").innerHTML = t("POST_ISSUE_MODIFIED_PLUGIN", {
+            issue_url,
+        });
 
         // trackfile_setting
         // https://github.com/martin-jw/obsidian-recall/blob/main/src/settings.ts
@@ -1197,6 +1268,29 @@ export class SRSettingTab extends PluginSettingTab {
             button.onClickEvent((_: MouseEvent) => {
                 lastPosition.tabName = tabName;
             });
+        }
+    }
+
+    private updateDateFormatPreview(descEl: HTMLElement, format: string): void {
+        // Удаляем старый предпросмотр если есть
+        const oldPreview = descEl.querySelector(".sr-date-preview");
+        if (oldPreview) {
+            oldPreview.remove();
+        }
+
+        // Создаем новый предпросмотр
+        const previewEl = descEl.createDiv("sr-date-preview");
+        previewEl.style.marginTop = "8px";
+        previewEl.style.fontSize = "0.9em";
+        previewEl.style.color = "var(--text-muted)";
+
+        try {
+            const exampleDate = window.moment().add(3, "days");
+            const formatted = exampleDate.format(format || "ddd MMM DD.YY");
+            previewEl.setText(`${t("SIDEBAR_DATE_FORMAT_PREVIEW")} ${formatted}`);
+        } catch (e) {
+            previewEl.setText(`${t("SIDEBAR_DATE_FORMAT_PREVIEW")} Invalid format`);
+            previewEl.style.color = "var(--text-error)";
         }
     }
 }

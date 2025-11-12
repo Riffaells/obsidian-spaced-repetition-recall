@@ -1,24 +1,30 @@
-import { ItemView, WorkspaceLeaf, Menu, TFile } from "obsidian";
+import { debounce, ItemView, Menu, TFile, WorkspaceLeaf } from "obsidian";
 
 import type SRPlugin from "src/main";
 import { COLLAPSE_ICON } from "src/constants";
 import { ReviewDeck, SchedNote } from "src/ReviewDeck";
 import { t } from "src/lang/helpers";
 import { DataLocation } from "src/dataStore/dataLocation";
-import { DateUtils } from "src/util/utils_recall";
 import { globalDateProvider } from "src/util/DateProvider";
+import { SidebarNewDesign } from "src/gui/SidebarNew";
 
 export const REVIEW_QUEUE_VIEW_TYPE = "review-queue-list-view";
 
 export class ReviewQueueListView extends ItemView {
-    private plugin: SRPlugin;
+    private readonly plugin: SRPlugin;
+    private newDesign: SidebarNewDesign | null = null;
+    private readonly debouncedRedraw: () => void;
 
     constructor(leaf: WorkspaceLeaf, plugin: SRPlugin) {
         super(leaf);
 
         this.plugin = plugin;
-        this.registerEvent(this.app.workspace.on("file-open", () => this.redraw()));
-        this.registerEvent(this.app.vault.on("rename", () => this.redraw()));
+
+        // debounce to prevent frequent repaints
+        this.debouncedRedraw = debounce(() => this.redraw(), 150, false);
+
+        this.registerEvent(this.app.workspace.on("file-open", () => this.debouncedRedraw()));
+        this.registerEvent(this.app.vault.on("rename", () => this.debouncedRedraw()));
     }
 
     public getViewType(): string {
@@ -44,8 +50,41 @@ export class ReviewQueueListView extends ItemView {
     }
 
     public redraw(): void {
+        if (!this.plugin?.data) {
+            return;
+        }
+
         const activeFile: TFile | null = this.app.workspace.getActiveFile();
 
+        if (this.plugin.data.settings.useNewSidebarDesign) {
+            this.renderNewSidebar(activeFile);
+            return;
+        }
+
+        this.destroyNewSidebar();
+        this.renderOldSidebar(activeFile);
+    }
+
+    private renderNewSidebar(activeFile: TFile | null): void {
+        if (!this.contentEl) {
+            return;
+        }
+
+        if (!this.newDesign) {
+            this.newDesign = new SidebarNewDesign(this.plugin, this.contentEl);
+        }
+
+        this.newDesign.render(activeFile);
+    }
+
+    private destroyNewSidebar(): void {
+        if (this.newDesign) {
+            this.newDesign.destroy();
+            this.newDesign = null;
+        }
+    }
+
+    private renderOldSidebar(activeFile: TFile | null): void {
         const rootEl: HTMLElement = createDiv("tree-item nav-folder mod-root");
         const childrenEl: HTMLElement = rootEl.createDiv("tree-item-children nav-folder-children");
 
@@ -157,9 +196,8 @@ export class ReviewQueueListView extends ItemView {
             }
         }
 
-        const contentEl: Element = this.containerEl.children[1];
-        contentEl.empty();
-        contentEl.appendChild(rootEl);
+        this.contentEl.empty();
+        this.contentEl.appendChild(rootEl);
     }
 
     private createRightPaneFolder(
