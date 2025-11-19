@@ -3,13 +3,14 @@ import type SRPlugin from "src/main";
 import { SidebarHeader } from "./sidebar/SidebarHeader";
 import { SidebarStats } from "./sidebar/SidebarStats";
 import { DeckComponent } from "./sidebar/DeckComponent";
-import { FilterType, SidebarStats as Stats } from "./sidebar/types";
+import { FilterType, SidebarStats as Stats, SortType } from "./sidebar/types";
 import { calculateActiveNotesCount, calculateSidebarStats, createGroupKey } from "./sidebar/utils";
 
 export class SidebarNewDesign {
     private readonly plugin: SRPlugin;
     private containerEl: HTMLElement;
     private currentFilter: FilterType = FilterType.ALL;
+    private currentSort: SortType = SortType.DATE_ASC;
     private expandedDecks: Set<string> = new Set();
     private expandedGroups: Set<string> = new Set();
     private header: SidebarHeader | null = null;
@@ -50,6 +51,11 @@ export class SidebarNewDesign {
             },
             () => this.collapseAll(),
             () => this.expandAll(),
+            (sort) => {
+                this.currentSort = sort;
+                const currentFile = this.plugin.app.workspace.getActiveFile();
+                this.update(currentFile);
+            },
         );
         this.header.render();
 
@@ -58,7 +64,6 @@ export class SidebarNewDesign {
         this.cachedStats = calculateSidebarStats(this.plugin);
         this.stats = new SidebarStats(statsContainer, this.cachedStats);
         this.stats.render();
-
 
         this.decksContainer = this.mainContainer.createDiv("sr-new-sidebar-decks");
     }
@@ -92,8 +97,10 @@ export class SidebarNewDesign {
         const shouldAutoExpand = currentPath !== this.lastActiveFilePath && !this.isFilterChange;
         this.lastActiveFilePath = currentPath;
 
-        for (const deckKey in this.plugin.reviewDecks) {
-            const deck = this.plugin.reviewDecks[deckKey];
+        const decks = Object.values(this.plugin.reviewDecks);
+        const sortedDecks = this.sortDecks(decks);
+
+        for (const deck of sortedDecks) {
             const deckComponent = new DeckComponent(
                 this.plugin,
                 deck,
@@ -111,6 +118,95 @@ export class SidebarNewDesign {
         }
 
         this.isFilterChange = false;
+    }
+
+    private sortDecks(decks: any[]): any[] {
+        const sorted = [...decks];
+
+        switch (this.currentSort) {
+            case SortType.DATE_ASC:
+                sorted.sort((a, b) => {
+                    const minDateA = this.getMinDueDate(a);
+                    const minDateB = this.getMinDueDate(b);
+                    return minDateA - minDateB;
+                });
+                break;
+
+            case SortType.DATE_DESC:
+                sorted.sort((a, b) => {
+                    const maxDateA = this.getMaxDueDate(a);
+                    const maxDateB = this.getMaxDueDate(b);
+                    return maxDateB - maxDateA;
+                });
+                break;
+
+            case SortType.COUNT_DESC:
+                sorted.sort((a, b) => {
+                    const countA = this.getDeckNotesCount(a);
+                    const countB = this.getDeckNotesCount(b);
+                    return countB - countA;
+                });
+                break;
+
+            case SortType.COUNT_ASC:
+                sorted.sort((a, b) => {
+                    const countA = this.getDeckNotesCount(a);
+                    const countB = this.getDeckNotesCount(b);
+                    return countA - countB;
+                });
+                break;
+        }
+
+        return sorted;
+    }
+
+    private getMinDueDate(deck: any): number {
+        let minDate = Infinity;
+
+        if (deck.dueNotesCount > 0 && deck.scheduledNotes.length > 0) {
+            for (const note of deck.scheduledNotes) {
+                if (note.dueUnix && note.dueUnix < minDate) {
+                    minDate = note.dueUnix;
+                }
+            }
+        }
+
+        return minDate === Infinity ? Date.now() : minDate;
+    }
+
+    private getMaxDueDate(deck: any): number {
+        let maxDate = 0;
+
+        if (deck.dueNotesCount > 0 && deck.scheduledNotes.length > 0) {
+            for (const note of deck.scheduledNotes) {
+                if (note.dueUnix && note.dueUnix > maxDate) {
+                    maxDate = note.dueUnix;
+                }
+            }
+        }
+
+        return maxDate === 0 ? Date.now() : maxDate;
+    }
+
+    private getDeckNotesCount(deck: any): number {
+        let count = 0;
+
+        if (this.currentFilter === FilterType.ALL) {
+            count = deck.dueNotesCount + deck.newNotes.length;
+        } else if (this.currentFilter === FilterType.ACTIVE) {
+            count =
+                deck.scheduledNotes.filter((note: any) => {
+                    const file = this.plugin.app.vault.getAbstractFileByPath(note.note.filePath);
+                    return file instanceof TFile;
+                }).length + deck.newNotes.length;
+        } else if (this.currentFilter === FilterType.REVIEWED) {
+            count = deck.scheduledNotes.filter((note: any) => {
+                const file = this.plugin.app.vault.getAbstractFileByPath(note.note.filePath);
+                return !(file instanceof TFile);
+            }).length;
+        }
+
+        return count;
     }
 
     private toggleDeck(deckName: string, activeFile: TFile | null): void {

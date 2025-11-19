@@ -4,6 +4,13 @@ export enum FilterType {
     REVIEWED = "reviewed",
 }
 
+export enum SortType {
+    DATE_ASC = "date_asc",
+    DATE_DESC = "date_desc",
+    COUNT_ASC = "count_asc",
+    COUNT_DESC = "count_desc",
+}
+
 export interface SidebarStats {
     totalDue: number;
     totalNew: number;

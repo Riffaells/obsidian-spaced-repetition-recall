@@ -1,25 +1,29 @@
 import { t } from "src/lang/helpers";
-import { FilterType } from "./types";
-import { setIcon } from "obsidian";
+import { FilterType, SortType } from "./types";
+import { setIcon, Menu } from "obsidian";
 
 export class SidebarHeader {
     private containerEl: HTMLElement;
     private readonly onFilterChange: (filter: FilterType) => void;
     private readonly onCollapseAll: () => void;
     private readonly onExpandAll: () => void;
+    private readonly onSortChange: (sort: SortType) => void;
     private currentFilter: FilterType = FilterType.ALL;
+    private currentSort: SortType = SortType.DATE_ASC;
     private activeCount: number = 0;
 
     constructor(
         containerEl: HTMLElement,
         onFilterChange: (filter: FilterType) => void,
         onCollapseAll: () => void,
-        onExpandAll: () => void
+        onExpandAll: () => void,
+        onSortChange: (sort: SortType) => void
     ) {
         this.containerEl = containerEl;
         this.onFilterChange = onFilterChange;
         this.onCollapseAll = onCollapseAll;
         this.onExpandAll = onExpandAll;
+        this.onSortChange = onSortChange;
     }
 
     public render(): void {
@@ -40,6 +44,49 @@ export class SidebarHeader {
         const controlsContainer = this.containerEl.createDiv("sr-controls-buttons");
         this.createControlButton(controlsContainer, "collapse", t("COLLAPSE_ALL"), this.onCollapseAll);
         this.createControlButton(controlsContainer, "expand", t("EXPAND_ALL"), this.onExpandAll);
+        this.createSortButton(controlsContainer);
+    }
+
+    private createSortButton(container: HTMLElement): void {
+        const sortButton = container.createEl("button", {
+            cls: "sr-control-btn",
+            attr: {
+                "aria-label": t("SORT"),
+            },
+        });
+
+        setIcon(sortButton, "arrow-up-down");
+
+        sortButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const menu = new Menu();
+
+            const sortOptions = [
+                { type: SortType.DATE_ASC, label: t("SORT_DATE_ASC"), icon: "calendar-arrow-up" },
+                { type: SortType.DATE_DESC, label: t("SORT_DATE_DESC"), icon: "calendar-arrow-down" },
+                { type: SortType.COUNT_DESC, label: t("SORT_COUNT_DESC"), icon: "arrow-down-wide-narrow" },
+                { type: SortType.COUNT_ASC, label: t("SORT_COUNT_ASC"), icon: "arrow-up-narrow-wide" },
+            ];
+
+            sortOptions.forEach(option => {
+                menu.addItem((item) => {
+                    item
+                        .setTitle(option.label)
+                        .setIcon(option.icon)
+                        .setChecked(this.currentSort === option.type)
+                        .onClick(() => {
+                            this.currentSort = option.type;
+                            this.onSortChange(option.type);
+                        });
+                });
+            });
+
+            menu.showAtMouseEvent(e as MouseEvent);
+        });
+    }
+
+    public setSort(sort: SortType): void {
+        this.currentSort = sort;
     }
 
     private createControlButton(

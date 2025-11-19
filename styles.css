@@ -532,6 +532,7 @@ ResponseFloatBar TOOLBAR
     display: flex;
     gap: 6px;
     margin-top: 6px;
+    justify-content: center;
 }
 
 .sr-control-btn {
