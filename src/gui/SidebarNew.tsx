@@ -35,10 +35,14 @@ export class SidebarNewDesign {
     constructor(plugin: SRPlugin, containerEl: HTMLElement) {
         this.plugin = plugin;
         this.containerEl = containerEl;
+        this.currentSort = this.plugin.data.settings.sidebarSortOrder;
+        this.currentNoteSort = this.plugin.data.settings.sidebarNoteSortOrder;
     }
 
-    private handleNoteSortChange = (sort: NoteSortType) => {
+    private handleNoteSortChange = async (sort: NoteSortType) => {
         this.currentNoteSort = sort;
+        this.plugin.data.settings.sidebarNoteSortOrder = sort;
+        await this.plugin.saveData(this.plugin.data);
         this.update(this.plugin.app.workspace.getActiveFile(), false); // don't resort decks
     };
 
@@ -68,6 +72,8 @@ export class SidebarNewDesign {
             () => this.expandAll(),
             (sort) => {
                 this.currentSort = sort;
+                this.plugin.data.settings.sidebarSortOrder = sort;
+                void this.plugin.saveData(this.plugin.data);
                 const currentFile = this.plugin.app.workspace.getActiveFile();
                 this.update(currentFile);
             },
