@@ -1,5 +1,6 @@
 import { Platform } from "obsidian";
 import { t } from "src/lang/helpers";
+import { SortType, NoteSortType } from "./gui/sidebar/types";
 // import { pathMatchesPattern } from "src/utils/fs";
 
 // https://github.com/martin-jw/obsidian-recall/blob/main/src/settings.ts
@@ -66,6 +67,8 @@ export interface SRSettings {
     useNewSidebarDesign: boolean;
     sidebarDateFormat: string;
     sidebarShowRelativeDays: boolean;
+    sidebarSortOrder: SortType;
+    sidebarNoteSortOrder: NoteSortType;
 
     // algorithm
     algorithm: string;
@@ -156,6 +159,8 @@ export const DEFAULT_SETTINGS: SRSettings = {
     useNewSidebarDesign: false,
     sidebarDateFormat: "ddd MMM DD.YY",
     sidebarShowRelativeDays: true,
+    sidebarSortOrder: SortType.DATE_ASC,
+    sidebarNoteSortOrder: NoteSortType.DEFAULT,
 
     // algorithm
     baseEase: 250,

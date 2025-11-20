@@ -1,5 +1,5 @@
 import { t } from "src/lang/helpers";
-import { FilterType, SortType } from "./types";
+import { FilterType, NoteSortType, SortType } from "./types";
 import { setIcon, Menu } from "obsidian";
 
 export class SidebarHeader {
@@ -8,8 +8,10 @@ export class SidebarHeader {
     private readonly onCollapseAll: () => void;
     private readonly onExpandAll: () => void;
     private readonly onSortChange: (sort: SortType) => void;
+    private readonly onNoteSortChange: (sort: NoteSortType) => void;
     private currentFilter: FilterType = FilterType.ALL;
     private currentSort: SortType = SortType.DATE_ASC;
+    private currentNoteSort: NoteSortType = NoteSortType.DEFAULT;
     private activeCount: number = 0;
 
     constructor(
@@ -17,13 +19,15 @@ export class SidebarHeader {
         onFilterChange: (filter: FilterType) => void,
         onCollapseAll: () => void,
         onExpandAll: () => void,
-        onSortChange: (sort: SortType) => void
+        onSortChange: (sort: SortType) => void,
+        onNoteSortChange: (sort: NoteSortType) => void,
     ) {
         this.containerEl = containerEl;
         this.onFilterChange = onFilterChange;
         this.onCollapseAll = onCollapseAll;
         this.onExpandAll = onExpandAll;
         this.onSortChange = onSortChange;
+        this.onNoteSortChange = onNoteSortChange;
     }
 
     public render(): void {
@@ -37,14 +41,60 @@ export class SidebarHeader {
             filterContainer,
             FilterType.ACTIVE,
             t("FILTER_ACTIVE"),
-            this.activeCount
+            this.activeCount,
         );
         this.createFilterButton(filterContainer, FilterType.REVIEWED, t("FILTER_REVIEWED"), null);
 
         const controlsContainer = this.containerEl.createDiv("sr-controls-buttons");
-        this.createControlButton(controlsContainer, "collapse", t("COLLAPSE_ALL"), this.onCollapseAll);
+        this.createControlButton(
+            controlsContainer,
+            "collapse",
+            t("COLLAPSE_ALL"),
+            this.onCollapseAll,
+        );
         this.createControlButton(controlsContainer, "expand", t("EXPAND_ALL"), this.onExpandAll);
         this.createSortButton(controlsContainer);
+        this.createNoteSortButton(controlsContainer);
+    }
+
+    private createNoteSortButton(container: HTMLElement): void {
+        const noteSortButton = container.createEl("button", {
+            cls: "sr-control-btn",
+            attr: {
+                "aria-label": t("SORT_NOTES"),
+            },
+        });
+
+        setIcon(noteSortButton, "list-ordered");
+
+        noteSortButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const menu = new Menu();
+
+            const sortOptions = [
+                { type: NoteSortType.DEFAULT, label: t("DEFAULT"), icon: "arrow-up-down" },
+                { type: NoteSortType.NAME_ASC, label: t("SORT_NAME_ASC"), icon: "sort-asc" },
+                { type: NoteSortType.NAME_DESC, label: t("SORT_NAME_DESC"), icon: "sort-desc" },
+            ];
+
+            sortOptions.forEach((option) => {
+                menu.addItem((item) => {
+                    item.setTitle(option.label)
+                        .setIcon(option.icon)
+                        .setChecked(this.currentNoteSort === option.type)
+                        .onClick(() => {
+                            this.currentNoteSort = option.type;
+                            this.onNoteSortChange(option.type);
+                        });
+                });
+            });
+
+            menu.showAtMouseEvent(e as MouseEvent);
+        });
+    }
+
+    public setNoteSort(sort: NoteSortType): void {
+        this.currentNoteSort = sort;
     }
 
     private createSortButton(container: HTMLElement): void {
@@ -62,16 +112,41 @@ export class SidebarHeader {
             const menu = new Menu();
 
             const sortOptions = [
-                { type: SortType.DATE_ASC, label: t("SORT_DATE_ASC"), icon: "calendar-arrow-up" },
-                { type: SortType.DATE_DESC, label: t("SORT_DATE_DESC"), icon: "calendar-arrow-down" },
-                { type: SortType.COUNT_DESC, label: t("SORT_COUNT_DESC"), icon: "arrow-down-wide-narrow" },
-                { type: SortType.COUNT_ASC, label: t("SORT_COUNT_ASC"), icon: "arrow-up-narrow-wide" },
+                {
+                    type: SortType.DATE_ASC,
+                    label: t("SORT_DATE_ASC"),
+                    icon: "calendar-arrow-up",
+                },
+                {
+                    type: SortType.DATE_DESC,
+                    label: t("SORT_DATE_DESC"),
+                    icon: "calendar-arrow-down",
+                },
+                {
+                    type: SortType.COUNT_DESC,
+                    label: t("SORT_COUNT_DESC"),
+                    icon: "arrow-down-wide-narrow",
+                },
+                {
+                    type: SortType.COUNT_ASC,
+                    label: t("SORT_COUNT_ASC"),
+                    icon: "arrow-up-narrow-wide",
+                },
+                {
+                    type: SortType.NAME_ASC,
+                    label: t("SORT_NAME_ASC"),
+                    icon: "sort-asc",
+                },
+                {
+                    type: SortType.NAME_DESC,
+                    label: t("SORT_NAME_DESC"),
+                    icon: "sort-desc",
+                },
             ];
 
-            sortOptions.forEach(option => {
+            sortOptions.forEach((option) => {
                 menu.addItem((item) => {
-                    item
-                        .setTitle(option.label)
+                    item.setTitle(option.label)
                         .setIcon(option.icon)
                         .setChecked(this.currentSort === option.type)
                         .onClick(() => {
@@ -93,7 +168,7 @@ export class SidebarHeader {
         container: HTMLElement,
         type: "collapse" | "expand",
         label: string,
-        onClick: () => void
+        onClick: () => void,
     ): void {
         const button = container.createEl("button", {
             cls: "sr-control-btn",
@@ -120,7 +195,7 @@ export class SidebarHeader {
         container: HTMLElement,
         filter: FilterType,
         label: string,
-        count: number | null
+        count: number | null,
     ): void {
         const button = container.createEl("button", {
             cls: "sr-filter-btn",
@@ -140,16 +215,7 @@ export class SidebarHeader {
         }
 
         button.addEventListener("click", () => {
-            this.currentFilter = filter;
             this.onFilterChange(filter);
-            this.updateActiveButton(container, button);
         });
-    }
-
-    private updateActiveButton(container: HTMLElement, activeButton: HTMLElement): void {
-        container.querySelectorAll(".sr-filter-btn").forEach(btn => {
-            btn.removeClass("sr-filter-active");
-        });
-        activeButton.addClass("sr-filter-active");
     }
 }

@@ -3,7 +3,7 @@ import type SRPlugin from "src/main";
 import { ReviewDeck, SchedNote } from "src/ReviewDeck";
 import { t } from "src/lang/helpers";
 import { NoteGroupComponent } from "./NoteGroupComponent";
-import { FilterType } from "./types";
+import { FilterType, NoteSortType } from "./types";
 import { calculateDaysUntilDue, createGroupKey, getGroupTitle } from "./utils";
 
 export class DeckComponent {
@@ -20,6 +20,7 @@ export class DeckComponent {
     private groupComponents: NoteGroupComponent[] = [];
     private deckEl: HTMLElement | null = null;
     private headerClickHandler: (() => void) | null = null;
+    private noteSort: NoteSortType;
 
     constructor(
         plugin: SRPlugin,
@@ -32,6 +33,7 @@ export class DeckComponent {
         shouldAutoExpand: boolean,
         onToggleDeck: (deckName: string) => void,
         onToggleGroup: (groupKey: string) => void,
+        noteSort: NoteSortType,
     ) {
         this.plugin = plugin;
         this.deck = deck;
@@ -43,6 +45,7 @@ export class DeckComponent {
         this.shouldAutoExpand = shouldAutoExpand;
         this.onToggleDeck = onToggleDeck;
         this.onToggleGroup = onToggleGroup;
+        this.noteSort = noteSort;
     }
 
     public render(): HTMLElement | null {
@@ -216,6 +219,7 @@ export class DeckComponent {
                 this.expandedGroups,
                 this.shouldAutoExpand,
                 this.onToggleGroup,
+                this.noteSort,
             );
             const rendered = newGroup.render();
             if (rendered) {
@@ -292,6 +296,7 @@ export class DeckComponent {
                 this.expandedGroups,
                 this.shouldAutoExpand,
                 this.onToggleGroup,
+                this.noteSort,
             );
             const rendered = group.render();
             if (rendered) {

@@ -2,6 +2,7 @@ import { Menu, TFile } from "obsidian";
 import type SRPlugin from "src/main";
 import { ReviewDeck, SchedNote } from "src/ReviewDeck";
 import { DataLocation } from "src/dataStore/dataLocation";
+import { NoteSortType } from "./types";
 
 export class NoteGroupComponent {
     private plugin: SRPlugin;
@@ -15,8 +16,10 @@ export class NoteGroupComponent {
     private shouldAutoScroll: boolean;
     private onToggleGroup: (groupKey: string) => void;
     private groupEl: HTMLElement | null = null;
+    private timeoutId: number | null = null;
     private eventListeners: Array<{ element: HTMLElement; type: string; handler: EventListener }> =
         [];
+    private noteSort: NoteSortType;
 
     constructor(
         plugin: SRPlugin,
@@ -28,7 +31,8 @@ export class NoteGroupComponent {
         groupKey: string,
         expandedGroups: Set<string>,
         shouldAutoScroll: boolean,
-        onToggleGroup: (groupKey: string) => void
+        onToggleGroup: (groupKey: string) => void,
+        noteSort: NoteSortType,
     ) {
         this.plugin = plugin;
         this.title = title;
@@ -40,6 +44,20 @@ export class NoteGroupComponent {
         this.expandedGroups = expandedGroups;
         this.shouldAutoScroll = shouldAutoScroll;
         this.onToggleGroup = onToggleGroup;
+        this.noteSort = noteSort;
+    }
+
+    private sortNotes(notes: SchedNote[]): SchedNote[] {
+        if (this.noteSort === NoteSortType.DEFAULT) {
+            return notes;
+        }
+        const sorted = [...notes];
+        if (this.noteSort === NoteSortType.NAME_ASC) {
+            sorted.sort((a, b) => a.note.basename.localeCompare(b.note.basename));
+        } else if (this.noteSort === NoteSortType.NAME_DESC) {
+            sorted.sort((a, b) => b.note.basename.localeCompare(a.note.basename));
+        }
+        return sorted;
     }
 
     public render(): HTMLElement | null {
@@ -74,7 +92,8 @@ export class NoteGroupComponent {
         });
 
         let activeNoteEl: HTMLElement | null = null;
-        for (const note of this.notes) {
+        const sortedNotes = this.sortNotes(this.notes);
+        for (const note of sortedNotes) {
             if (note && note.note) {
                 const noteEl = this.renderNote(notesList, note);
                 // Запоминаем элемент активной заметки
@@ -85,9 +104,10 @@ export class NoteGroupComponent {
         }
 
         if (activeNoteEl && isExpanded && this.shouldAutoScroll) {
-            setTimeout(() => {
+            this.timeoutId = requestAnimationFrame(() => {
                 activeNoteEl?.scrollIntoView({ behavior: "smooth", block: "center" });
-            }, 100);
+                this.timeoutId = null;
+            });
         }
 
         return this.groupEl;
@@ -151,6 +171,10 @@ export class NoteGroupComponent {
     }
 
     public destroy(): void {
+        if (this.timeoutId) {
+            cancelAnimationFrame(this.timeoutId);
+            this.timeoutId = null;
+        }
         for (const { element, type, handler } of this.eventListeners) {
             element.removeEventListener(type, handler);
         }
