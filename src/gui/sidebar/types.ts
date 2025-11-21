@@ -17,6 +17,8 @@ export enum NoteSortType {
     DEFAULT = "default",
     NAME_ASC = "name_asc",
     NAME_DESC = "name_desc",
+    PATH_ASC = "path_asc",
+    PATH_DESC = "path_desc",
 }
 
 export interface SidebarStats {

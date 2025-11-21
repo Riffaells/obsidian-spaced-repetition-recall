@@ -56,6 +56,10 @@ export class NoteGroupComponent {
             sorted.sort((a, b) => a.note.basename.localeCompare(b.note.basename));
         } else if (this.noteSort === NoteSortType.NAME_DESC) {
             sorted.sort((a, b) => b.note.basename.localeCompare(a.note.basename));
+        } else if (this.noteSort === NoteSortType.PATH_ASC) {
+            sorted.sort((a, b) => a.note.path.localeCompare(b.note.path));
+        } else if (this.noteSort === NoteSortType.PATH_DESC) {
+            sorted.sort((a, b) => b.note.path.localeCompare(a.note.path));
         }
         return sorted;
     }

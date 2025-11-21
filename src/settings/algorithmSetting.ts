@@ -13,7 +13,7 @@ export const DEFAULT_responseOptionBtnsText: Record<string, string[]> = {
     Default: [t("RESET"), t("HARD"), t("GOOD"), t("EASY")],
     Fsrs: [t("RESET"), t("HARD"), t("GOOD"), t("EASY")],
     Anki: [t("RESET"), t("HARD"), t("GOOD"), t("EASY")],
-    SM2: ["Blackout", "Incorrect", "Incorrect (Easy)", t("HARD"), t("GOOD"), t("EASY")],
+    SM2: [t("BLACKOUT"), t("INCORRECT"), t("INCORRECT_EASY"), t("HARD"), t("GOOD"), t("EASY")],
 };
 
 export function addAlgorithmSetting(containerEl: HTMLElement, plugin: SRPlugin) {

@@ -219,6 +219,13 @@ export function upgradeSettings(settings: SRSettings) {
         if (settings.convertCurlyBracketsToClozes)
             settings.clozePatterns.push("{{[123;;]answer[;;hint]}}");
     }
+
+    if (settings.sidebarSortOrder == null) {
+        settings.sidebarSortOrder = SortType.DATE_ASC;
+    }
+    if (settings.sidebarNoteSortOrder == null) {
+        settings.sidebarNoteSortOrder = NoteSortType.DEFAULT;
+    }
 }
 
 export class SettingsUtil {

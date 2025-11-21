@@ -75,6 +75,8 @@ export class SidebarHeader {
                 { type: NoteSortType.DEFAULT, label: t("DEFAULT"), icon: "arrow-up-down" },
                 { type: NoteSortType.NAME_ASC, label: t("SORT_NAME_ASC"), icon: "sort-asc" },
                 { type: NoteSortType.NAME_DESC, label: t("SORT_NAME_DESC"), icon: "sort-desc" },
+                { type: NoteSortType.PATH_ASC, label: t("SORT_PATH_ASC"), icon: "sort-asc" },
+                { type: NoteSortType.PATH_DESC, label: t("SORT_PATH_DESC"), icon: "sort-desc" },
             ];
 
             sortOptions.forEach((option) => {
