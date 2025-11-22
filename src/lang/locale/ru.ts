@@ -350,6 +350,10 @@ export default {
     DATA_FILE_UPDATE:
         "${filePath} обновлен - строка: ${lineNo}\nДобавлено: ${added} новых карточек, удалено ${removed} карточек.",
     DATA_ALL_ITEMS_UPDATED: "Все элементы были обновлены.",
+    RECALCULATE_NOTES: "Пересчёт заметок",
+    RECALCULATING_NOTES_NOTICE_START: "Пересчитывая заметки...",
+    RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Нашлись ${count} новых заметок",
+    RECALCULATING_NOTES_NOTICE_DONE_NONE: "Новых заметок не найдено.",
 
     // reviewView.ts
     NEXT_REVIEW_MINUTES: "Можно повторить через ${interval} минут",

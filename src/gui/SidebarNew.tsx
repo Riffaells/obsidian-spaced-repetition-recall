@@ -31,6 +31,7 @@ export class SidebarNewDesign {
     private lastActiveFilePath: string | null = null;
     private isFilterChange: boolean = false;
     private sortedDecks: ReviewDeck[] = [];
+    private justRecalculated = false;
 
     constructor(plugin: SRPlugin, containerEl: HTMLElement) {
         this.plugin = plugin;
@@ -38,6 +39,36 @@ export class SidebarNewDesign {
         this.currentSort = this.plugin.data.settings.sidebarSortOrder;
         this.currentNoteSort = this.plugin.data.settings.sidebarNoteSortOrder;
     }
+
+    private handleRecalculate = async () => {
+        new Notice(t("RECALCULATING_NOTES_NOTICE_START"));
+
+        const decksBefore = Object.values(this.plugin.reviewDecks);
+        let notesBefore = 0;
+        for (const deck of decksBefore) {
+            notesBefore += (deck.newNotes?.length || 0) + (deck.scheduledNotes?.length || 0);
+        }
+
+        this.justRecalculated = true;
+        await this.plugin.sync();
+
+        const decksAfter = Object.values(this.plugin.reviewDecks);
+        let notesAfter = 0;
+        for (const deck of decksAfter) {
+            notesAfter += (deck.newNotes?.length || 0) + (deck.scheduledNotes?.length || 0);
+        }
+
+        const notesAdded = notesAfter - notesBefore;
+
+        if (notesAdded > 0) {
+            new Notice(t("RECALCULATING_NOTES_NOTICE_DONE_ADDED", { count: notesAdded }));
+        } else {
+            new Notice(t("RECALCULATING_NOTES_NOTICE_DONE_NONE"));
+        }
+
+        const currentFile = this.plugin.app.workspace.getActiveFile();
+        this.update(currentFile);
+    };
 
     private handleNoteSortChange = async (sort: NoteSortType) => {
         this.currentNoteSort = sort;
@@ -78,6 +109,7 @@ export class SidebarNewDesign {
                 this.update(currentFile);
             },
             this.handleNoteSortChange,
+            () => this.handleRecalculate(),
         );
         this.header.render();
 
@@ -118,7 +150,11 @@ export class SidebarNewDesign {
         if (!this.decksContainer) return;
 
         const currentPath = activeFile?.path || null;
-        const shouldAutoExpand = currentPath !== this.lastActiveFilePath && !this.isFilterChange;
+        let shouldAutoExpand = currentPath !== this.lastActiveFilePath && !this.isFilterChange;
+        if (this.justRecalculated) {
+            shouldAutoExpand = true;
+            this.justRecalculated = false; // reset the flag
+        }
         this.lastActiveFilePath = currentPath;
 
         if (resort) {

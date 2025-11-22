@@ -454,6 +454,10 @@ export default {
     DATA_FILE_UPDATE:
         "${filePath} update - lineNo: ${lineNo}\nAdded: ${added} new card items, removed ${removed} card items.",
     DATA_ALL_ITEMS_UPDATED: "all items have been updated.",
+    RECALCULATE_NOTES: "Recalculate notes",
+    RECALCULATING_NOTES_NOTICE_START: "Recalculating notes...",
+    RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Recalculation finished. Found ${count} new note(s).",
+    RECALCULATING_NOTES_NOTICE_DONE_NONE: "Recalculation finished. No new notes found.",
 
     // reviewView.ts
     NEXT_REVIEW_MINUTES: "You can review in ${interval} minutes",

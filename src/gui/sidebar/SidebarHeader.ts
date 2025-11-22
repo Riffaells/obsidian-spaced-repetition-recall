@@ -9,6 +9,7 @@ export class SidebarHeader {
     private readonly onExpandAll: () => void;
     private readonly onSortChange: (sort: SortType) => void;
     private readonly onNoteSortChange: (sort: NoteSortType) => void;
+    private readonly onRecalculate: () => void;
     private currentFilter: FilterType = FilterType.ALL;
     private currentSort: SortType = SortType.DATE_ASC;
     private currentNoteSort: NoteSortType = NoteSortType.DEFAULT;
@@ -21,6 +22,7 @@ export class SidebarHeader {
         onExpandAll: () => void,
         onSortChange: (sort: SortType) => void,
         onNoteSortChange: (sort: NoteSortType) => void,
+        onRecalculate: () => void,
     ) {
         this.containerEl = containerEl;
         this.onFilterChange = onFilterChange;
@@ -28,6 +30,7 @@ export class SidebarHeader {
         this.onExpandAll = onExpandAll;
         this.onSortChange = onSortChange;
         this.onNoteSortChange = onNoteSortChange;
+        this.onRecalculate = onRecalculate;
     }
 
     public render(): void {
@@ -55,6 +58,22 @@ export class SidebarHeader {
         this.createControlButton(controlsContainer, "expand", t("EXPAND_ALL"), this.onExpandAll);
         this.createSortButton(controlsContainer);
         this.createNoteSortButton(controlsContainer);
+        this.createRecalculateButton(controlsContainer);
+    }
+
+    private createRecalculateButton(container: HTMLElement): void {
+        const recalculateButton = container.createEl("button", {
+            cls: "sr-control-btn",
+            attr: {
+                "aria-label": t("RECALCULATE_NOTES"),
+            },
+        });
+
+        setIcon(recalculateButton, "refresh-cw"); // Using a refresh/cycle icon
+
+        recalculateButton.addEventListener("click", () => {
+            this.onRecalculate();
+        });
     }
 
     private createNoteSortButton(container: HTMLElement): void {
