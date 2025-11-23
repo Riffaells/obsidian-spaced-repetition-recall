@@ -17,7 +17,7 @@ export class DeckComponent {
     private shouldAutoExpand: boolean;
     private onToggleDeck: (deckName: string) => void;
     private onToggleGroup: (groupKey: string) => void;
-    private groupComponents: NoteGroupComponent[] = [];
+    private groupComponents: Map<string, NoteGroupComponent> = new Map();
     private deckEl: HTMLElement | null = null;
     private headerClickHandler: (() => void) | null = null;
     private noteSort: NoteSortType;
@@ -50,6 +50,7 @@ export class DeckComponent {
 
     public render(): HTMLElement | null {
         if (!this.deck || (!this.deck.newNotes?.length && !this.deck.scheduledNotes?.length)) {
+            this.removeElement();
             return null;
         }
 
@@ -57,6 +58,7 @@ export class DeckComponent {
         if (this.filter === FilterType.ACTIVE) {
             const hasActiveNotes = this.checkIfDeckHasActiveNotes();
             if (!hasActiveNotes) {
+                this.removeElement();
                 return null;
             }
         }
@@ -65,6 +67,7 @@ export class DeckComponent {
         if (this.filter === FilterType.REVIEWED) {
             const hasReviewedNotes = this.checkIfDeckHasReviewedNotes();
             if (!hasReviewedNotes) {
+                this.removeElement();
                 return null;
             }
         }
@@ -76,25 +79,92 @@ export class DeckComponent {
             }
         }
 
-        this.deckEl = this.containerEl.createDiv("sr-new-deck");
+        if (!this.deckEl) {
+            this.deckEl = this.containerEl.createDiv("sr-new-deck");
 
-        const isExpanded = this.expandedDecks.has(this.deck.deckName);
-        const header = this.renderHeader(this.deckEl, isExpanded);
-        const content = this.deckEl.createDiv("sr-new-deck-content");
+            const isExpanded = this.expandedDecks.has(this.deck.deckName);
+            const header = this.renderHeader(this.deckEl, isExpanded);
+            const content = this.deckEl.createDiv("sr-new-deck-content");
 
-        if (!isExpanded) {
-            content.style.display = "none";
+            if (!isExpanded) {
+                content.style.display = "none";
+            }
+
+            this.headerClickHandler = () => {
+                this.onToggleDeck(this.deck.deckName);
+            };
+
+            header.addEventListener("click", this.headerClickHandler);
+
+            this.reconcileGroups(content);
+        } else {
+            // Ensure listeners are attached if for some reason they were lost (unlikely if we just reuse)
+            // But we do need to return the element.
+            // We rely on update() to have updated the content.
         }
 
-        this.headerClickHandler = () => {
-            this.onToggleDeck(this.deck.deckName);
-        };
-
-        header.addEventListener("click", this.headerClickHandler);
-
-        this.renderContent(content);
-
         return this.deckEl;
+    }
+
+    private removeElement(): void {
+        if (this.deckEl) {
+            if (this.headerClickHandler) {
+                const header = this.deckEl.querySelector(".sr-new-deck-header");
+                if (header) {
+                    header.removeEventListener("click", this.headerClickHandler);
+                }
+                this.headerClickHandler = null;
+            }
+            this.deckEl.remove();
+            this.deckEl = null;
+        }
+    }
+
+    public update(
+        activeFile: TFile | null,
+        filter: FilterType,
+        shouldAutoExpand: boolean,
+        noteSort: NoteSortType
+    ): void {
+        this.activeFile = activeFile;
+        this.filter = filter;
+        this.shouldAutoExpand = shouldAutoExpand;
+        this.noteSort = noteSort;
+
+        if (!this.deckEl) return;
+
+        // Update header stats
+        const header = this.deckEl.querySelector(".sr-new-deck-header");
+        if (header) {
+            const detailedStats = this.calculateDetailedStats();
+            const stats = header.querySelector(".sr-new-deck-stats");
+            if (stats) {
+                stats.setText(
+                    `${detailedStats.newCount} / ${detailedStats.dueCount} / ${detailedStats.reviewedCount}`,
+                );
+                stats.setAttribute(
+                    "aria-label",
+                    `${t("NEW")}: ${detailedStats.newCount}, ${t("DUE_CARDS")}: ${detailedStats.dueCount}, ${t("REVIEWED")}: ${detailedStats.reviewedCount}`,
+                );
+            }
+
+            if (this.expandedDecks.has(this.deck.deckName)) {
+                header.addClass("sr-deck-expanded");
+            } else {
+                header.removeClass("sr-deck-expanded");
+            }
+        }
+
+        const content = this.deckEl.querySelector(".sr-new-deck-content") as HTMLElement;
+        if (content) {
+            if (this.expandedDecks.has(this.deck.deckName)) {
+                content.style.display = "block";
+            } else {
+                content.style.display = "none";
+            }
+
+            this.reconcileGroups(content);
+        }
     }
 
     private checkIfDeckHasActiveNotes(): boolean {
@@ -196,39 +266,106 @@ export class DeckComponent {
         return { newCount, dueCount, reviewedCount };
     }
 
-    private renderContent(content: HTMLElement): void {
+    private reconcileGroups(content: HTMLElement): void {
+        const groupsData: { title: string; notes: SchedNote[]; key: string }[] = [];
+
         if (
             this.filter !== FilterType.REVIEWED &&
             this.deck.newNotes &&
             this.deck.newNotes.length > 0
         ) {
             const groupKey = createGroupKey(this.deck.deckName, t("NEW"));
-
             if (this.shouldAutoExpand && this.checkIfGroupContainsActiveFile(this.deck.newNotes)) {
                 this.expandedGroups.add(groupKey);
             }
-
-            const newGroup = new NoteGroupComponent(
-                this.plugin,
-                t("NEW"),
-                this.deck.newNotes,
-                this.activeFile,
-                this.deck,
-                content,
-                groupKey,
-                this.expandedGroups,
-                this.shouldAutoExpand,
-                this.onToggleGroup,
-                this.noteSort,
-            );
-            const rendered = newGroup.render();
-            if (rendered) {
-                this.groupComponents.push(newGroup);
-            }
+            groupsData.push({
+                title: t("NEW"),
+                notes: this.deck.newNotes,
+                key: groupKey,
+            });
         }
 
         if (this.deck.scheduledNotes && this.deck.scheduledNotes.length > 0) {
-            this.renderScheduledGroups(content);
+            const maxDaysToRender = this.plugin.data.settings.maxNDaysNotesReviewQueue;
+            const groupedNotes: { [key: string]: SchedNote[] } = {};
+
+            const sortedNotes =
+                this.filter === FilterType.REVIEWED
+                    ? [...this.deck.scheduledNotes].sort((a, b) => b.dueUnix - a.dueUnix)
+                    : [...this.deck.scheduledNotes].sort((a, b) => a.dueUnix - b.dueUnix);
+
+            for (const sNote of sortedNotes) {
+                const nDays = calculateDaysUntilDue(sNote.dueUnix, this.plugin);
+
+                if (nDays > maxDaysToRender) {
+                    continue;
+                }
+
+                if (this.filter === FilterType.ACTIVE && nDays > 0) {
+                    continue;
+                }
+
+                if (this.filter === FilterType.REVIEWED && nDays <= 0) {
+                    continue;
+                }
+
+                const folderTitle = getGroupTitle(nDays, sNote.dueUnix, this.plugin);
+
+                if (!groupedNotes[folderTitle]) {
+                    groupedNotes[folderTitle] = [];
+                }
+                groupedNotes[folderTitle].push(sNote);
+            }
+
+            for (const [title, notes] of Object.entries(groupedNotes)) {
+                if (!notes || notes.length === 0) continue;
+                const groupKey = createGroupKey(this.deck.deckName, title);
+                if (this.shouldAutoExpand && this.checkIfGroupContainsActiveFile(notes)) {
+                    this.expandedGroups.add(groupKey);
+                }
+                groupsData.push({
+                    title: title,
+                    notes: notes,
+                    key: groupKey,
+                });
+            }
+        }
+
+        // 3. Reconcile
+        const newGroupKeys = new Set(groupsData.map((g) => g.key));
+
+        // Remove groups that dont exist anymore
+        for (const [key, component] of this.groupComponents) {
+            if (!newGroupKeys.has(key)) {
+                component.destroy();
+                this.groupComponents.delete(key);
+            }
+        }
+
+        // Create or Update groups
+        for (const data of groupsData) {
+            let component = this.groupComponents.get(data.key);
+            if (component) {
+                component.update(this.activeFile, data.notes, this.shouldAutoExpand);
+            } else {
+                component = new NoteGroupComponent(
+                    this.plugin,
+                    data.title,
+                    data.notes,
+                    this.activeFile,
+                    this.deck,
+                    content,
+                    data.key,
+                    this.expandedGroups,
+                    this.shouldAutoExpand,
+                    this.onToggleGroup,
+                    this.noteSort,
+                );
+                const rendered = component.render();
+                if (rendered) {
+                    this.groupComponents.set(data.key, component);
+                }
+            }
         }
     }
 
@@ -244,72 +381,11 @@ export class DeckComponent {
         return false;
     }
 
-    private renderScheduledGroups(content: HTMLElement): void {
-        const maxDaysToRender = this.plugin.data.settings.maxNDaysNotesReviewQueue;
-        const groupedNotes: { [key: string]: SchedNote[] } = {};
-
-        const sortedNotes =
-            this.filter === FilterType.REVIEWED
-                ? [...this.deck.scheduledNotes].sort((a, b) => b.dueUnix - a.dueUnix)
-                : [...this.deck.scheduledNotes].sort((a, b) => a.dueUnix - b.dueUnix);
-
-        for (const sNote of sortedNotes) {
-            const nDays = calculateDaysUntilDue(sNote.dueUnix, this.plugin);
-
-            if (nDays > maxDaysToRender) {
-                continue;
-            }
-
-            if (this.filter === FilterType.ACTIVE && nDays > 0) {
-                continue;
-            }
-
-            if (this.filter === FilterType.REVIEWED && nDays <= 0) {
-                continue;
-            }
-
-            const folderTitle = getGroupTitle(nDays, sNote.dueUnix, this.plugin);
-
-            if (!groupedNotes[folderTitle]) {
-                groupedNotes[folderTitle] = [];
-            }
-            groupedNotes[folderTitle].push(sNote);
-        }
-
-        for (const [title, notes] of Object.entries(groupedNotes)) {
-            if (!notes || notes.length === 0) continue;
-
-            const groupKey = createGroupKey(this.deck.deckName, title);
-
-            if (this.shouldAutoExpand && this.checkIfGroupContainsActiveFile(notes)) {
-                this.expandedGroups.add(groupKey);
-            }
-
-            const group = new NoteGroupComponent(
-                this.plugin,
-                title,
-                notes,
-                this.activeFile,
-                this.deck,
-                content,
-                groupKey,
-                this.expandedGroups,
-                this.shouldAutoExpand,
-                this.onToggleGroup,
-                this.noteSort,
-            );
-            const rendered = group.render();
-            if (rendered) {
-                this.groupComponents.push(group);
-            }
-        }
-    }
-
     public destroy(): void {
-        for (const group of this.groupComponents) {
+        for (const group of this.groupComponents.values()) {
             group.destroy();
         }
-        this.groupComponents = [];
+        this.groupComponents.clear();
 
         if (this.deckEl && this.headerClickHandler) {
             const header = this.deckEl.querySelector(".sr-new-deck-header");

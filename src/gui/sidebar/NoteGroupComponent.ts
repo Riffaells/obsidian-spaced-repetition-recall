@@ -66,55 +66,94 @@ export class NoteGroupComponent {
 
     public render(): HTMLElement | null {
         if (!this.notes || this.notes.length === 0) {
+            this.removeElement();
             return null;
         }
 
-        this.groupEl = this.containerEl.createDiv("sr-new-note-group");
+        if (!this.groupEl) {
+            this.groupEl = this.containerEl.createDiv("sr-new-note-group");
 
-        const isExpanded = this.expandedGroups.has(this.groupKey);
-        const groupHeader = this.groupEl.createDiv("sr-new-note-group-header");
-        groupHeader.setText(`${this.title} (${this.notes.length})`);
+            const isExpanded = this.expandedGroups.has(this.groupKey);
+            const groupHeader = this.groupEl.createDiv("sr-new-note-group-header");
+            groupHeader.setText(`${this.title} (${this.notes.length})`);
 
-        if (isExpanded) {
-            groupHeader.addClass("sr-group-expanded");
-        }
-
-        const notesList = this.groupEl.createDiv("sr-new-notes-list");
-        if (!isExpanded) {
-            notesList.style.display = "none";
-        }
-
-        const headerClickHandler = () => {
-            this.onToggleGroup(this.groupKey);
-        };
-
-        groupHeader.addEventListener("click", headerClickHandler);
-        this.eventListeners.push({
-            element: groupHeader,
-            type: "click",
-            handler: headerClickHandler,
-        });
-
-        let activeNoteEl: HTMLElement | null = null;
-        const sortedNotes = this.sortNotes(this.notes);
-        for (const note of sortedNotes) {
-            if (note && note.note) {
-                const noteEl = this.renderNote(notesList, note);
-                // Запоминаем элемент активной заметки
-                if (this.activeFile && note.note.path === this.activeFile.path) {
-                    activeNoteEl = noteEl;
-                }
+            if (isExpanded) {
+                groupHeader.addClass("sr-group-expanded");
             }
-        }
 
-        if (activeNoteEl && isExpanded && this.shouldAutoScroll) {
-            this.timeoutId = requestAnimationFrame(() => {
-                activeNoteEl?.scrollIntoView({ behavior: "smooth", block: "center" });
-                this.timeoutId = null;
+            const notesList = this.groupEl.createDiv("sr-new-notes-list");
+            if (!isExpanded) {
+                notesList.style.display = "none";
+            }
+
+            const headerClickHandler = () => {
+                this.onToggleGroup(this.groupKey);
+            };
+
+            groupHeader.addEventListener("click", headerClickHandler);
+            this.eventListeners.push({
+                element: groupHeader,
+                type: "click",
+                handler: headerClickHandler,
             });
+
+            this.renderNotes(notesList);
         }
 
         return this.groupEl;
+    }
+
+    private removeElement(): void {
+        if (this.groupEl) {
+            this.groupEl.remove();
+            this.groupEl = null;
+        }
+    }
+
+    public update(
+        activeFile: TFile | null,
+        notes: SchedNote[],
+        shouldAutoScroll: boolean
+    ): void {
+        this.activeFile = activeFile;
+        this.notes = notes;
+        this.shouldAutoScroll = shouldAutoScroll;
+
+        if (!this.groupEl) return;
+
+        // Update header
+        const header = this.groupEl.querySelector(".sr-new-note-group-header");
+        if (header) {
+            header.setText(`${this.title} (${this.notes.length})`);
+            if (this.expandedGroups.has(this.groupKey)) {
+                header.addClass("sr-group-expanded");
+            } else {
+                header.removeClass("sr-group-expanded");
+            }
+        }
+
+        const notesList = this.groupEl.querySelector(".sr-new-notes-list") as HTMLElement;
+        if (notesList) {
+            if (this.expandedGroups.has(this.groupKey)) {
+                notesList.style.display = "block";
+            } else {
+                notesList.style.display = "none";
+            }
+
+            notesList.empty();
+            this.eventListeners = this.eventListeners.filter(l => !l.element.classList.contains("sr-new-note-item"));
+            
+            this.renderNotes(notesList);
+        }
+    }
+
+    private renderNotes(container: HTMLElement): void {
+        const sortedNotes = this.sortNotes(this.notes);
+        for (const note of sortedNotes) {
+            if (note && note.note) {
+                this.renderNote(container, note);
+            }
+        }
     }
 
     private renderNote(container: HTMLElement, note: SchedNote): HTMLElement {

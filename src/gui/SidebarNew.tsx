@@ -1,4 +1,4 @@
-import { TFile } from "obsidian";
+import { Notice, TFile } from "obsidian";
 import type SRPlugin from "src/main";
 import { DeckComponent } from "./sidebar/DeckComponent";
 import { SidebarHeader } from "./sidebar/SidebarHeader";
@@ -24,7 +24,7 @@ export class SidebarNewDesign {
     private expandedGroups: Set<string> = new Set();
     private header: SidebarHeader | null = null;
     private stats: SidebarStats | null = null;
-    private deckComponents: DeckComponent[] = [];
+    private deckComponents: Map<string, DeckComponent> = new Map();
     private mainContainer: HTMLElement | null = null;
     private decksContainer: HTMLElement | null = null;
     private cachedStats: Stats | null = null;
@@ -32,6 +32,7 @@ export class SidebarNewDesign {
     private isFilterChange: boolean = false;
     private sortedDecks: ReviewDeck[] = [];
     private justRecalculated = false;
+    private scrollTimeout: number | null = null;
 
     constructor(plugin: SRPlugin, containerEl: HTMLElement) {
         this.plugin = plugin;
@@ -125,7 +126,8 @@ export class SidebarNewDesign {
     private update(activeFile: TFile | null, resort = true): void {
         if (!this.decksContainer) return;
 
-        this.destroyDeckComponents();
+        // Note: We no longer destroy all components here.
+        // We reconcile them in renderDecks.
 
         this.cachedStats = calculateSidebarStats(this.plugin);
         if (this.stats && this.cachedStats) {
@@ -141,12 +143,12 @@ export class SidebarNewDesign {
             this.header.render();
         }
 
-        this.decksContainer.empty();
-
-        this.renderDecks(activeFile, resort);
+        this.reconcileDecks(activeFile, resort);
+        
+        this.scrollToActiveItem();
     }
 
-    private renderDecks(activeFile: TFile | null, resort = true): void {
+    private reconcileDecks(activeFile: TFile | null, resort = true): void {
         if (!this.decksContainer) return;
 
         const currentPath = activeFile?.path || null;
@@ -162,25 +164,60 @@ export class SidebarNewDesign {
             this.sortedDecks = this.sortDecks(decks);
         }
 
+        const newDeckNames = new Set(this.sortedDecks.map(d => d.deckName));
+
+        // Remove decks that don't exist anymore
+        for (const [name, component] of this.deckComponents) {
+            if (!newDeckNames.has(name)) {
+                component.destroy();
+                this.deckComponents.delete(name);
+            }
+        }
+
         for (const deck of this.sortedDecks) {
-            const deckComponent = new DeckComponent(
-                this.plugin,
-                deck,
-                this.decksContainer,
-                activeFile,
-                this.currentFilter,
-                this.expandedDecks,
-                this.expandedGroups,
-                shouldAutoExpand,
-                (deckName) => this.toggleDeck(deckName, activeFile),
-                (groupKey) => this.toggleGroup(groupKey, activeFile),
-                this.currentNoteSort,
-            );
-            deckComponent.render();
-            this.deckComponents.push(deckComponent);
+            let component = this.deckComponents.get(deck.deckName);
+            if (component) {
+                component.update(activeFile, this.currentFilter, shouldAutoExpand, this.currentNoteSort);
+                const el = component.render();
+                if (el) {
+                    this.decksContainer.appendChild(el);
+                }
+            } else {
+                component = new DeckComponent(
+                    this.plugin,
+                    deck,
+                    this.decksContainer,
+                    activeFile,
+                    this.currentFilter,
+                    this.expandedDecks,
+                    this.expandedGroups,
+                    shouldAutoExpand,
+                    (deckName) => this.toggleDeck(deckName, activeFile),
+                    (groupKey) => this.toggleGroup(groupKey, activeFile),
+                    this.currentNoteSort,
+                );
+                const rendered = component.render();
+                if (rendered) {
+                    this.deckComponents.set(deck.deckName, component);
+                }
+            }
         }
 
         this.isFilterChange = false;
+    }
+
+    private scrollToActiveItem(): void {
+        if (this.scrollTimeout) {
+            window.clearTimeout(this.scrollTimeout);
+            this.scrollTimeout = null;
+        }
+
+        this.scrollTimeout = window.setTimeout(() => {
+            const activeItem = this.containerEl.querySelector(".sr-new-note-item.is-active");
+            if (activeItem) {
+                activeItem.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        }, 100);
     }
 
     private sortDecks(decks: ReviewDeck[]): ReviewDeck[] {
@@ -339,21 +376,22 @@ export class SidebarNewDesign {
         this.update(currentFile, false);
     }
 
-    private destroyDeckComponents(): void {
-        for (const component of this.deckComponents) {
+    public destroy(): void {
+        for (const component of this.deckComponents.values()) {
             component.destroy();
         }
-        this.deckComponents = [];
-    }
-
-    public destroy(): void {
-        this.destroyDeckComponents();
+        this.deckComponents.clear();
 
         this.header = null;
         this.stats = null;
         this.mainContainer = null;
         this.decksContainer = null;
         this.cachedStats = null;
+
+        if (this.scrollTimeout) {
+            window.clearTimeout(this.scrollTimeout);
+            this.scrollTimeout = null;
+        }
 
         this.containerEl.empty();
         this.containerEl.removeClass("sr-sidebar-new-design");
