@@ -1,5 +1,6 @@
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
+import { SchedNote } from "src/ReviewDeck";
 import { DataLocation } from "src/dataStore/dataLocation";
 import { globalDateProvider } from "src/util/DateProvider";
 import { SidebarStats } from "./types";
@@ -98,4 +99,19 @@ export function calculateActiveNotesCount(plugin: SRPlugin): number {
  */
 export function createGroupKey(deckName: string, groupTitle: string): string {
     return `${deckName}::${groupTitle}`;
+}
+
+/**
+ * Checks if a note is active (due or overdue)
+ */
+export function isNoteActive(note: SchedNote, plugin: SRPlugin): boolean {
+    const nDays = calculateDaysUntilDue(note.dueUnix, plugin);
+    return nDays <= 0;
+}
+
+/**
+ * Filters active notes from a list
+ */
+export function filterActiveNotes(notes: SchedNote[], plugin: SRPlugin): SchedNote[] {
+    return notes.filter((note) => isNoteActive(note, plugin));
 }

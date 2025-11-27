@@ -4,7 +4,7 @@ import { ReviewDeck, SchedNote } from "src/ReviewDeck";
 import { t } from "src/lang/helpers";
 import { NoteGroupComponent } from "./NoteGroupComponent";
 import { FilterType, NoteSortType } from "./types";
-import { calculateDaysUntilDue, createGroupKey, getGroupTitle } from "./utils";
+import { calculateDaysUntilDue, createGroupKey, getGroupTitle, isNoteActive } from "./utils";
 
 export class DeckComponent {
     private plugin: SRPlugin;
@@ -94,7 +94,9 @@ export class DeckComponent {
                 this.onToggleDeck(this.deck.deckName);
             };
 
-            header.addEventListener("click", this.headerClickHandler);
+            header.addEventListener("click", this.headerClickHandler, {
+                signal: this.abortController.signal,
+            });
 
             this.reconcileGroups(content);
         } else {
@@ -124,12 +126,18 @@ export class DeckComponent {
         activeFile: TFile | null,
         filter: FilterType,
         shouldAutoExpand: boolean,
-        noteSort: NoteSortType
+        noteSort: NoteSortType,
+        deck?: ReviewDeck
     ): void {
         this.activeFile = activeFile;
         this.filter = filter;
         this.shouldAutoExpand = shouldAutoExpand;
         this.noteSort = noteSort;
+        
+        // Update deck reference if provided
+        if (deck) {
+            this.deck = deck;
+        }
 
         if (!this.deckEl) return;
 
@@ -174,8 +182,7 @@ export class DeckComponent {
 
         if (this.deck.scheduledNotes && this.deck.scheduledNotes.length > 0) {
             for (const sNote of this.deck.scheduledNotes) {
-                const nDays = calculateDaysUntilDue(sNote.dueUnix, this.plugin);
-                if (nDays <= 0) {
+                if (isNoteActive(sNote, this.plugin)) {
                     return true;
                 }
             }
@@ -187,8 +194,7 @@ export class DeckComponent {
     private checkIfDeckHasReviewedNotes(): boolean {
         if (this.deck.scheduledNotes && this.deck.scheduledNotes.length > 0) {
             for (const sNote of this.deck.scheduledNotes) {
-                const nDays = calculateDaysUntilDue(sNote.dueUnix, this.plugin);
-                if (nDays > 0) {
+                if (!isNoteActive(sNote, this.plugin)) {
                     return true;
                 }
             }
@@ -254,8 +260,7 @@ export class DeckComponent {
 
         if (this.deck.scheduledNotes) {
             for (const sNote of this.deck.scheduledNotes) {
-                const nDays = calculateDaysUntilDue(sNote.dueUnix, this.plugin);
-                if (nDays <= 0) {
+                if (isNoteActive(sNote, this.plugin)) {
                     dueCount++;
                 } else {
                     reviewedCount++;
@@ -369,7 +374,7 @@ export class DeckComponent {
         }
     }
 
-    private checkIfGroupContainsActiveFile(notes: any[]): boolean {
+    private checkIfGroupContainsActiveFile(notes: SchedNote[]): boolean {
         if (!this.activeFile || !notes) return false;
 
         for (const note of notes) {
@@ -381,19 +386,16 @@ export class DeckComponent {
         return false;
     }
 
+    private abortController = new AbortController();
+
     public destroy(): void {
         for (const group of this.groupComponents.values()) {
             group.destroy();
         }
         this.groupComponents.clear();
 
-        if (this.deckEl && this.headerClickHandler) {
-            const header = this.deckEl.querySelector(".sr-new-deck-header");
-            if (header) {
-                header.removeEventListener("click", this.headerClickHandler);
-            }
-            this.headerClickHandler = null;
-        }
+        this.abortController.abort();
+        this.headerClickHandler = null;
 
         if (this.deckEl) {
             this.deckEl.remove();

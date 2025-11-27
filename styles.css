@@ -513,7 +513,6 @@ ResponseFloatBar TOOLBAR
     align-items: center;
     justify-content: center;
     min-width: 18px;
-    height: 18px;
     background: var(--background-secondary);
     padding: 0 5px;
     border-radius: 5px;

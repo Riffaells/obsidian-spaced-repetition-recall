@@ -1,4 +1,4 @@
-import { Notice, TFile } from "obsidian";
+import { Notice, TFile, debounce } from "obsidian";
 import type SRPlugin from "src/main";
 import { DeckComponent } from "./sidebar/DeckComponent";
 import { SidebarHeader } from "./sidebar/SidebarHeader";
@@ -74,15 +74,21 @@ export class SidebarNewDesign {
     private handleNoteSortChange = async (sort: NoteSortType) => {
         this.currentNoteSort = sort;
         this.plugin.data.settings.sidebarNoteSortOrder = sort;
-        await this.plugin.saveData(this.plugin.data);
-        this.update(this.plugin.app.workspace.getActiveFile(), false); // don't resort decks
+        this.saveSettingsDebounced();
+        this.update(this.plugin.app.workspace.getActiveFile(), false, false); // don't resort decks, don't scroll
     };
+
+    private saveSettingsDebounced = debounce(async () => {
+        await this.plugin.saveData(this.plugin.data);
+    }, 500, true);
 
     public render(activeFile: TFile | null): void {
         if (!this.mainContainer) {
             this.initializeStructure();
         }
-        this.update(activeFile);
+        const currentPath = activeFile?.path || null;
+        const shouldScroll = currentPath !== this.lastActiveFilePath;
+        this.update(activeFile, true, shouldScroll);
     }
 
     private initializeStructure(): void {
@@ -105,7 +111,7 @@ export class SidebarNewDesign {
             (sort) => {
                 this.currentSort = sort;
                 this.plugin.data.settings.sidebarSortOrder = sort;
-                void this.plugin.saveData(this.plugin.data);
+                this.saveSettingsDebounced();
                 const currentFile = this.plugin.app.workspace.getActiveFile();
                 this.update(currentFile);
             },
@@ -123,11 +129,14 @@ export class SidebarNewDesign {
         this.decksContainer = this.mainContainer.createDiv("sr-new-sidebar-decks");
     }
 
-    private update(activeFile: TFile | null, resort = true): void {
+    private update(activeFile: TFile | null, resort = true, shouldScroll = true): void {
         if (!this.decksContainer) return;
 
-        // Note: We no longer destroy all components here.
-        // We reconcile them in renderDecks.
+        // Clear any pending scroll to prevent race conditions
+        if (this.scrollTimeout) {
+            window.clearTimeout(this.scrollTimeout);
+            this.scrollTimeout = null;
+        }
 
         this.cachedStats = calculateSidebarStats(this.plugin);
         if (this.stats && this.cachedStats) {
@@ -145,7 +154,9 @@ export class SidebarNewDesign {
 
         this.reconcileDecks(activeFile, resort);
         
-        this.scrollToActiveItem();
+        if (shouldScroll) {
+            this.scrollToActiveItem();
+        }
     }
 
     private reconcileDecks(activeFile: TFile | null, resort = true): void {
@@ -173,15 +184,12 @@ export class SidebarNewDesign {
                 this.deckComponents.delete(name);
             }
         }
-
-        for (const deck of this.sortedDecks) {
+        for (let i = 0; i < this.sortedDecks.length; i++) {
+            const deck = this.sortedDecks[i];
             let component = this.deckComponents.get(deck.deckName);
+            
             if (component) {
-                component.update(activeFile, this.currentFilter, shouldAutoExpand, this.currentNoteSort);
-                const el = component.render();
-                if (el) {
-                    this.decksContainer.appendChild(el);
-                }
+                component.update(activeFile, this.currentFilter, shouldAutoExpand, this.currentNoteSort, deck);
             } else {
                 component = new DeckComponent(
                     this.plugin,
@@ -192,14 +200,17 @@ export class SidebarNewDesign {
                     this.expandedDecks,
                     this.expandedGroups,
                     shouldAutoExpand,
-                    (deckName) => this.toggleDeck(deckName, activeFile),
-                    (groupKey) => this.toggleGroup(groupKey, activeFile),
+                    (deckName) => this.toggleDeck(deckName),
+                    (groupKey) => this.toggleGroup(groupKey),
                     this.currentNoteSort,
                 );
-                const rendered = component.render();
-                if (rendered) {
-                    this.deckComponents.set(deck.deckName, component);
-                }
+                this.deckComponents.set(deck.deckName, component);
+            }
+
+            // Ensure order in DOM
+            const el = component.render();
+            if (el) {
+                this.decksContainer.appendChild(el);
             }
         }
 
@@ -220,57 +231,25 @@ export class SidebarNewDesign {
         }, 100);
     }
 
-    private sortDecks(decks: ReviewDeck[]): ReviewDeck[] {
-        const sorted = [...decks];
+    private deckStatsCache = new Map<string, { minDate: number; maxDate: number; count: number; timestamp: number }>();
 
-        switch (this.currentSort) {
-            case SortType.DATE_ASC:
-                sorted.sort((a, b) => {
-                    const minDateA = this.getMinDueDate(a);
-                    const minDateB = this.getMinDueDate(b);
-                    return minDateA - minDateB;
-                });
-                break;
-
-            case SortType.DATE_DESC:
-                sorted.sort((a, b) => {
-                    const maxDateA = this.getMaxDueDate(a);
-                    const maxDateB = this.getMaxDueDate(b);
-                    return maxDateB - maxDateA;
-                });
-                break;
-
-            case SortType.COUNT_DESC:
-                sorted.sort((a, b) => {
-                    const countA = this.getDeckNotesCount(a);
-                    const countB = this.getDeckNotesCount(b);
-                    return countB - countA;
-                });
-                break;
-
-            case SortType.COUNT_ASC:
-                sorted.sort((a, b) => {
-                    const countA = this.getDeckNotesCount(a);
-                    const countB = this.getDeckNotesCount(b);
-                    return countA - countB;
-                });
-                break;
-
-            case SortType.NAME_ASC:
-                sorted.sort((a, b) => a.deckName.localeCompare(b.deckName));
-                break;
-
-            case SortType.NAME_DESC:
-                sorted.sort((a, b) => b.deckName.localeCompare(a.deckName));
-                break;
+    private getDeckStats(deck: ReviewDeck): { minDate: number; maxDate: number; count: number } {
+        const cached = this.deckStatsCache.get(deck.deckName);
+        if (cached) {
+            return cached;
         }
 
-        return sorted;
+        const minDate = this.calculateMinDueDate(deck);
+        const maxDate = this.calculateMaxDueDate(deck);
+        const count = this.calculateDeckNotesCount(deck);
+
+        const stats = { minDate, maxDate, count, timestamp: Date.now() };
+        this.deckStatsCache.set(deck.deckName, stats);
+        return stats;
     }
 
-    private getMinDueDate(deck: ReviewDeck): number {
+    private calculateMinDueDate(deck: ReviewDeck): number {
         let minDate = Infinity;
-
         if (deck.dueNotesCount > 0 && deck.scheduledNotes.length > 0) {
             for (const note of deck.scheduledNotes) {
                 if (note.dueUnix && note.dueUnix < minDate) {
@@ -278,13 +257,11 @@ export class SidebarNewDesign {
                 }
             }
         }
-
         return minDate === Infinity ? Date.now() : minDate;
     }
 
-    private getMaxDueDate(deck: ReviewDeck): number {
+    private calculateMaxDueDate(deck: ReviewDeck): number {
         let maxDate = 0;
-
         if (deck.dueNotesCount > 0 && deck.scheduledNotes.length > 0) {
             for (const note of deck.scheduledNotes) {
                 if (note.dueUnix && note.dueUnix > maxDate) {
@@ -292,21 +269,17 @@ export class SidebarNewDesign {
                 }
             }
         }
-
         return maxDate === 0 ? Date.now() : maxDate;
     }
 
-    private getDeckNotesCount(deck: ReviewDeck): number {
+    private calculateDeckNotesCount(deck: ReviewDeck): number {
         const newNotesCount = deck.newNotes?.length || 0;
-
         if (!deck.scheduledNotes) {
             return this.currentFilter === FilterType.REVIEWED ? 0 : newNotesCount;
         }
-
         switch (this.currentFilter) {
             case FilterType.ALL:
                 return newNotesCount + (deck.scheduledNotes?.length || 0);
-
             case FilterType.ACTIVE: {
                 const dueCount = deck.scheduledNotes.filter(
                     (note: SchedNote) => calculateDaysUntilDue(note.dueUnix, this.plugin) <= 0,
@@ -319,33 +292,64 @@ export class SidebarNewDesign {
                 ).length;
             }
         }
-
         return 0;
     }
 
-    private toggleDeck(deckName: string, activeFile: TFile | null): void {
+    private sortDecks(decks: ReviewDeck[]): ReviewDeck[] {
+        // Clear cache before sorting to ensure fresh data for this update cycle
+        this.deckStatsCache.clear();
+        
+        const sorted = [...decks];
+
+        switch (this.currentSort) {
+            case SortType.DATE_ASC:
+                sorted.sort((a, b) => this.getDeckStats(a).minDate - this.getDeckStats(b).minDate);
+                break;
+            case SortType.DATE_DESC:
+                sorted.sort((a, b) => this.getDeckStats(b).maxDate - this.getDeckStats(a).maxDate);
+                break;
+            case SortType.COUNT_DESC:
+                sorted.sort((a, b) => this.getDeckStats(b).count - this.getDeckStats(a).count);
+                break;
+            case SortType.COUNT_ASC:
+                sorted.sort((a, b) => this.getDeckStats(a).count - this.getDeckStats(b).count);
+                break;
+            case SortType.NAME_ASC:
+                sorted.sort((a, b) => a.deckName.localeCompare(b.deckName));
+                break;
+            case SortType.NAME_DESC:
+                sorted.sort((a, b) => b.deckName.localeCompare(a.deckName));
+                break;
+        }
+
+        return sorted;
+    }
+
+    private toggleDeck(deckName: string): void {
         if (this.expandedDecks.has(deckName)) {
             this.expandedDecks.delete(deckName);
         } else {
             this.expandedDecks.add(deckName);
         }
-        this.update(activeFile, false);
+        const activeFile = this.plugin.app.workspace.getActiveFile();
+        this.update(activeFile, false, false);
     }
 
-    private toggleGroup(groupKey: string, activeFile: TFile | null): void {
+    private toggleGroup(groupKey: string): void {
         if (this.expandedGroups.has(groupKey)) {
             this.expandedGroups.delete(groupKey);
         } else {
             this.expandedGroups.add(groupKey);
         }
-        this.update(activeFile, false);
+        const activeFile = this.plugin.app.workspace.getActiveFile();
+        this.update(activeFile, false, false);
     }
 
     private collapseAll(): void {
         this.expandedDecks.clear();
         this.expandedGroups.clear();
         const currentFile = this.plugin.app.workspace.getActiveFile();
-        this.update(currentFile, false);
+        this.update(currentFile, false, false);
     }
 
     private expandAll(): void {
@@ -373,7 +377,7 @@ export class SidebarNewDesign {
         this.expandedGroups = allGroupKeys;
 
         const currentFile = this.plugin.app.workspace.getActiveFile();
-        this.update(currentFile, false);
+        this.update(currentFile, false, false);
     }
 
     public destroy(): void {
@@ -387,6 +391,7 @@ export class SidebarNewDesign {
         this.mainContainer = null;
         this.decksContainer = null;
         this.cachedStats = null;
+        this.lastActiveFilePath = null;
 
         if (this.scrollTimeout) {
             window.clearTimeout(this.scrollTimeout);

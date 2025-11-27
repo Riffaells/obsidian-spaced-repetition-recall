@@ -15,6 +15,12 @@ export class SidebarHeader {
     private currentNoteSort: NoteSortType = NoteSortType.DEFAULT;
     private activeCount: number = 0;
 
+
+
+    private isRendered = false;
+    private filterButtons: Map<FilterType, HTMLElement> = new Map();
+    private activeCountChip: HTMLElement | null = null;
+
     constructor(
         containerEl: HTMLElement,
         onFilterChange: (filter: FilterType) => void,
@@ -34,19 +40,27 @@ export class SidebarHeader {
     }
 
     public render(): void {
+        if (!this.isRendered) {
+            this.createView();
+            this.isRendered = true;
+        }
+        this.updateView();
+    }
+
+    private createView(): void {
         this.containerEl.empty();
         this.containerEl.addClass("sr-new-sidebar-header");
 
         const filterContainer = this.containerEl.createDiv("sr-filter-buttons");
 
-        this.createFilterButton(filterContainer, FilterType.ALL, t("FILTER_ALL"), null);
+        this.createFilterButton(filterContainer, FilterType.ALL, t("FILTER_ALL"));
         this.createFilterButton(
             filterContainer,
             FilterType.ACTIVE,
             t("FILTER_ACTIVE"),
-            this.activeCount,
+            true
         );
-        this.createFilterButton(filterContainer, FilterType.REVIEWED, t("FILTER_REVIEWED"), null);
+        this.createFilterButton(filterContainer, FilterType.REVIEWED, t("FILTER_REVIEWED"));
 
         const controlsContainer = this.containerEl.createDiv("sr-controls-buttons");
         this.createControlButton(
@@ -61,6 +75,27 @@ export class SidebarHeader {
         this.createRecalculateButton(controlsContainer);
     }
 
+    private updateView(): void {
+        // Update Filter Buttons
+        for (const [filter, btn] of this.filterButtons) {
+            if (this.currentFilter === filter) {
+                btn.addClass("sr-filter-active");
+            } else {
+                btn.removeClass("sr-filter-active");
+            }
+        }
+
+        // Update Active Count
+        if (this.activeCountChip) {
+            if (this.activeCount > 0) {
+                this.activeCountChip.setText(this.activeCount.toString());
+                this.activeCountChip.style.display = "inline-block";
+            } else {
+                this.activeCountChip.style.display = "none";
+            }
+        }
+    }
+
     private createRecalculateButton(container: HTMLElement): void {
         const recalculateButton = container.createEl("button", {
             cls: "sr-control-btn",
@@ -69,7 +104,7 @@ export class SidebarHeader {
             },
         });
 
-        setIcon(recalculateButton, "refresh-cw"); // Using a refresh/cycle icon
+        setIcon(recalculateButton, "refresh-cw");
 
         recalculateButton.addEventListener("click", () => {
             this.onRecalculate();
@@ -216,7 +251,7 @@ export class SidebarHeader {
         container: HTMLElement,
         filter: FilterType,
         label: string,
-        count: number | null,
+        hasChip: boolean = false,
     ): void {
         const button = container.createEl("button", {
             cls: "sr-filter-btn",
@@ -224,19 +259,18 @@ export class SidebarHeader {
 
         button.createSpan({ text: label });
 
-        if (count !== null && count > 0) {
-            button.createSpan({
-                text: count.toString(),
+        if (hasChip) {
+            this.activeCountChip = button.createSpan({
+                text: "0",
                 cls: "sr-filter-chip",
             });
-        }
-
-        if (this.currentFilter === filter) {
-            button.addClass("sr-filter-active");
+            this.activeCountChip.style.display = "none";
         }
 
         button.addEventListener("click", () => {
             this.onFilterChange(filter);
         });
+
+        this.filterButtons.set(filter, button);
     }
 }

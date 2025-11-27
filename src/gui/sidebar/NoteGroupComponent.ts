@@ -17,8 +17,8 @@ export class NoteGroupComponent {
     private onToggleGroup: (groupKey: string) => void;
     private groupEl: HTMLElement | null = null;
     private timeoutId: number | null = null;
-    private eventListeners: Array<{ element: HTMLElement; type: string; handler: EventListener }> =
-        [];
+    private abortController = new AbortController();
+    private notesAbortController = new AbortController();
     private noteSort: NoteSortType;
 
     constructor(
@@ -90,11 +90,8 @@ export class NoteGroupComponent {
                 this.onToggleGroup(this.groupKey);
             };
 
-            groupHeader.addEventListener("click", headerClickHandler);
-            this.eventListeners.push({
-                element: groupHeader,
-                type: "click",
-                handler: headerClickHandler,
+            groupHeader.addEventListener("click", headerClickHandler, {
+                signal: this.abortController.signal,
             });
 
             this.renderNotes(notesList);
@@ -141,8 +138,11 @@ export class NoteGroupComponent {
             }
 
             notesList.empty();
-            this.eventListeners = this.eventListeners.filter(l => !l.element.classList.contains("sr-new-note-item"));
             
+            // Abort previous notes listeners
+            this.notesAbortController.abort();
+            this.notesAbortController = new AbortController();
+
             this.renderNotes(notesList);
         }
     }
@@ -176,11 +176,8 @@ export class NoteGroupComponent {
             }
         };
 
-        noteEl.addEventListener("click", clickHandler);
-        this.eventListeners.push({
-            element: noteEl,
-            type: "click",
-            handler: clickHandler,
+        noteEl.addEventListener("click", clickHandler, {
+            signal: this.notesAbortController.signal,
         });
 
         const contextHandler: EventListener = (event: Event) => {
@@ -203,11 +200,8 @@ export class NoteGroupComponent {
             });
         };
 
-        noteEl.addEventListener("contextmenu", contextHandler);
-        this.eventListeners.push({
-            element: noteEl,
-            type: "contextmenu",
-            handler: contextHandler,
+        noteEl.addEventListener("contextmenu", contextHandler, {
+            signal: this.notesAbortController.signal,
         });
 
         return noteEl;
@@ -218,10 +212,9 @@ export class NoteGroupComponent {
             cancelAnimationFrame(this.timeoutId);
             this.timeoutId = null;
         }
-        for (const { element, type, handler } of this.eventListeners) {
-            element.removeEventListener(type, handler);
-        }
-        this.eventListeners = [];
+        
+        this.abortController.abort();
+        this.notesAbortController.abort();
 
         if (this.groupEl) {
             this.groupEl.remove();
