@@ -1,5 +1,4 @@
 // 简体中文
-
 export default {
     // flashcard-modal.tsx
     DECKS: "卡组",
@@ -11,6 +10,9 @@ export default {
     EDIT_CARD: "编辑卡片",
     RESET_CARD_PROGRESS: "重置卡片",
     RESET: "重来",
+    BLACKOUT: "Blackout",
+    INCORRECT: "Incorrect",
+    INCORRECT_EASY: "Incorrect (Easy)",
     HARD: "较难",
     GOOD: "记得",
     EASY: "简单",
@@ -23,14 +25,13 @@ export default {
     CURRENT_INTERVAL_HELP_TEXT: "目前间隔：",
     CARD_GENERATED_FROM: "生成自：${notePath}",
     OPEN_NOTE: "打开笔记",
-
     // main.ts
     OPEN_NOTE_FOR_REVIEW: "打开一个笔记开始复习",
     REVIEW_CARDS: "复习卡片",
     REVIEW_DIFFICULTY_FILE_MENU: "复习：${difficulty}",
     REVIEW_NOTE_DIFFICULTY_CMD: "标记为“${difficulty}”",
-    REVIEW_ALL_CARDS: "复习所有笔记中的卡片",
     CRAM_ALL_CARDS: "选择要集中复习的卡组",
+    REVIEW_ALL_CARDS: "复习所有笔记中的卡片",
     REVIEW_CARDS_IN_NOTE: "复习此笔记中的卡片",
     CRAM_CARDS_IN_NOTE: "集中复习此笔记中的卡片",
     VIEW_STATS: "查看数据",
@@ -42,7 +43,6 @@ export default {
     RESPONSE_RECEIVED: "反馈已收到",
     NO_DECK_EXISTS: "没有 ${deckName} 卡组",
     ALL_CAUGHT_UP: "都复习完啦，你真棒！\n去接触点新东西吧~",
-
     // scheduling.ts
     DAYS_STR_IVL: "${interval}天",
     MONTHS_STR_IVL: "${interval}月",
@@ -54,7 +54,6 @@ export default {
     MINUTES_STR_IVL: "${interval}分钟",
     HOURS_STR_IVL_MOBILE: "${interval}时",
     MINUTES_STR_IVL_MOBILE: "${interval}分",
-
     // settings.ts
     SETTINGS_HEADER: "间隔重复插件",
     GROUP_TAGS_FOLDERS: "标签和文件夹",
@@ -65,19 +64,14 @@ export default {
     GROUP_FLASHCARDS_NOTES: "闪卡和笔记",
     GROUP_CONTRIBUTING: "Contributing",
     CHECK_WIKI: '了解更多, 请点击<a href="${wikiUrl}">wiki</a>.',
-    GITHUB_DISCUSSIONS:
-        'Visit the <a href="${discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
-    GITHUB_ISSUES:
-        'Raise an issue <a href="${issuesUrl}">here</a> if you have a feature request or a bug report.',
-    GITHUB_SOURCE_CODE:
-        'The project\'s source code is available on <a href="${githubProjectUrl}">GitHub</a>.',
-    CODE_CONTRIBUTION_INFO:
-        '<a href="${codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
-    TRANSLATION_CONTRIBUTION_INFO:
-        '<a href="${translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
+    GITHUB_DISCUSSIONS: 'Visit the <a href="${discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
+    GITHUB_ISSUES: 'Raise an <a href="${issuesUrl}">issue</a> if you have a feature request or a bug report.',
+    GITHUB_ISSUES_MODIFIED_PLUGIN: 'Raise an <a href="${issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
+    GITHUB_SOURCE_CODE: 'The project\'s source code is available on <a href="${githubProjectUrl}">GitHub</a>.',
+    CODE_CONTRIBUTION_INFO: '<a href="${codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
+    TRANSLATION_CONTRIBUTION_INFO: '<a href="${translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
     FOLDERS_TO_IGNORE: "忽略此文件夹",
-    FOLDERS_TO_IGNORE_DESC:
-        "在单独一行中输入文件夹路径或全局模式，例如 Templates/Scripts 或 .excalidraw.md。此设置对闪存卡和笔记都通用。",
+    FOLDERS_TO_IGNORE_DESC: "Enter folder paths or glob patterns on separate lines e.g. Templates/Scripts or **/*.excalidraw.md. This setting is common to both flashcards and notes.",
     OBSIDIAN_INTEGRATION: "Integration into Obsidian",
     FLASHCARDS: "卡片",
     FLASHCARD_EASY_LABEL: "“简单”按钮文本",
@@ -96,6 +90,7 @@ export default {
     INLINE_SCHEDULING_COMMENTS_DESC: "HTML注释不再破坏列表格式",
     BURY_SIBLINGS_TILL_NEXT_DAY: "将关联卡片隐藏至下一天",
     BURY_SIBLINGS_TILL_NEXT_DAY_DESC: "关联卡片是来自同一卡片的不同形式， 例如：完形填空卡片",
+    BURY_SIBLINGS_TILL_NEXT_DAY_BY_NOTE_REVIEW: "Bury sibling cards until the next day by note review",
     MULTI_CLOZE: "允许多个完形填空?",
     MULTI_CLOZE_DESC: "将新/到期的关联卡片组合到一个卡片中.",
     SHOW_CARD_CONTEXT: "在卡片中显示上下文",
@@ -119,17 +114,13 @@ export default {
     REVIEW_DECK_ORDER_RANDOM_DECK_AND_CARD: "卡片组及卡片都乱序",
     DISABLE_CLOZE_CARDS: "不进行完形填空",
     CONVERT_HIGHLIGHTS_TO_CLOZES: "将 ==高亮== 转换为完形填空",
-    CONVERT_HIGHLIGHTS_TO_CLOZES_DESC:
-        '添加/删除 "完形填空模式" 中的 <code>${defaultPattern}</code>',
+    CONVERT_HIGHLIGHTS_TO_CLOZES_DESC: 'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_BOLD_TEXT_TO_CLOZES: "将 **粗体** 转换为完形填空",
-    CONVERT_BOLD_TEXT_TO_CLOZES_DESC:
-        '添加/删除 "完形填空模式" 中的 <code>${defaultPattern}</code>',
+    CONVERT_BOLD_TEXT_TO_CLOZES_DESC: 'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_CURLY_BRACKETS_TO_CLOZES: "将 {{大括号}} 转换为完形填空",
-    CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC:
-        '添加/删除 "完形填空模式" 中的 <code>${defaultPattern}</code>',
+    CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC: 'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
     CLOZE_PATTERNS: "完形填空模式",
-    CLOZE_PATTERNS_DESC:
-        '输入以换行符分隔的完形填空模式. Check the <a href="${docsUrl}">wiki</a> for guidance.',
+    CLOZE_PATTERNS_DESC: 'Enter cloze patterns separated by newlines. Check the <a href="${docsUrl}">wiki</a> for guidance.',
     INLINE_CARDS_SEPARATOR: "单行卡片的分隔符",
     FIX_SEPARATORS_MANUALLY_WARNING: "注意：更改此选项后你将需要自行更改已存在卡片的分隔符。",
     INLINE_REVERSED_CARDS_SEPARATOR: "单行翻转卡片的分隔符",
@@ -144,9 +135,6 @@ export default {
     OPEN_RANDOM_NOTE: "复习随机笔记",
     OPEN_RANDOM_NOTE_DESC: "关闭此选项，笔记将以重要度(PageRank)排序。",
     AUTO_NEXT_NOTE: "复习后自动打开下一个笔记",
-    ENABLE_FILE_MENU_REVIEW_OPTIONS: "请在文件菜单中启用复习选项（例如：复习：简单、良好、困难",
-    ENABLE_FILE_MENU_REVIEW_OPTIONS_DESC:
-        "如果您在文件菜单中禁用复习选项，您可以使用插件命令来复习笔记，如果您定义了相关快捷键，也可以使用它们。",
     MAX_N_DAYS_REVIEW_QUEUE: "右边栏中显示的最大天数",
     MIN_ONE_DAY: "天数最小值为1",
     VALID_NUMBER_WARNING: "请输入有效的数字。",
@@ -157,9 +145,10 @@ export default {
     SHOW_STATUS_BAR_DESC: "将此关闭以隐藏 Obsidian 状态栏中的卡片复习状态。",
     SHOW_RIBBON_ICON: "在功能区中显示图标",
     SHOW_RIBBON_ICON_DESC: "关闭此选项可隐藏 Obsidian 功能区栏中的插件图标",
+    ENABLE_FILE_MENU_REVIEW_OPTIONS: "请在文件菜单中启用复习选项（例如：复习：简单、良好、困难",
+    ENABLE_FILE_MENU_REVIEW_OPTIONS_DESC: "If you disable the review options in the file menu, you can review your notes using the plugin commands and, if you defined them, the associated command hotkeys.",
     INITIALLY_EXPAND_SUBDECKS_IN_TREE: "默认在列表中展开嵌套子牌组",
-    INITIALLY_EXPAND_SUBDECKS_IN_TREE_DESC:
-        "关闭此选项可折叠同一张卡片中的嵌套牌组。如果您的卡片属于同一文件中的许多套牌，则很有用。",
+    INITIALLY_EXPAND_SUBDECKS_IN_TREE_DESC: "Turn this off to collapse nested decks in the same card. Useful if you have cards which belong to many decks in the same file.",
     ALGORITHM: "算法",
     CHECK_ALGORITHM_WIKI: '了解更多, 请点击<a href="${algoUrl}">算法实现</a>.',
     SM2_OSR_VARIANT: "OSR's variant of SM-2",
@@ -183,8 +172,7 @@ export default {
     FUZZING: "均衡",
     FUZZING_DESC: "启用时, 会给新间隔添加个较小的随机延迟，以免卡片总被堆积在同一天复习。",
     SWITCH_SHORT_TERM: "短期排程",
-    SWITCH_SHORT_TERM_DESC:
-        "禁用时，可让用户跳过短期排程(如5分钟、10分钟)，直接切换到长期排程（如3天、5天）。",
+    SWITCH_SHORT_TERM_DESC: "When disabled, this allow user to skip the short-term scheduler and directly switch to the long-term scheduler.",
     LOGGING: "记录中",
     DISPLAY_SCHEDULING_DEBUG_INFO: "在开发者控制台中显示调试信息",
     DISPLAY_PARSER_DEBUG_INFO: "Show the parser's debugging information on the developer console",
@@ -192,7 +180,6 @@ export default {
     EXPERIMENTAL: "Experimental",
     HELP: "Help",
     STORE_IN_NOTES: "In the notes",
-
     DATA_LOC: "数据位置",
     DATA_LOC_DESC: "间隔重复数据项的文件的保存位置.",
     DATA_FOLDER: "`tracked_files.json`的文件夹",
@@ -202,14 +189,14 @@ export default {
     NEW_PER_DAY_NEG: "整数必须大于等于-1.",
     REPEAT_ITEMS: "重复错误",
     REPEAT_ITEMS_DESC: "错误项是否要一直重复复习，直到回答正确?",
-    ALGORITHMS_CONFIRM:
-        "切换算法可能导致日期排程重置，这个修改不可撤销，当重启软件或重新加载插件切换算法才会生效。你确定要切换算法么?",
-    ALGORITHMS_DESC:
-        '用于间隔重复的算法. 更多信息请查阅 <a href="https://github.com/martin-jw/obsidian-recall">算法</a>.',
+    ALGORITHMS_CONFIRM: `Switching algorithms might reset or impact review timings on existing items.
+    This change is irreversible. Changing algorithms only takes effect after a restart
+    or a plugin reload. Are you sure you want to switch algorithms?
+    `,
+    ALGORITHMS_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://github.com/martin-jw/obsidian-recall">algorithms</a>.',
     CONVERT_TRACKED_TO_DECK: "将复习笔记转换为卡牌组?",
     REVIEW_FLOATBAR: "复习悬浮栏",
-    REVIEW_FLOATBAR_DESC:
-        "当设置项“复习后自动打开下一个笔记”启用时，这个设置项启用才生效. 通过点击状态栏/侧边栏/命令进行复习时就会显示出来.",
+    REVIEW_FLOATBAR_DESC: "only working when autoNextNote is true. show it when reviewing note via click statusbar/sidebar/command.",
     REVIEW_NOTE_DIRECTLY: "直接复习笔记?",
     REVIEW_NOTE_DIRECTLY_DESC: "复习笔记时, 不必选择标签（多个复习标签的情况）就直接打开笔记",
     INTERVAL_SHOWHIDE: "显示复习间隔",
@@ -217,21 +204,16 @@ export default {
     REQUEST_RETENTION: "保留度",
     REQUEST_RETENTION_DESC: "在下次进行复习时，你期望能回想起答案的概率（百分比）",
     REVLOG_TAGS: "输出到日志的标签",
-    REVLOG_TAGS_DESC:
-        "用于输出到日志的标签, 卡片或笔记的标签（如#review #flashcards #tag1）都行。默认留空则不按标签区分，都正常输出到日志表格",
-
+    REVLOG_TAGS_DESC: "Tags for output review log, could be flashcards tags or/and notes tags(e.g. #review #flashcards #tag1), default empty means it output to the review log file normally without filtered by tags",
     FLASHCARD_AGAIN_LABEL: "重来 按钮文本",
     FLASHCARD_BLACKOUT_LABEL: "忘记 按钮文本",
     FLASHCARD_INCORRECT_LABEL: "猜错 按钮文本",
-    "FLASHCARD_INCORRECT (EASY)_LABEL": "猜错（简单） 按钮文本",
     FLASHCARD_AGAIN_DESC: "自定义“重来”按钮的标签",
     FLASHCARD_BLACKOUT_DESC: "自定义“忘记”按钮的标签",
     FLASHCARD_INCORRECT_DESC: "自定义“猜错”按钮的标签",
-    "FLASHCARD_INCORRECT (EASY)_DESC": "自定义“猜错（简单）”按钮的标签",
     UNTRACK_WITH_REVIEWTAG: "UntrackWithReviewTag",
     NEW_DESIGN: "New Sidebar",
     NEW_DESIGN_DESC: "New experimental Sidebar design",
-
     // sidebar.ts
     FILTER_ALL: "All",
     FILTER_ACTIVE: "Active",
@@ -239,6 +221,17 @@ export default {
     REVIEWED: "Reviewed",
     COLLAPSE_ALL: "Collapse all",
     EXPAND_ALL: "Expand all",
+    SORT: "Sort",
+    SORT_DATE_ASC: "Due date: Soonest first",
+    SORT_DATE_DESC: "Due date: Latest first",
+    SORT_COUNT_DESC: "Note count: High to low",
+    SORT_COUNT_ASC: "Note count: Low to high",
+    SORT_NOTES: "Sort Notes",
+    DEFAULT: "Default",
+    SORT_NAME_ASC: "By name: A → Z",
+    SORT_NAME_DESC: "By name: Z → A",
+    SORT_PATH_ASC: "By path: A → Z",
+    SORT_PATH_DESC: "By path: Z → A",
     OVERDUE_BY_DAYS: "Overdue by ${count} days",
     IN_DAYS: "In ${count} days",
     SIDEBAR_DATE_FORMAT: "Sidebar date format",
@@ -252,7 +245,6 @@ export default {
     YESTERDAY: "昨天",
     TODAY: "今天",
     TOMORROW: "明天",
-
     // stats-modal.tsx
     STATS_TITLE: "数据",
     MONTH: "月",
@@ -287,7 +279,113 @@ export default {
     DUE_REVIEWED: "复习",
     REVIEWED_TODAY_SUMMARY: "总复习数: ${totalreviewedCount}",
     DATE: "日期",
-
+    // cardBlockIDSetting.ts
+    CARD_BLOCK_ID: "Card Block ID",
+    CARD_BLOCK_ID_DESC: "use Card Block ID instead of line number and text hash.<br>  <b>If set True, block id will append after card text. And block id will keep in note after reset to False again.</b>",
+    CARD_BLOCK_ID_CONFIRM: "**If set True, block id will append after card text. And block id will keep in note after reset to False again. ** \n\nSuggestion： backup your vault before set True. Or try it in sandbox vault. \n\nAfter setting is turned on, blockid will be added after all cards. Even if it is turned off again, the added blockid will still remain in the note and will not be deleted.\n\nIt is recommended to **backup first** the note library, or try it in a sandbox library.",
+    // mixQueueSetting.ts
+    MIX_QUEUE: "Mix queue",
+    MIX_QUEUE_DESC: "mix ondue and new notes when review. **first** slider for total count, second slider for ondue count. And new count is (total - ondue).",
+    // trackSetting.ts
+    UNTRACK_WITH_REVIEWTAG_DESC: "When deleting the review tag in the note, synchronously untrack the operation, so that the note will no longer be reviewed<br><b>true</b>: synchronous untrack operation;<br><b>false</b>：After deleting the review tag, you need to untrack again before the note will no longer be reviewed. (same as previous version)",
+    // dataLocation.ts
+    DATA_LOCATION_PLUGIN_FOLDER: "In Plugin Folder",
+    DATA_LOCATION_ROOT_FOLDER: "In Vault Folder",
+    DATA_LOCATION_SPECIFIED_FOLDER: "In the folder specified below",
+    DATA_LOCATION_SAVE_ON_NOTE_FILE: "Save On Note File",
+    // fsrs.ts
+    FSRS_ALGORITHM_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://github.com/open-spaced-repetition/ts-fsrs">FSRS algorithm</a>.',
+    FSRS_W_PARAM_DESC: 'See <a href="https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm">FSRS V6 WIKI</a> and <a href="https://open-spaced-repetition.github.io/anki_fsrs_visualizer">FSRS w parameter visualization</a> to set various parameters.',
+    // anki.ts
+    ANKI_ALGORITHM_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://faqs.ankiweb.net/what-spaced-repetition-algorithm.html">Anki algorithm</a>.',
+    STARTING_EASE: "Starting Ease",
+    STARTING_EASE_DESC: "The initial ease given to an item.",
+    STARTING_EASE_ERROR: "Starting ease must be a positive number.",
+    STARTING_EASE_WARNING: "Starting ease lower than 1.3 is not recommended.",
+    EASY_BONUS_ANKI: "Easy Bonus",
+    EASY_BONUS_ANKI_DESC: "A bonus multiplier for items reviewed as easy.",
+    EASY_BONUS_ANKI_ERROR: "Easy bonus must be a number greater than or equal to 1.",
+    LAPSE_INTERVAL_MODIFIER: "Lapse Interval Modifier",
+    LAPSE_INTERVAL_MODIFIER_DESC: "A factor to modify the review interval with when an item is reviewed as wrong.",
+    LAPSE_INTERVAL_ERROR: "Lapse interval must be a positive number.",
+    GRADUATING_INTERVAL: "Graduating Interval",
+    GRADUATING_INTERVAL_DESC: "The interval (in days) to the next review after reviewing a new item as 'Good'.",
+    GRADUATING_INTERVAL_ERROR: "Interval must be a positive number.",
+    EASY_INTERVAL: "Easy Interval",
+    EASY_INTERVAL_DESC: "The interval (in days) to the next review after reviewing a new item as 'Easy'.",
+    EASY_INTERVAL_ERROR: "Interval must be a positive number.",
+    // scheduling_default.ts
+    DEFAULT_ALGORITHM_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://www.stephenmwangi.com/obsidian-spaced-repetition/algorithms/">modified Anki algorithm</a>.',
+    // supermemo.ts
+    SM2_ALGORITHM_DESC: 'The algorithm used for spaced repetition. Currently shares the same parameters as the Anki algorithm (only the algorithm processing method is different). For more information see <a href="https://www.supermemo.com/en/archives1990-2015/english/ol/sm2">SM2 algorithm</a>.',
+    // info.ts
+    ITEM_INFO_TITLE: "Item info of",
+    CARDS_IN_NOTE: "Cards in this Note",
+    SAVE_ITEM_INFO: "Save",
+    SAVE_ITEM_INFO_TOOLTIP: "only save current note's item info",
+    CLOSE_ITEM_INFO: "Close",
+    LINE_NO: "LineNo:",
+    NEXT_REVIEW: "nextReivew:",
+    NEW_CARD: "NewCard",
+    ITEM_DATA_INFO: "Item.data info",
+    // locationSetting.ts
+    DATA_LOCATION_WARNING_TO_NOTE: "BE CAREFUL!!!\n  if you confirm this, it will convert all your scheduling informations in `tracked_files.json` to note, which will change lots of your note file in the same time.\n Please make sure the setting tags of flashcards and notes is what you are using.",
+    DATA_LOCATION_WARNING_OTHER_ALGO: "if you want to save data on notefile, you **have to** use Default Algorithm.",
+    DATA_LOCATION_WARNING_TO_TRACKED: "BE CAREFUL!!! \n if you confirm this, it will converte all your scheduling informations on note(which will be deleted in the same time) TO `tracked_files.json`.",
+    POST_ISSUE_MODIFIED_PLUGIN: 'Post an <a href="${issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
     // donation.ts
     DONATION_TEXT: "业余时间折腾的，如果对你有所帮助，可以请我喝瓶饮料或奶茶呀~",
+    // locationSetting.ts
+    FOLDER_PLACEHOLDER: "Example: folder1/folder2",
+    SAVE_BUTTON: "Save",
+    LOCATION_CHANGE_FINISHED: "Finished location change.",
+    // commands.ts
+    CMD_ITEM_INFO: "Item Info",
+    CMD_TRACK_NOTE: "Track Note",
+    CMD_UNTRACK_NOTE: "Untrack Note",
+    CMD_RESCHEDULE: "Reschedule",
+    CMD_POSTPONE_CARDS: "Postpone cards",
+    CMD_POSTPONE_NOTES: "Postpone notes",
+    CMD_POSTPONE_ALL: "Postpone All",
+    CMD_POSTPONE_NOTE_MANUAL: "Postpone this note after x days",
+    CMD_POSTPONE_CARDS_MANUAL: "Postpone cards in this note after x days",
+    CMD_BUILD_QUEUE: "Build Queue",
+    CMD_REVIEW: "Review",
+    CMD_PRINT_VIEW_STATE: "Print View State",
+    CMD_PRINT_EPHEMERAL_STATE: "Print Ephemeral State",
+    CMD_CLEAR_QUEUE: "Clear Queue",
+    CMD_QUEUE_ALL: "Queue All",
+    CMD_PRINT_DATA: "Print Data",
+    CMD_UPDATE_ITEMS: "Update Items",
+    CMD_INPUT_POSITIVE_NUMBER: "please input positive number",
+    CMD_NOTE_POSTPONED: "This note has been postponed ${days} days",
+    // trackFileEvents.ts
+    MENU_TRACK_ALL_NOTES: "Track All Notes",
+    MENU_UNTRACK_ALL_NOTES: "Untrack All Notes",
+    MENU_TRACK_NOTE: "Track Note",
+    MENU_UNTRACK_NOTE: "Untrack Note",
+    // data.ts
+    DATA_TAGGED_FILE_CANT_UNTRACK: "it is taged file, can't untrack by this. You can delete the #review tag in note file.",
+    DATA_UNTRACKED_ITEMS: "Untracked ${numItems} items${nulrstr}",
+    DATA_UNABLE_TO_SAVE: "Unable to save data file!",
+    DATA_FOLDER_UNTRACKED: "In folder ${folderPath}, ${totalRemoved} files are no longer tracked for repetition",
+    DATA_ADDED_REMOVED_ITEMS: "Added ${totalAdded} new items, removed ${totalRemoved} items.",
+    DATA_ADDED_REMOVED_ITEMS_SHORT: "Added ${added} new items, removed ${removed} items.",
+    DATA_FILE_UPDATE: "${filePath} update - lineNo: ${lineNo}\nAdded: ${added} new card items, removed ${removed} card items.",
+    DATA_ALL_ITEMS_UPDATED: "all items have been updated.",
+    RECALCULATE_NOTES: "Recalculate notes",
+    RECALCULATING_NOTES_NOTICE_START: "Recalculating notes...",
+    RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Recalculation finished. Found ${count} new note(s).",
+    RECALCULATING_NOTES_NOTICE_DONE_NONE: "Recalculation finished. No new notes found.",
+    // reviewView.ts
+    NEXT_REVIEW_MINUTES: "You can review in ${interval} minutes",
+    NEXT_REVIEW_HOURS: "You can review in ${interval} hours",
+    // location_switch.ts
+    DATA_FILE_MOVED_SUCCESS: "Successfully moved data file!",
+    DATA_FILE_DELETE_OLD_FAILED: "Unable to delete old data file, please delete it manually.",
+    DATA_FILE_MOVE_FAILED: "Unable to move data file!",
+    DATA_LOST_WARNING: "have some data lost, see console for details.",
+    // algorithms_switch.ts
+    ALGORITHM_SWITCH_FAILED: "conversion failed, old algorithm and data restored, please issue it.",
+    ALGORITHM_SWITCH_SUCCESS: "conversion completed, due to different algorithm parameters, subsequent review intervals will be adjusted"
 };
