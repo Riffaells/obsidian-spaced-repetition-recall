@@ -1,7 +1,7 @@
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 
 // import { StatisticsView } from "src/gui/statistics";
-import { createTabs, TabStructure } from "src/gui/tabs";
+import { createTabs, TabStructure } from "./components/tabs";
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
 import { setDebugParser } from "src/parser";

@@ -363,7 +363,7 @@ export class reviewResponseModal {
                 this.showAnswer();
             }
         };
-        touch.swipUpCb = () => {
+        touch.swipeUpCb = () => {
             this._triggerControls();
             // this.close();
         };

@@ -1,7 +1,7 @@
 import { Notice, TFile } from "obsidian";
 import { DataStore } from "src/dataStore/data";
 import { itemToShedNote } from "src/dataStore/itemTrans";
-import { reviewResponseModal } from "src/gui/reviewresponse-modal";
+import { reviewResponseModal } from "../modals/reviewresponse-modal";
 import { t } from "src/lang/helpers";
 import SRPlugin from "src/main";
 import { IReviewNote } from "src/reviewNote/review-note";

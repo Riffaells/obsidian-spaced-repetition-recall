@@ -4,9 +4,9 @@ import type SRPlugin from "src/main";
 import { SRSettings } from "src/settings";
 import { ReviewResponse, textInterval } from "src/scheduling";
 import { t } from "src/lang/helpers";
-import { Card } from "../Card";
-import { CardListType, Deck } from "../Deck";
-import { CardType, Question } from "../Question";
+import { Card } from "../../Card";
+import { CardListType, Deck } from "../../Deck";
+import { CardType, Question } from "../../Question";
 import {
     FlashcardReviewMode,
     IFlashcardReviewSequencer as IFlashcardReviewSequencer,
@@ -14,10 +14,10 @@ import {
 import { Note } from "src/Note";
 import { RenderMarkdownWrapper } from "src/util/RenderMarkdownWrapper";
 import { CardScheduleInfo } from "src/CardSchedule";
-import { FlashcardMode } from "./FlashcardModal";
+import { FlashcardMode } from "../modals/FlashcardModal";
 import { RepetitionItem } from "src/dataStore/repetitionItem";
 import { SrTFile } from "src/SRFile";
-import { ItemInfoModal } from "./info";
+import { ItemInfoModal } from "../utils/info";
 import { DataLocation } from "src/dataStore/dataLocation";
 import { debug } from "src/util/utils_recall";
 

@@ -213,7 +213,4 @@ export const logExecutionTime = () => {
     };
 };
 
-export function isIgnoredPath(noteFoldersToIgnore: string[], path: string) {
-    // return noteFoldersToIgnore.some((folder) => isEqualOrSubPath(path, folder));
-    return noteFoldersToIgnore.some((folder) => path.includes(folder));
-}
+

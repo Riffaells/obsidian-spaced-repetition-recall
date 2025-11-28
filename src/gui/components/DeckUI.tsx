@@ -5,13 +5,13 @@ import type SRPlugin from "src/main";
 import { SRSettings } from "src/settings";
 import { COLLAPSE_ICON } from "src/constants";
 import { t } from "src/lang/helpers";
-import { Deck } from "../Deck";
+import { Deck } from "../../Deck";
 import {
     DeckStats,
     IFlashcardReviewSequencer as IFlashcardReviewSequencer,
 } from "src/FlashcardReviewSequencer";
 import { TopicPath } from "src/TopicPath";
-import { FlashcardMode } from "./FlashcardModal";
+import { FlashcardMode } from "../modals/FlashcardModal";
 
 export class DeckUI {
     public plugin: SRPlugin;

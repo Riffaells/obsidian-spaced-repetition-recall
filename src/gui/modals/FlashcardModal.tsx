@@ -4,15 +4,15 @@ import { App, Modal } from "obsidian";
 import type SRPlugin from "src/main";
 import { SRSettings } from "src/settings";
 
-import { Deck } from "../Deck";
-import { Question } from "../Question";
+import { Deck } from "src/Deck";
+import { Question } from "src/Question";
 import {
     FlashcardReviewMode,
     IFlashcardReviewSequencer as IFlashcardReviewSequencer,
 } from "src/FlashcardReviewSequencer";
 import { FlashcardEditModal } from "./EditModal";
-import { DeckUI } from "./DeckUI";
-import { CardUI } from "./CardUI";
+import { DeckUI } from "../components/DeckUI";
+import { CardUI } from "../components/CardUI";
 
 export enum FlashcardMode {
     Deck,

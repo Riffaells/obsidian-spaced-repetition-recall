@@ -18,7 +18,7 @@ import { DataStore } from "./data";
 import { Tags } from "src/tags";
 
 import { Stats } from "src/stats";
-import { isIgnoredPath } from "src/util/utils_recall";
+import { SettingsUtil } from "src/settings";
 import { RPITEMTYPE } from "./repetitionItem";
 import deepcopy from "deepcopy";
 import { NoteCardScheduleParser } from "src/CardSchedule";
@@ -128,7 +128,7 @@ export class LocationSwitch {
         let notes: TFile[] = Iadapter.instance.vault.getMarkdownFiles();
         notes = notes.filter(
             (noteFile) =>
-                !isIgnoredPath(settings.noteFoldersToIgnore, noteFile.path) &&
+                !SettingsUtil.isPathInNoteIgnoreFolder(settings, noteFile.path) &&
                 plugin.createSrTFile(noteFile).getAllTagsFromCache().length > 0,
         );
         for (const noteFile of notes) {
@@ -311,7 +311,7 @@ export class LocationSwitch {
         await Promise.all(
             tracked_files
                 .filter((tkfile) => tkfile != null)
-                .filter((tkfile) => !isIgnoredPath(this.settings.noteFoldersToIgnore, tkfile.path))
+                .filter((tkfile) => !SettingsUtil.isPathInNoteIgnoreFolder(this.settings, tkfile.path))
                 .map(async (tkfile) => {
                     const item = store.getItembyID(tkfile.noteID);
                     const note = Iadapter.instance.vault.getAbstractFileByPath(

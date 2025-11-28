@@ -4,7 +4,7 @@ import { SR_TAB_VIEW } from "src/constants";
 import SRPlugin from "src/main";
 import { FlashcardReviewMode } from "src/FlashcardReviewSequencer";
 import { Deck } from "src/Deck";
-import { TabView } from "src/gui/TabView";
+import { TabView } from "./TabView";
 
 export type TabViewType = { type: string; viewCreator: ViewCreator };
 

@@ -3,7 +3,7 @@ import { Setting } from "obsidian";
 import { algorithmNames } from "src/algorithms/algorithms";
 import { DataLocation, getLocalizedLocationMap } from "src/dataStore/dataLocation";
 import { LocationSwitch } from "src/dataStore/location_switch";
-import ConfirmModal from "src/gui/confirm";
+import ConfirmModal from "../gui/modals/confirm";
 import { t } from "src/lang/helpers";
 import SRPlugin from "src/main";
 import { FolderSuggest } from "src/suggesters/FolderSuggester";

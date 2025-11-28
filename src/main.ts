@@ -10,9 +10,9 @@ import {
 import * as graph from "pagerank.js";
 
 import { DEFAULT_SETTINGS, SettingsUtil, SRSettings, upgradeSettings } from "src/settings";
-import { FlashcardModal } from "src/gui/FlashcardModal";
-import { StatsModal } from "src/gui/StatsModal";
-import { REVIEW_QUEUE_VIEW_TYPE, ReviewQueueListView } from "src/gui/Sidebar";
+import { FlashcardModal } from "./gui/modals/FlashcardModal";
+import { StatsModal } from "./gui/modals/StatsModal";
+import { REVIEW_QUEUE_VIEW_TYPE, ReviewQueueListView } from "src/gui/sidebar/Sidebar";
 import { ReviewResponse, schedule } from "src/scheduling";
 import { SCHEDULING_INFO_REGEX, YAML_FRONT_MATTER_REGEX } from "src/constants";
 import { ReviewDeck, SchedNote } from "src/ReviewDeck";
@@ -50,9 +50,9 @@ import { DataStore } from "./dataStore/data";
 import Commands from "./commands";
 import { algorithmNames, SrsAlgorithm } from "src/algorithms/algorithms";
 
-import { reviewResponseModal } from "src/gui/reviewresponse-modal";
-import { debug, isIgnoredPath, isVersionNewerThanOther } from "./util/utils_recall";
-import { ReleaseNotes } from "src/gui/ReleaseNotes";
+import { reviewResponseModal } from "./gui/modals/reviewresponse-modal";
+import { debug, isVersionNewerThanOther } from "./util/utils_recall";
+import { ReleaseNotes } from "./gui/modals/ReleaseNotes";
 
 import { algorithms } from "src/algorithms/algorithms_switch";
 import { DataLocation } from "./dataStore/dataLocation";
@@ -60,16 +60,16 @@ import { addFileMenuEvt, registerTrackFileEvents } from "./Events/trackFileEvent
 import { ItemTrans } from "./dataStore/itemTrans";
 import { LinkRank } from "src/algorithms/priorities/linkPageranks";
 import { Queue } from "./dataStore/queue";
-import { ReviewDeckSelectionModal } from "./gui/reviewDeckSelectionModal";
+import { ReviewDeckSelectionModal } from "././gui/modals/reviewDeckSelectionModal";
 import { setDueDates } from "./algorithms/balance/balance";
 import { RepetitionItem } from "./dataStore/repetitionItem";
 import { IReviewNote } from "./reviewNote/review-note";
-import { ReviewView } from "./gui/reviewView";
+import { ReviewView } from "././gui/views/reviewView";
 import { MixQueSet } from "./dataStore/mixQueSet";
 import { Iadapter } from "./dataStore/adapter";
-import TabViewManager from "src/gui/TabViewManager";
-import { TabView } from "src/gui/TabView";
-import { SRSettingTab } from "src/gui/settings";
+import TabViewManager from "./gui/views/TabViewManager";
+import { TabView } from "./gui/views/TabView";
+import { SRSettingTab } from "src/gui/settings/SettingsTab";
 
 interface PluginData {
     settings: SRSettings;
@@ -509,7 +509,7 @@ export default class SRPlugin extends Plugin {
                 tags.some((notetag) => notetag.startsWith(igntag)),
             );
             return (
-                !isIgnoredPath(this.data.settings.noteFoldersToIgnore, noteFile.path) &&
+                !SettingsUtil.isPathInNoteIgnoreFolder(this.data.settings, noteFile.path) &&
                 !isIgnoredTags
             );
         });
@@ -689,7 +689,7 @@ export default class SRPlugin extends Plugin {
 
     async saveReviewResponse(note: TFile, response: ReviewResponse): Promise<void> {
         const settings = this.data.settings;
-        if (isIgnoredPath(settings.noteFoldersToIgnore, note.path)) {
+        if (SettingsUtil.isPathInNoteIgnoreFolder(settings, note.path)) {
             new Notice(t("NOTE_IN_IGNORED_FOLDER"));
             return;
         }

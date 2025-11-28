@@ -49,11 +49,14 @@ export class NoteQuestionParser {
         // For efficiency, we first get the tag list from the Obsidian cache
         // (this only gives the tag names, not the line numbers, but this is sufficient for this first step)
         const tagCacheList: string[] = noteFile.getAllTagsFromCache();
-        const hasTopicPaths: boolean =
-            tagCacheList.some((item) => SettingsUtil.isFlashcardTag(this.settings, item)) ||
-            folderTopicPath.hasPath;
+        const hasFlashcardTags: boolean = tagCacheList.some((item) =>
+            SettingsUtil.isFlashcardTag(this.settings, item),
+        );
 
-        if (hasTopicPaths) {
+        // Only process files that have flashcard tags
+        // Note: If convertFoldersToDecks or trackedNoteToDecks is enabled, files without flashcard tags
+        // will still be processed, but they won't create any cards unless they contain flashcard syntax
+        if (hasFlashcardTags) {
             // Reading the file is relatively an expensive operation, so we only do this when needed
             const noteText: string = await noteFile.read();
 

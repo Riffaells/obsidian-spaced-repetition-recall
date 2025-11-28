@@ -2,12 +2,12 @@ import { ItemView, WorkspaceLeaf } from "obsidian";
 
 import { SR_TAB_VIEW } from "src/constants";
 import { Deck } from "src/Deck";
-import { CardUI } from "src/gui/CardUI";
-import { DeckUI } from "src/gui/DeckUI";
+import { CardUI } from "../components/CardUI";
+import { DeckUI } from "../components/DeckUI";
 import SRPlugin from "src/main";
 import { Question } from "src/Question";
 import { SRSettings } from "src/settings";
-import { FlashcardEditModal } from "src/gui/EditModal";
+import { FlashcardEditModal } from "../modals/EditModal";
 import { FlashcardReviewMode, IFlashcardReviewSequencer } from "src/FlashcardReviewSequencer";
 
 /**

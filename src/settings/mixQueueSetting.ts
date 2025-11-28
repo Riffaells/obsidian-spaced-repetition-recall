@@ -1,6 +1,6 @@
 import { Setting } from "obsidian";
 import { MixQueSet } from "src/dataStore/mixQueSet";
-import { applySettingsUpdate } from "src/gui/settings";
+import { applySettingsUpdate } from "src/gui/settings/utils";
 import { t } from "src/lang/helpers";
 import SRPlugin from "src/main";
 import { DEFAULT_SETTINGS } from "src/settings";

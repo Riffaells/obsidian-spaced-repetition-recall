@@ -139,7 +139,38 @@ export class DeckComponent {
             this.deck = deck;
         }
 
-        if (!this.deckEl) return;
+        // START of checks from render()
+        if (!this.deck || (!this.deck.newNotes?.length && !this.deck.scheduledNotes?.length)) {
+            this.removeElement();
+            return;
+        }
+
+        // Аre there any "active" notes?
+        if (this.filter === FilterType.ACTIVE) {
+            const hasActiveNotes = this.checkIfDeckHasActiveNotes();
+            if (!hasActiveNotes) {
+                this.removeElement();
+                return;
+            }
+        }
+
+        // are there any "revied" notes?
+        if (this.filter === FilterType.REVIEWED) {
+            const hasReviewedNotes = this.checkIfDeckHasReviewedNotes();
+            if (!hasReviewedNotes) {
+                this.removeElement();
+                return;
+            }
+        }
+        
+        // If element was removed by filter, but now should be visible, we must re-render it.
+        if (!this.deckEl) {
+             this.render(); // This will create it if needed
+             if (!this.deckEl) {
+                // Still null, so must be empty after all, so do nothing.
+                return;
+             }
+        }
 
         // Auto-expand deck if it contains the active file
         if (this.shouldAutoExpand) {

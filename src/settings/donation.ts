@@ -1,9 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import QR_alipay from ".github/funding/QR_alipay.png";
+// import QR_alipay from ".github/funding/QR_alipay.png";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import QR_wechat from ".github/funding/QR_wechat.png";
+// import QR_wechat from ".github/funding/QR_wechat.png";
 import { t } from "src/lang/helpers";
 
 export function buildDonation(containerEl: HTMLElement): void {
@@ -20,13 +20,13 @@ export function buildDonation(containerEl: HTMLElement): void {
 
     let anchor = document.createElement("a");
     const image = new Image();
-    image.src = QR_alipay;
+    // image.src = QR_alipay;
     image.width = 130;
     anchor.appendChild(image);
     div.appendChild(anchor);
 
     const image2 = new Image();
-    image2.src = QR_wechat;
+    // image2.src = QR_wechat;
     image2.width = 130;
     anchor = document.createElement("a");
     anchor.appendChild(image2);

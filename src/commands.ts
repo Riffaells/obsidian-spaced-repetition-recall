@@ -1,11 +1,11 @@
 import { MarkdownView, Notice } from "obsidian";
 import ObsidianSrsPlugin from "./main";
-import { ItemInfoModal } from "src/gui/info";
+import { ItemInfoModal } from "./gui/utils/info";
 import { Queue } from "./dataStore/queue";
 import { postponeItems } from "./algorithms/balance/postpone";
 import { reschedule } from "./algorithms/balance/reschedule";
-import { GetInputModal } from "./gui/getInputModal";
-import { ReviewView } from "./gui/reviewView";
+import { GetInputModal } from "././gui/modals/getInputModal";
+import { ReviewView } from "././gui/views/reviewView";
 import { t } from "src/lang/helpers";
 
 export default class Commands {

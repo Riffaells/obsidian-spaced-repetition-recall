@@ -2,9 +2,9 @@ import { debounce, ItemView, Menu, Notice, TFile, WorkspaceLeaf } from "obsidian
 
 import type SRPlugin from "src/main";
 import { t } from "src/lang/helpers";
-import { DeckComponent } from "./sidebar/DeckComponent";
-import { SidebarHeader } from "./sidebar/SidebarHeader";
-import { SidebarStats } from "./sidebar/SidebarStats";
+import { DeckComponent } from "./DeckComponent";
+import { SidebarHeader } from "./SidebarHeader";
+import { SidebarStats } from "./SidebarStats";
 import { ReviewDeck, SchedNote } from "src/ReviewDeck";
 import {
     FilterType,
@@ -12,15 +12,15 @@ import {
     SidebarStats as Stats,
     SidebarViewMode,
     SortType,
-} from "./sidebar/types";
+} from "./types";
 import {
     calculateActiveNotesCount,
     calculateDaysUntilDue,
     calculateSidebarStats,
     createGroupKey,
     getGroupTitle,
-} from "./sidebar/utils";
-import { FlashcardDeckComponent } from "./sidebar/FlashcardDeckComponent";
+} from "./utils";
+import { FlashcardDeckComponent } from "./FlashcardDeckComponent";
 import { Deck } from "src/Deck";
 
 export const REVIEW_QUEUE_VIEW_TYPE = "review-queue-list-view";
