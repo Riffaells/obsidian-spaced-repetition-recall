@@ -106,7 +106,6 @@ button.sr-tab-header-button:hover { background-color: var(--background-modifier-
 .sr-tab-header-button svg { vertical-align: middle; }
 .sr-tab-content { display: none; padding: 6px 12px; }
 .sr-tab-content.sr-tab-active { display: block; }
-.sr-setting-tab-bg { background-color: var(--text-selection); }
 
 /* === Response Float Bar === */
 #reviewResponseModalBar { width: 95%; height: auto; padding: 3px; display: grid; user-select: none; border-radius: 6px; position: absolute; left: 0; right: 0; bottom: 5%; margin: auto; align-items: center; transition: 200ms ease; min-width: fit-content; z-index: var(--layer-status-bar); box-shadow: 0 3px 32px rgba(37, 49, 224, 0.15); border: 1px solid var(--background-modifier-border); background: var(--background-primary-alt); }

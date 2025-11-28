@@ -112,6 +112,12 @@ export class NoteGroupComponent {
         this.notes = notes;
         this.shouldAutoScroll = shouldAutoScroll;
 
+        // If group becomes empty, remove it
+        if (!this.notes || this.notes.length === 0) {
+            this.removeElement();
+            return;
+        }
+
         if (!this.groupEl) return;
 
         // Update header

@@ -273,19 +273,27 @@ export class FlashcardDeckComponent {
             let component = this.groupComponents.get(data.key);
             if (component) {
                 component.update(data.cards);
+                // If group became empty after update, remove it from map
+                if (!data.cards || data.cards.length === 0) {
+                    component.destroy();
+                    this.groupComponents.delete(data.key);
+                }
             } else {
-                component = new CardGroupComponent(
-                    this.plugin,
-                    data.title,
-                    data.cards,
-                    this.deck,
-                    content,
-                    data.key,
-                    this.expandedGroups,
-                    this.onToggleGroup,
-                );
-                this.groupComponents.set(data.key, component);
-                component.render();
+                // Only create new groups if they have cards
+                if (data.cards && data.cards.length > 0) {
+                    component = new CardGroupComponent(
+                        this.plugin,
+                        data.title,
+                        data.cards,
+                        this.deck,
+                        content,
+                        data.key,
+                        this.expandedGroups,
+                        this.onToggleGroup,
+                    );
+                    this.groupComponents.set(data.key, component);
+                    component.render();
+                }
             }
         }
     }

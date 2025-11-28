@@ -4,8 +4,8 @@
         "paths": {
             "src/*": ["src/*"]
         },
-        "emitDecoratorMetadata": true, // optional, 使Reflect类可以添加或读取metadata
-        "experimentalDecorators": true, // required
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "inlineSourceMap": true,
         "inlineSources": true,
         "module": "ESNext",

@@ -82,6 +82,12 @@ export class CardGroupComponent {
     public update(cards: Card[]): void {
         this.cards = cards;
 
+        // If group becomes empty, remove it
+        if (!this.cards || this.cards.length === 0) {
+            this.removeElement();
+            return;
+        }
+
         if (!this.groupEl) return;
 
         // Update header
@@ -174,7 +180,7 @@ export class CardGroupComponent {
 
         // Open the flashcard modal with this specific deck
         if (this.plugin.data.settings.openViewInNewTab) {
-            this.plugin.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
+            await this.plugin.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
         } else {
             // Access the private method through type assertion
             // This is the same pattern used in FlashcardDeckComponent

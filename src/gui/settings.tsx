@@ -143,12 +143,12 @@ export class SRSettingTab extends PluginSettingTab {
             );
 
         this.createSettingFoldersToIgnore(containerEl);
-        // addignoreSetting(newSettingEl(containerEl), this.plugin);
+        // addignoreSetting(containerEl, this.plugin);
 
         containerEl.createEl("h3", { text: t("GROUP_FLASHCARD_REVIEW") });
-        addMultiClozeSetting(newSettingEl(containerEl), this.plugin);
-        addburySiblingSetting(newSettingEl(containerEl), this.plugin);
-        addcardBlockIDSetting(newSettingEl(containerEl), this.plugin);
+        addMultiClozeSetting(containerEl, this.plugin);
+        addburySiblingSetting(containerEl, this.plugin);
+        addcardBlockIDSetting(containerEl, this.plugin);
         new Setting(containerEl)
             .setName(t("BURY_SIBLINGS_TILL_NEXT_DAY"))
             .setDesc(t("BURY_SIBLINGS_TILL_NEXT_DAY_DESC"))
@@ -214,7 +214,7 @@ export class SRSettingTab extends PluginSettingTab {
                     await this.plugin.savePluginData();
                 }),
         );
-        addIntervalShowHideSetting(newSettingEl(containerEl), this.plugin);
+        addIntervalShowHideSetting(containerEl, this.plugin);
 
         containerEl.createEl("h3", { text: t("GROUP_FLASHCARD_SEPARATORS") });
         const convertHighlightsToClozesEl = new Setting(containerEl).setName(
@@ -502,15 +502,15 @@ export class SRSettingTab extends PluginSettingTab {
             );
 
         this.createSettingFoldersToIgnore(containerEl);
-        // addignoreSetting(newSettingEl(containerEl), this.plugin);
+        // addignoreSetting(containerEl, this.plugin);
 
         containerEl.createEl("h3", { text: t("NOTES_REVIEW_QUEUE") });
 
-        addmixQueueSetting(newSettingEl(containerEl), this.plugin);
-        addTrackedNoteToDecksSetting(newSettingEl(containerEl), this.plugin);
-        addUntrackSetting(newSettingEl(containerEl), this.plugin);
-        addResponseFloatBarSetting(newSettingEl(containerEl), this.plugin);
-        addReviewNoteDirectlySetting(newSettingEl(containerEl), this.plugin);
+        addmixQueueSetting(containerEl, this.plugin);
+        addTrackedNoteToDecksSetting(containerEl, this.plugin);
+        addUntrackSetting(containerEl, this.plugin);
+        addResponseFloatBarSetting(containerEl, this.plugin);
+        addReviewNoteDirectlySetting(containerEl, this.plugin);
 
         new Setting(containerEl).setName(t("AUTO_NEXT_NOTE")).addToggle((toggle) =>
             toggle.setValue(this.plugin.data.settings.autoNextNote).onChange(async (value) => {
@@ -749,7 +749,7 @@ export class SRSettingTab extends PluginSettingTab {
             });
 
         containerEl.createEl("h3", { text: t("GROUP_FLASHCARDS_NOTES") });
-        addResponseButtonTextSetting(newSettingEl(containerEl), this.plugin);
+        addResponseButtonTextSetting(containerEl, this.plugin);
 
         containerEl.createEl("h3", { text: t("EXPERIMENTAL") });
         const dateFormatSetting = new Setting(containerEl)
@@ -918,16 +918,16 @@ export class SRSettingTab extends PluginSettingTab {
 
         const issue_url =
             "https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/issues";
-        newSettingEl(containerEl).createEl("p").innerHTML = t("POST_ISSUE_MODIFIED_PLUGIN", {
+        containerEl.createEl("p").innerHTML = t("POST_ISSUE_MODIFIED_PLUGIN", {
             issue_url,
         });
 
         // trackfile_setting
         // https://github.com/martin-jw/obsidian-recall/blob/main/src/settings.ts
-        addDataLocationSettings(newSettingEl(containerEl), this.plugin);
+        addDataLocationSettings(containerEl, this.plugin);
 
-        addAlgorithmSetting(newSettingEl(containerEl), this.plugin);
-        addAlgorithmSpecificDisplaySetting(newSettingEl(containerEl), this.plugin);
+        addAlgorithmSetting(containerEl, this.plugin);
+        addAlgorithmSpecificDisplaySetting(containerEl, this.plugin);
 
         return;
 
@@ -1210,7 +1210,7 @@ export class SRSettingTab extends PluginSettingTab {
 
         const issue_url =
             "https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/issues";
-        newSettingEl(containerEl)
+        containerEl
             .createEl("p")
             .insertAdjacentHTML(
                 "beforeend",
@@ -1275,10 +1275,4 @@ export class SRSettingTab extends PluginSettingTab {
             previewEl.style.color = "var(--text-error)";
         }
     }
-}
-
-export function newSettingEl(containerEl: HTMLElement) {
-    const el = containerEl.createDiv();
-    el.addClass("sr-setting-tab-bg");
-    return el;
 }

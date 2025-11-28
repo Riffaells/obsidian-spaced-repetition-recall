@@ -7,7 +7,7 @@ import { FilterType, NoteSortType } from "./types";
 import { calculateDaysUntilDue, createGroupKey, getGroupTitle, isNoteActive } from "./utils";
 
 export class DeckComponent {
-    private plugin: SRPlugin;
+    private readonly plugin: SRPlugin;
     private deck: ReviewDeck;
     private containerEl: HTMLElement;
     private activeFile: TFile | null;
@@ -140,6 +140,14 @@ export class DeckComponent {
         }
 
         if (!this.deckEl) return;
+
+        // Auto-expand deck if it contains the active file
+        if (this.shouldAutoExpand) {
+            const hasActiveFile = this.checkIfDeckContainsActiveFile();
+            if (hasActiveFile) {
+                this.expandedDecks.add(this.deck.deckName);
+            }
+        }
 
         // Update header stats
         const header = this.deckEl.querySelector(".sr-new-deck-header");
@@ -339,7 +347,7 @@ export class DeckComponent {
         // 3. Reconcile
         const newGroupKeys = new Set(groupsData.map((g) => g.key));
 
-        // Remove groups that dont exist anymore
+        // Remove groups that dont exist anymore or became empty
         for (const [key, component] of this.groupComponents) {
             if (!newGroupKeys.has(key)) {
                 component.destroy();
@@ -351,24 +359,28 @@ export class DeckComponent {
         for (const data of groupsData) {
             let component = this.groupComponents.get(data.key);
             if (component) {
+                // Update existing component
                 component.update(this.activeFile, data.notes, this.shouldAutoExpand);
             } else {
-                component = new NoteGroupComponent(
-                    this.plugin,
-                    data.title,
-                    data.notes,
-                    this.activeFile,
-                    this.deck,
-                    content,
-                    data.key,
-                    this.expandedGroups,
-                    this.shouldAutoExpand,
-                    this.onToggleGroup,
-                    this.noteSort,
-                );
-                const rendered = component.render();
-                if (rendered) {
-                    this.groupComponents.set(data.key, component);
+                // Only create new groups if they have notes
+                if (data.notes && data.notes.length > 0) {
+                    component = new NoteGroupComponent(
+                        this.plugin,
+                        data.title,
+                        data.notes,
+                        this.activeFile,
+                        this.deck,
+                        content,
+                        data.key,
+                        this.expandedGroups,
+                        this.shouldAutoExpand,
+                        this.onToggleGroup,
+                        this.noteSort,
+                    );
+                    const rendered = component.render();
+                    if (rendered) {
+                        this.groupComponents.set(data.key, component);
+                    }
                 }
             }
         }

@@ -48,7 +48,6 @@ export class ReviewQueueListView extends ItemView {
     // Cache and state tracking
     private cachedStats: Stats | null = null;
     private lastActiveFilePath: string | null = null;
-    private isFilterChange: boolean = false;
     private sortedDecks: ReviewDeck[] = [];
     private justRecalculated = false;
     private scrollFrameId: number | null = null;
@@ -123,9 +122,8 @@ export class ReviewQueueListView extends ItemView {
             headerContainer,
             (filter) => {
                 this.currentFilter = filter;
-                this.isFilterChange = true;
                 const currentFile = this.plugin.app.workspace.getActiveFile();
-                this.update(currentFile);
+                this.update(currentFile, true, false);
             },
             () => this.collapseAll(),
             () => this.expandAll(),
@@ -134,7 +132,7 @@ export class ReviewQueueListView extends ItemView {
                 this.plugin.data.settings.sidebarSortOrder = sort;
                 this.saveSettingsDebounced();
                 const currentFile = this.plugin.app.workspace.getActiveFile();
-                this.update(currentFile);
+                this.update(currentFile, true, false);
             },
             this.handleNoteSortChange,
             () => this.handleRecalculate(),
@@ -235,18 +233,19 @@ export class ReviewQueueListView extends ItemView {
             this.header.render();
         }
 
-        this.reconcileDecks(activeFile, resort);
+        // Determine if we should auto-expand based on file change
+        const shouldAutoExpand = shouldScroll;
+        this.reconcileDecks(activeFile, resort, shouldAutoExpand);
 
         if (shouldScroll) {
             this.scrollToActiveItem();
         }
     }
 
-    private reconcileDecks(activeFile: TFile | null, resort = true): void {
+    private reconcileDecks(activeFile: TFile | null, resort = true, shouldAutoExpand = false): void {
         if (!this.decksContainer) return;
 
         const currentPath = activeFile?.path || null;
-        let shouldAutoExpand = currentPath !== this.lastActiveFilePath && !this.isFilterChange;
         if (this.justRecalculated) {
             shouldAutoExpand = true;
             this.justRecalculated = false;
@@ -313,8 +312,6 @@ export class ReviewQueueListView extends ItemView {
             }
             this.flashcardDeckComponents.clear();
         }
-
-        this.isFilterChange = false;
     }
 
     private reconcileFlashcardDecks(activeFile: TFile | null): void {
