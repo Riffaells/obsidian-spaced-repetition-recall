@@ -1,5 +1,5 @@
 import { Notice } from "obsidian";
-import { SrsAlgorithm, algorithmNames } from "src/algorithms/algorithms";
+import { algorithmNames, SrsAlgorithm } from "src/algorithms/algorithms";
 import { t } from "src/lang/helpers";
 import SRPlugin from "src/main";
 import { AnkiAlgorithm } from "./anki";

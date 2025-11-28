@@ -1,4 +1,4 @@
-import { SrsAlgorithm, algorithmNames } from "src/algorithms/algorithms";
+import { algorithmNames, SrsAlgorithm } from "src/algorithms/algorithms";
 import { setDueDates } from "src/algorithms/balance/balance";
 import { DefaultAlgorithm } from "src/algorithms/scheduling_default";
 import { DataStore } from "src/dataStore/data";

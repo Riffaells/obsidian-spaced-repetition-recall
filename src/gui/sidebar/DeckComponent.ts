@@ -127,13 +127,13 @@ export class DeckComponent {
         filter: FilterType,
         shouldAutoExpand: boolean,
         noteSort: NoteSortType,
-        deck?: ReviewDeck
+        deck?: ReviewDeck,
     ): void {
         this.activeFile = activeFile;
         this.filter = filter;
         this.shouldAutoExpand = shouldAutoExpand;
         this.noteSort = noteSort;
-        
+
         // Update deck reference if provided
         if (deck) {
             this.deck = deck;

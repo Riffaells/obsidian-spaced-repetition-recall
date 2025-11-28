@@ -1,140 +1,149 @@
-import { debug } from "src/util/utils_recall";
-
-interface IminTouch {
+interface IMinTouch {
     identifier: number;
     pageX: number;
     pageY: number;
 }
 
 export class TouchOnMobile {
-    timeStart = 0;
-    timeDiff_longClick = 800; // ms
+    private static readonly LONG_CLICK_DURATION = 800; // ms
+    private static readonly SWIPE_MAX_DURATION = 200; // ms
+    private static readonly SWIPE_MAX_X_DIFF = 30; // px
+    private static readonly SWIPE_MIN_Y_DIFF = 50; // px
+    private static readonly LONG_CLICK_MAX_MOVEMENT = 10; // px
 
-    originTouches: IminTouch[] = [];
-    ongoingTouches: IminTouch[] = [];
+    private timeStart = 0;
+    private originTouches: IMinTouch[] = [];
+    private ongoingTouches: IMinTouch[] = [];
 
-    public longClickCb: () => void;
-    public swipUpCb: () => void;
+    public longClickCb?: () => void;
+    public swipeUpCb?: () => void;
 
-    static create() {
+    static create(): TouchOnMobile {
         return new TouchOnMobile();
     }
-    constructor() {}
 
-    handleStart(evt: TouchEvent) {
+    handleStart(evt: TouchEvent): void {
         const touches = evt.changedTouches;
         this.timeStart = Date.now();
+        
         for (let i = 0; i < touches.length; i++) {
-            // console.debug("开始第 " + i + " 个触摸 ...");
             this.originTouches.push(copyTouch(touches[i]));
             this.ongoingTouches.push(copyTouch(touches[i]));
         }
-        setTimeout(() => {
-            // console.debug("time up");
-            if (this.originTouches.length > 0 && this.isLongClick(0)) {
-                evt.preventDefault();
-                this.longClickCb();
-                this.handleCancel(evt);
-            }
-        }, this.timeDiff_longClick);
     }
 
-    handleMove(evt: TouchEvent) {
-        // evt.preventDefault();
+    handleMove(evt: TouchEvent): void {
         const touches = evt.changedTouches;
 
         for (let i = 0; i < touches.length; i++) {
-            const idx = this.finTouchesIndexById(touches[i].identifier);
+            const idx = this.findTouchesIndexById(touches[i].identifier);
 
             if (idx >= 0) {
-                // console.debug("继续第 " + idx + "个触摸。");
-                // console.debug("ctx.lineTo(" + touches[i].pageX + ", " + touches[i].pageY + ");");
-                this.ongoingTouches.splice(idx, 1, copyTouch(touches[i])); // 切换触摸信息
-            } else {
-                console.debug("无法确定下一个触摸点。");
+                this.ongoingTouches.splice(idx, 1, copyTouch(touches[i]));
             }
         }
     }
 
-    handleEnd(evt: TouchEvent) {
-        // console.debug("触摸结束。");
+    handleEnd(evt: TouchEvent): void {
         const touches = evt.changedTouches;
 
         for (let i = 0; i < touches.length; i++) {
-            const idx = this.finTouchesIndexById(touches[i].identifier);
-            // const msg = `end touches len: ${touches.length}`;
-            // debug(this.handleEnd, {msg});
+            const idx = this.findTouchesIndexById(touches[i].identifier);
+            
             if (idx >= 0) {
-                if (this.isSwipUp(idx)) {
+                // Check for long click first (higher priority)
+                if (this.isLongClick(idx)) {
                     evt.preventDefault();
-                    this.swipUpCb();
+                    if (this.longClickCb) {
+                        this.longClickCb();
+                    }
+                } 
+                // Then check for swipe up
+                else if (this.isSwipeUp(idx)) {
+                    evt.preventDefault();
+                    if (this.swipeUpCb) {
+                        this.swipeUpCb();
+                    }
                 }
-                // const msg = `移除 ${idx} (${ongoingTouches[idx].pageX}, ${ongoingTouches[idx].pageY}) timeDur: ${getTimeDuration()} `;
 
-                this.originTouches.splice(idx, 1); // 用完后移除
-                this.ongoingTouches.splice(idx, 1); // 用完后移除
-            } else {
-                // console.debug("无法确定要结束哪个触摸点。");
+                this.originTouches.splice(idx, 1);
+                this.ongoingTouches.splice(idx, 1);
             }
         }
     }
 
-    handleCancel(evt: TouchEvent) {
+    handleCancel(evt: TouchEvent): void {
         evt.preventDefault();
-        // console.debug("触摸取消。");
         const touches = evt.changedTouches;
 
         for (let i = 0; i < touches.length; i++) {
-            const idx = this.finTouchesIndexById(touches[i].identifier);
-            this.originTouches.splice(idx, 1); // 用完后移除
-            this.ongoingTouches.splice(idx, 1); // 用完后移除
+            const idx = this.findTouchesIndexById(touches[i].identifier);
+            
+            if (idx >= 0) {
+                this.originTouches.splice(idx, 1);
+                this.ongoingTouches.splice(idx, 1);
+            }
         }
     }
 
-    finTouchesIndexById(idToFind: number) {
-        const idx = this.ongoingTouches.findIndex((t) => {
-            return idToFind === t.identifier;
-        });
-        return idx;
+    private findTouchesIndexById(idToFind: number): number {
+        return this.ongoingTouches.findIndex((t) => t.identifier === idToFind);
     }
-    isSwipUp(idx: number) {
-        const moveXDiff = 30;
-        const moveYDiff = 50;
-        const timeDiff = 200; // ms
-        // const msg = `actxdiff: ${this.absXDiff(idx)}, actydiff: ${this.actYDiff(
-        //     idx,
-        // )}, time dur: ${this.getTimeDuration()}`;
-        // debug(this.isSwipUp, { msg });
+
+    private isSwipeUp(idx: number): boolean {
+        if (!this.isValidIndex(idx)) {
+            return false;
+        }
+
+        const duration = this.getTimeDuration();
+        const xDiff = this.absXDiff(idx);
+        const yDiff = this.actYDiff(idx);
+
         return (
-            this.getTimeDuration() < timeDiff &&
-            this.absXDiff(idx) < moveXDiff &&
-            this.actYDiff(idx) > moveYDiff
+            duration < TouchOnMobile.SWIPE_MAX_DURATION &&
+            xDiff < TouchOnMobile.SWIPE_MAX_X_DIFF &&
+            yDiff > TouchOnMobile.SWIPE_MIN_Y_DIFF
         );
     }
 
-    isLongClick(idx: number) {
-        const longClickDiff = 10;
+    private isLongClick(idx: number): boolean {
+        if (!this.isValidIndex(idx)) {
+            return false;
+        }
+
+        const duration = this.getTimeDuration();
+        const xDiff = this.absXDiff(idx);
+        const yDiff = Math.abs(this.actYDiff(idx));
+
         return (
-            this.getTimeDuration() >= this.timeDiff_longClick &&
-            this.absXDiff(idx) < longClickDiff &&
-            Math.abs(this.actYDiff(idx)) < longClickDiff
+            duration >= TouchOnMobile.LONG_CLICK_DURATION &&
+            xDiff < TouchOnMobile.LONG_CLICK_MAX_MOVEMENT &&
+            yDiff < TouchOnMobile.LONG_CLICK_MAX_MOVEMENT
         );
     }
 
-    getTimeDuration() {
+    private isValidIndex(idx: number): boolean {
+        return (
+            idx >= 0 &&
+            idx < this.originTouches.length &&
+            idx < this.ongoingTouches.length
+        );
+    }
+
+    private getTimeDuration(): number {
         return Date.now() - this.timeStart;
     }
 
-    actYDiff(idx: number) {
+    private actYDiff(idx: number): number {
         return this.originTouches[idx].pageY - this.ongoingTouches[idx].pageY;
     }
 
-    absXDiff(idx: number) {
+    private absXDiff(idx: number): number {
         return Math.abs(this.originTouches[idx].pageX - this.ongoingTouches[idx].pageX);
     }
 }
 
-function copyTouch(touch: Touch) {
+function copyTouch(touch: Touch): IMinTouch {
     return {
         identifier: touch.identifier,
         pageX: touch.pageX,

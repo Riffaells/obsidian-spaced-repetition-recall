@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { App, MarkdownRenderer, Modal, Notice, moment, request } from "obsidian";
+import { App, MarkdownRenderer, Modal, moment, Notice, request } from "obsidian";
 import { errorlog, isVersionNewerThanOther } from "src/util/utils_recall";
 import SRPlugin from "src/main";
 

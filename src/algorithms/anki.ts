@@ -1,9 +1,8 @@
-import { Setting, Notice } from "obsidian";
+import { Notice, Setting } from "obsidian";
 import { DateUtils, MiscUtils } from "src/util/utils_recall";
-import { SrsAlgorithm, algorithmNames } from "./algorithms";
+import { algorithmNames, SrsAlgorithm } from "./algorithms";
 import deepcopy from "deepcopy";
 import { FsrsData } from "./fsrs";
-import { balance } from "./balance/balance";
 import { RepetitionItem, ReviewResult } from "src/dataStore/repetitionItem";
 import { t } from "src/lang/helpers";
 

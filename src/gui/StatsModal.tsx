@@ -1,19 +1,19 @@
-import { Modal, App, Platform } from "obsidian";
+import { App, Modal, Platform } from "obsidian";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import h from "vhtml";
 import {
-    Chart,
-    BarElement,
+    ArcElement,
     BarController,
-    Legend,
-    Title,
-    Tooltip,
-    SubTitle,
-    ChartTypeRegistry,
+    BarElement,
     CategoryScale,
+    Chart,
+    ChartTypeRegistry,
+    Legend,
     LinearScale,
     PieController,
-    ArcElement,
+    SubTitle,
+    Title,
+    Tooltip,
 } from "chart.js";
 
 import type SRPlugin from "src/main";

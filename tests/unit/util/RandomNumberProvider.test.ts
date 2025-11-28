@@ -1,8 +1,8 @@
 import {
     IStaticRandom,
-    WeightedRandomNumber,
     setupNextRandomNumber,
     setupStaticRandomNumberProvider,
+    WeightedRandomNumber,
 } from "src/util/RandomNumberProvider";
 
 let provider: WeightedRandomNumber;

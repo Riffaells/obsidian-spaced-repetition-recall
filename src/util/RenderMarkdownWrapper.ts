@@ -2,8 +2,8 @@ import { App, MarkdownRenderer, TFile } from "obsidian";
 import {
     AUDIO_FORMATS,
     IMAGE_FORMATS,
-    VIDEO_FORMATS,
     NON_LETTER_SYMBOLS_REGEX,
+    VIDEO_FORMATS,
 } from "../constants";
 import SRPlugin from "../main";
 import { TextDirection } from "./TextDirection";

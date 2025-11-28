@@ -1,5 +1,5 @@
 // https://img.shields.io/github/v/release/chetachiezikeuzor/cMenu-Plugin
-import { App, MarkdownView, Menu, MenuItem, Platform, TFile, setIcon } from "obsidian";
+import { App, MarkdownView, Menu, MenuItem, Platform, setIcon } from "obsidian";
 import { textInterval } from "src/scheduling";
 import { SRSettings } from "src/settings";
 import { t } from "src/lang/helpers";

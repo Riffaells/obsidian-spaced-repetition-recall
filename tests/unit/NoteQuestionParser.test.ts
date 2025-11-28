@@ -5,7 +5,7 @@ import { CardType, Question } from "src/Question";
 import { DEFAULT_SETTINGS, SRSettings } from "src/settings";
 import { TopicPath, TopicPathList } from "src/TopicPath";
 import { createTest_NoteQuestionParser } from "./SampleItems";
-import { ISRFile, frontmatterTagPseudoLineNum } from "src/SRFile";
+import { frontmatterTagPseudoLineNum, ISRFile } from "src/SRFile";
 import { setupStaticDateProvider_20230906 } from "src/util/DateProvider";
 import { TextDirection } from "src/util/TextDirection";
 import { UnitTestSRFile } from "./helpers/UnitTestSRFile";

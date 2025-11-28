@@ -18,13 +18,12 @@ import { DEFAULT_SETTINGS, SRSettings } from "src/settings";
 import { SampleItemDecks } from "./SampleItems";
 import { ReviewResponse } from "src/scheduling";
 import {
-    setupStaticDateProvider,
     setupStaticDateProvider_20230906,
     setupStaticDateProvider_OriginDatePlusDays,
 } from "src/util/DateProvider";
 import moment from "moment";
 import { INoteEaseList, NoteEaseList } from "src/NoteEaseList";
-import { QuestionPostponementList, IQuestionPostponementList } from "src/QuestionPostponementList";
+import { QuestionPostponementList } from "src/QuestionPostponementList";
 import { UnitTestSRFile } from "./helpers/UnitTestSRFile";
 
 const order_DueFirst_Sequential: IIteratorOrder = {

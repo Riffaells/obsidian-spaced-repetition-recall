@@ -1,16 +1,16 @@
-import { MiscUtils, debug } from "src/util/utils_recall";
+import { debug, MiscUtils } from "src/util/utils_recall";
 import { SRSettings } from "../settings";
 
-import { TFile, TFolder, getAllTags } from "obsidian";
+import { getAllTags, TFile, TFolder } from "obsidian";
 
 import { FsrsData } from "src/algorithms/fsrs";
 import { AnkiData } from "src/algorithms/anki";
 
 import { getStorePath } from "src/dataStore/dataLocation";
 import { Tags } from "src/tags";
-import { SrsAlgorithm, algorithmNames } from "src/algorithms/algorithms";
+import { algorithmNames, SrsAlgorithm } from "src/algorithms/algorithms";
 import { CardInfo, TrackedFile } from "./trackedFile";
-import { RPITEMTYPE, RepetitionItem, ReviewResult } from "./repetitionItem";
+import { RepetitionItem, ReviewResult, RPITEMTYPE } from "./repetitionItem";
 import { DEFAULT_QUEUE_DATA, Queue } from "./queue";
 import { Iadapter } from "./adapter";
 import { t } from "src/lang/helpers";

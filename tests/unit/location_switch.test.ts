@@ -1,8 +1,8 @@
 import {
-    updateNoteSchedFrontHeader,
-    updateCardSchedXml,
-    delDefaultTag,
     cardTextReplace,
+    delDefaultTag,
+    updateCardSchedXml,
+    updateNoteSchedFrontHeader,
 } from "src/dataStore/location_switch";
 
 describe("updateNoteSchedFrontHeader", () => {

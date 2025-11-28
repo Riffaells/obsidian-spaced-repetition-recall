@@ -107,11 +107,7 @@ export class NoteGroupComponent {
         }
     }
 
-    public update(
-        activeFile: TFile | null,
-        notes: SchedNote[],
-        shouldAutoScroll: boolean
-    ): void {
+    public update(activeFile: TFile | null, notes: SchedNote[], shouldAutoScroll: boolean): void {
         this.activeFile = activeFile;
         this.notes = notes;
         this.shouldAutoScroll = shouldAutoScroll;
@@ -138,7 +134,7 @@ export class NoteGroupComponent {
             }
 
             notesList.empty();
-            
+
             // Abort previous notes listeners
             this.notesAbortController.abort();
             this.notesAbortController = new AbortController();
@@ -191,7 +187,7 @@ export class NoteGroupComponent {
                 fileMenu,
                 note.note,
                 "link-context-menu",
-                null
+                null,
             );
 
             fileMenu.showAtPosition({
@@ -212,7 +208,7 @@ export class NoteGroupComponent {
             cancelAnimationFrame(this.timeoutId);
             this.timeoutId = null;
         }
-        
+
         this.abortController.abort();
         this.notesAbortController.abort();
 

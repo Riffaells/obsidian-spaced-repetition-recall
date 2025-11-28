@@ -1,4 +1,4 @@
-import { DateUtils, isArray, logExecutionTime } from "src/util/utils_recall";
+import { isArray } from "src/util/utils_recall";
 import { DataStore } from "./data";
 import { TrackedFile } from "./trackedFile";
 import { RepetitionItem } from "./repetitionItem";

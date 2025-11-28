@@ -1,5 +1,5 @@
 import { DateUtils, MiscUtils } from "src/util/utils_recall";
-import { SrsAlgorithm, algorithmNames } from "./algorithms";
+import { algorithmNames, SrsAlgorithm } from "./algorithms";
 import deepcopy from "deepcopy";
 import { AnkiAlgorithm, AnkiSettings } from "./anki";
 import { RepetitionItem, ReviewResult } from "src/dataStore/repetitionItem";

@@ -18,7 +18,7 @@ import { DataStore } from "./data";
 import { Tags } from "src/tags";
 
 import { Stats } from "src/stats";
-import { DateUtils, isIgnoredPath } from "src/util/utils_recall";
+import { isIgnoredPath } from "src/util/utils_recall";
 import { RPITEMTYPE } from "./repetitionItem";
 import deepcopy from "deepcopy";
 import { NoteCardScheduleParser } from "src/CardSchedule";

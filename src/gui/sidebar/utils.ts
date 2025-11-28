@@ -24,7 +24,7 @@ export function calculateDaysUntilDue(dueUnix: number, plugin: SRPlugin): number
  */
 export function getGroupTitle(nDays: number, dueUnix: number, plugin: SRPlugin): string {
     const showRelativeDays = plugin.data.settings.sidebarShowRelativeDays;
-    
+
     if (nDays === -1) {
         return t("YESTERDAY");
     } else if (nDays === 0) {
@@ -34,7 +34,6 @@ export function getGroupTitle(nDays: number, dueUnix: number, plugin: SRPlugin):
     } else if (showRelativeDays && nDays < -1) {
         return t("OVERDUE_BY_DAYS", { count: Math.abs(nDays) });
     } else if (showRelativeDays && nDays > 1) {
-
         return t("IN_DAYS", { count: nDays });
     } else {
         const format = plugin.data.settings.sidebarDateFormat || DEFAULT_SETTINGS.sidebarDateFormat;
@@ -78,7 +77,7 @@ export function calculateActiveNotesCount(plugin: SRPlugin): number {
 
     for (const deckKey in plugin.reviewDecks) {
         const deck = plugin.reviewDecks[deckKey];
-        
+
         activeCount += deck.newNotes?.length || 0;
 
         if (deck.scheduledNotes) {

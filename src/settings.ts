@@ -1,8 +1,7 @@
 import { Platform } from "obsidian";
 import { t } from "src/lang/helpers";
-import { SortType, NoteSortType } from "./gui/sidebar/types";
+import { NoteSortType, SidebarViewMode, SortType } from "./gui/sidebar/types";
 // import { pathMatchesPattern } from "src/utils/fs";
-
 // https://github.com/martin-jw/obsidian-recall/blob/main/src/settings.ts
 import { algorithms } from "./algorithms/algorithms_switch";
 import { DataLocation } from "./dataStore/dataLocation";
@@ -64,11 +63,11 @@ export interface SRSettings {
     flashcardHardText: string;
     reviewButtonDelay: number;
     openViewInNewTab: boolean;
-    useNewSidebarDesign: boolean;
     sidebarDateFormat: string;
     sidebarShowRelativeDays: boolean;
     sidebarSortOrder: SortType;
     sidebarNoteSortOrder: NoteSortType;
+    sidebarViewMode: SidebarViewMode;
 
     // algorithm
     algorithm: string;
@@ -156,11 +155,11 @@ export const DEFAULT_SETTINGS: SRSettings = {
     flashcardHardText: t("HARD"),
     reviewButtonDelay: 0,
     openViewInNewTab: false,
-    useNewSidebarDesign: false,
     sidebarDateFormat: "ddd MMM DD.YY",
     sidebarShowRelativeDays: true,
     sidebarSortOrder: SortType.DATE_ASC,
     sidebarNoteSortOrder: NoteSortType.DEFAULT,
+    sidebarViewMode: SidebarViewMode.Notes,
 
     // algorithm
     baseEase: 250,
@@ -225,6 +224,18 @@ export function upgradeSettings(settings: SRSettings) {
     }
     if (settings.sidebarNoteSortOrder == null) {
         settings.sidebarNoteSortOrder = NoteSortType.DEFAULT;
+    }
+    if (settings.sidebarViewMode == null) {
+        settings.sidebarViewMode = SidebarViewMode.Notes;
+    }
+
+    // Validate sidebarViewMode - default to Notes if invalid
+    if (
+        settings.sidebarViewMode !== SidebarViewMode.Notes &&
+        settings.sidebarViewMode !== SidebarViewMode.FlashCards
+    ) {
+        console.log(`Invalid sidebarViewMode: ${settings.sidebarViewMode}, defaulting to Notes`);
+        settings.sidebarViewMode = SidebarViewMode.Notes;
     }
 }
 

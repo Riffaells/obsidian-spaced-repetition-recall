@@ -1,6 +1,6 @@
 import { Setting } from "obsidian";
 import { algorithmNames } from "src/algorithms/algorithms";
-import { algorithmSwitchData, algorithms } from "src/algorithms/algorithms_switch";
+import { algorithms, algorithmSwitchData } from "src/algorithms/algorithms_switch";
 import { DataLocation } from "src/dataStore/dataLocation";
 import ConfirmModal from "src/gui/confirm";
 import { t } from "src/lang/helpers";

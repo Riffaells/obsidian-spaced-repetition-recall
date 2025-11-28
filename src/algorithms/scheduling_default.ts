@@ -3,11 +3,10 @@ import { Notice, Setting } from "obsidian";
 import { t } from "src/lang/helpers";
 
 import { DateUtils } from "src/util/utils_recall";
-import { SrsAlgorithm, algorithmNames } from "./algorithms";
+import { algorithmNames, SrsAlgorithm } from "./algorithms";
 import deepcopy from "deepcopy";
 import { AnkiData } from "./anki";
 import { FsrsData } from "./fsrs";
-import { balance } from "./balance/balance";
 import { RepetitionItem, ReviewResult } from "src/dataStore/repetitionItem";
 
 // https://github.com/mgmeyers/obsidian-kanban/blob/main/src/Settings.ts

@@ -1,5 +1,5 @@
 import { Notice, Platform } from "obsidian";
-import { cyrb53, isEqualOrSubPath } from "src/util/utils";
+import { cyrb53 } from "src/util/utils";
 
 export class DateUtils {
     /**

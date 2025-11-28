@@ -1,4 +1,4 @@
-import { App, Modal, ButtonComponent, MarkdownRenderer } from "obsidian";
+import { ButtonComponent, MarkdownRenderer, Modal } from "obsidian";
 import SRPlugin from "src/main";
 
 type ConfirmCallback = (confirmed: boolean) => void;

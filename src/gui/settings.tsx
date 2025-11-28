@@ -752,24 +752,6 @@ export class SRSettingTab extends PluginSettingTab {
         addResponseButtonTextSetting(newSettingEl(containerEl), this.plugin);
 
         containerEl.createEl("h3", { text: t("EXPERIMENTAL") });
-        new Setting(containerEl)
-            .setName(t("NEW_DESIGN"))
-            .setDesc(t("NEW_DESIGN_DESC"))
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.data.settings.useNewSidebarDesign)
-                    .onChange(async (value) => {
-                        this.plugin.data.settings.useNewSidebarDesign = value;
-                        await this.plugin.savePluginData();
-                        const leaves = this.app.workspace.getLeavesOfType("review-queue-list-view");
-                        leaves.forEach((leaf) => {
-                            if (leaf.view && "redraw" in leaf.view) {
-                                (leaf.view as { redraw: () => void }).redraw();
-                            }
-                        });
-                    }),
-            );
-
         const dateFormatSetting = new Setting(containerEl)
             .setName(t("SIDEBAR_DATE_FORMAT"))
             .setDesc(t("SIDEBAR_DATE_FORMAT_DESC"))

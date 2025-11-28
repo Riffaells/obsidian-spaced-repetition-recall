@@ -1,14 +1,8 @@
-import { NoteQuestionParser } from "src/NoteQuestionParser";
 import { CardListType, Deck } from "src/Deck";
-import { DEFAULT_SETTINGS } from "src/settings";
 import { SampleItemDecks } from "./SampleItems";
 import { TopicPath } from "src/TopicPath";
-import { CardOrder, DeckTreeIterator, IIteratorOrder, DeckOrder } from "src/DeckTreeIterator";
-import {
-    StaticDateProvider,
-    globalDateProvider,
-    setupStaticDateProvider_20230906,
-} from "src/util/DateProvider";
+import { CardOrder, DeckOrder, DeckTreeIterator, IIteratorOrder } from "src/DeckTreeIterator";
+import { setupStaticDateProvider_20230906 } from "src/util/DateProvider";
 import {
     setupNextRandomNumber,
     setupStaticRandomNumberProvider,

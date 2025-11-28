@@ -1,5 +1,4 @@
 import { algorithmSwitchData } from "src/algorithms/algorithms_switch";
-import SRPlugin from "src/main";
 
 describe("algorithmSwitchData", () => {
     test("to fsrs", () => {

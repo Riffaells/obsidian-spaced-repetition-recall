@@ -21,6 +21,11 @@ export enum NoteSortType {
     PATH_DESC = "path_desc",
 }
 
+export enum SidebarViewMode {
+    Notes = "notes",
+    FlashCards = "flashcards",
+}
+
 export interface SidebarStats {
     totalDue: number;
     totalNew: number;

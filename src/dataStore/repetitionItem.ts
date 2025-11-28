@@ -3,7 +3,7 @@ import { AnkiData } from "src/algorithms/anki";
 import { balance } from "src/algorithms/balance/balance";
 import { FsrsData } from "src/algorithms/fsrs";
 import { globalDateProvider } from "src/util/DateProvider";
-import { DateUtils, debug } from "src/util/utils_recall";
+import { DateUtils } from "src/util/utils_recall";
 
 export enum RPITEMTYPE {
     NOTE = "note",

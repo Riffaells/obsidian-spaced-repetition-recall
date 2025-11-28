@@ -1,9 +1,8 @@
 import { App, MarkdownView, Notice, Platform, setIcon } from "obsidian";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
 import type SRPlugin from "src/main";
 import { SRSettings } from "src/settings";
-import { textInterval, ReviewResponse } from "src/scheduling";
+import { ReviewResponse, textInterval } from "src/scheduling";
 import { t } from "src/lang/helpers";
 import { Card } from "../Card";
 import { CardListType, Deck } from "../Deck";

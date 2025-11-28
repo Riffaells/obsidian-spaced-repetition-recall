@@ -1,5 +1,4 @@
-import { parse, ParsedQuestionInfo, setDebugParser } from "src/parser";
-import { ParserOptions } from "src/parser";
+import { parse, ParsedQuestionInfo, ParserOptions, setDebugParser } from "src/parser";
 import { CardType } from "src/Question";
 
 const parserOptions: ParserOptions = {

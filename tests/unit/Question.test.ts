@@ -1,4 +1,3 @@
-import { TopicPath } from "src/TopicPath";
 import { DEFAULT_SETTINGS, SRSettings } from "src/settings";
 import { Question, QuestionText } from "src/Question";
 import { TextDirection } from "src/util/TextDirection";

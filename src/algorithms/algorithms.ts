@@ -1,5 +1,5 @@
 import { MiscUtils } from "src/util/utils_recall";
-import { RPITEMTYPE, RepetitionItem, ReviewResult } from "src/dataStore/repetitionItem";
+import { RepetitionItem, ReviewResult } from "src/dataStore/repetitionItem";
 
 export enum algorithmNames {
     Default = "Default",

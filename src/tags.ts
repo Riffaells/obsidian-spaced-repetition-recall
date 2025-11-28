@@ -1,4 +1,4 @@
-import { TFile, getAllTags } from "obsidian";
+import { getAllTags, TFile } from "obsidian";
 import { SRSettings } from "./settings";
 import { DEFAULT_DECKNAME } from "./constants";
 import { Iadapter } from "./dataStore/adapter";

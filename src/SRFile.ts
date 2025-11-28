@@ -1,11 +1,11 @@
 import {
-    MetadataCache,
-    TFile,
-    Vault,
+    FrontMatterCache,
     getAllTags as ObsidianGetAllTags,
     HeadingCache,
+    MetadataCache,
     TagCache,
-    FrontMatterCache,
+    TFile,
+    Vault,
 } from "obsidian";
 import { TextDirection } from "./util/TextDirection";
 import { parseObsidianFrontmatterTag } from "./util/utils";

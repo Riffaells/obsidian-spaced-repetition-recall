@@ -1,4 +1,4 @@
-import { App, DataAdapter, Keymap, MetadataCache, Vault } from "obsidian";
+import { App, DataAdapter, MetadataCache, Vault } from "obsidian";
 
 export abstract class Iadapter {
     metadataCache: MetadataCache;

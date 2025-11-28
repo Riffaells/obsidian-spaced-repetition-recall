@@ -1,5 +1,4 @@
-import moment from "moment";
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 import { sep } from "path";
 import { PREFERRED_DATE_FORMAT } from "src/constants";
 

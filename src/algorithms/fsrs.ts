@@ -1,13 +1,13 @@
-import { Setting, Notice } from "obsidian";
+import { Notice, Setting } from "obsidian";
 import { DateUtils, MiscUtils } from "src/util/utils_recall";
-import { SrsAlgorithm, algorithmNames } from "./algorithms";
+import { algorithmNames, SrsAlgorithm } from "./algorithms";
 import { DataStore } from "../dataStore/data";
 
 import * as tsfsrs from "ts-fsrs";
+import { Rating, ReviewLog } from "ts-fsrs";
 import { t } from "src/lang/helpers";
 import deepcopy from "deepcopy";
 import { AnkiData } from "./anki";
-import { Rating, ReviewLog } from "ts-fsrs";
 import { RepetitionItem, ReviewResult } from "src/dataStore/repetitionItem";
 import { Iadapter } from "src/dataStore/adapter";
 

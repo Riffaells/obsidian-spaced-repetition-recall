@@ -1,7 +1,7 @@
 import deepcopy from "deepcopy";
 import { Setting } from "obsidian";
 import { algorithmNames } from "src/algorithms/algorithms";
-import { DataLocation, locationMap, getLocalizedLocationMap } from "src/dataStore/dataLocation";
+import { DataLocation, getLocalizedLocationMap } from "src/dataStore/dataLocation";
 import { LocationSwitch } from "src/dataStore/location_switch";
 import ConfirmModal from "src/gui/confirm";
 import { t } from "src/lang/helpers";

@@ -42,7 +42,7 @@ import { DeckTreeStatsCalculator } from "./DeckTreeStatsCalculator";
 import { NoteEaseList } from "./NoteEaseList";
 import { QuestionPostponementList } from "./QuestionPostponementList";
 import { TextDirection } from "./util/TextDirection";
-import { convertToStringOrEmpty, isEqualOrSubPath } from "./util/utils";
+import { convertToStringOrEmpty } from "./util/utils";
 import { setDebugParser } from "src/parser";
 
 // https://github.com/martin-jw/obsidian-recall
@@ -400,11 +400,10 @@ export default class SRPlugin extends Plugin {
 
         this.app.workspace.onLayoutReady(async () => {
             await this.initReviewQueueView();
-            setTimeout(async () => {
-                if (!this.syncLock) {
-                    await this.sync();
-                }
-            }, 2000);
+            // Sync after layout is ready
+            if (!this.syncLock) {
+                await this.sync();
+            }
         });
 
         this.registerSRFocusListener();
