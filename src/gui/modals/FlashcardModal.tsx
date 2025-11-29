@@ -1,5 +1,4 @@
 import { App, Modal } from "obsidian";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 import type SRPlugin from "src/main";
 import { SRSettings } from "src/settings";
@@ -23,7 +22,6 @@ export enum FlashcardMode {
 
 export class FlashcardModal extends Modal {
     public plugin: SRPlugin;
-    public mode: FlashcardMode;
     private reviewSequencer: IFlashcardReviewSequencer;
     private settings: SRSettings;
     private reviewMode: FlashcardReviewMode;
@@ -39,28 +37,19 @@ export class FlashcardModal extends Modal {
     ) {
         super(app);
 
-        // Init properties
         this.plugin = plugin;
         this.settings = settings;
         this.reviewSequencer = reviewSequencer;
         this.reviewMode = reviewMode;
 
-        // Setup base containers
-        this.modalEl.style.height = this.settings.flashcardHeightPercentage + "%";
-        this.modalEl.style.maxHeight = this.settings.flashcardHeightPercentage + "%";
-        this.modalEl.style.width = this.settings.flashcardWidthPercentage + "%";
-        this.modalEl.style.maxWidth = this.settings.flashcardWidthPercentage + "%";
-        this.modalEl.setAttribute("id", "sr-modal");
+        this.setupModalStyles();
 
-        this.contentEl.addClass("sr-modal-content");
-
-        // Init static elements in views
         this.deckView = new DeckUI(
             this.plugin,
             this.settings,
             this.reviewSequencer,
             this.contentEl,
-            this._startReviewOfDeck.bind(this),
+            this.startReviewOfDeck,
         );
 
         this.flashcardView = new CardUI(
@@ -71,65 +60,87 @@ export class FlashcardModal extends Modal {
             this.reviewMode,
             this.contentEl,
             this.modalEl,
-            this._showDecksList.bind(this),
-            this._doEditQuestionText.bind(this),
+            this.showDecksList,
+            this.doEditQuestionText,
+            this.closeModal,
         );
     }
 
+    private setupModalStyles(): void {
+        const heightPercent = `${this.settings.flashcardHeightPercentage}%`;
+        const widthPercent = `${this.settings.flashcardWidthPercentage}%`;
+
+        this.modalEl.style.height = heightPercent;
+        this.modalEl.style.maxHeight = heightPercent;
+        this.modalEl.style.width = widthPercent;
+        this.modalEl.style.maxWidth = widthPercent;
+        this.modalEl.setAttribute("id", "sr-modal");
+
+        this.contentEl.addClass("sr-modal-content");
+    }
+
     onOpen(): void {
-        this._showDecksList();
+        if (this.reviewSequencer.hasCurrentCard) {
+            this.showFlashcard();
+        } else {
+            this.showDecksList();
+        }
     }
 
     onClose(): void {
         this.plugin.setSRViewInFocus(false);
-        this.mode = FlashcardMode.Closed;
         this.deckView.close();
         this.flashcardView.close();
     }
 
-    private _showDecksList(): void {
-        this._hideFlashcard();
+    private showDecksList = (): void => {
+        this.hideFlashcard();
         this.deckView.show();
-    }
+    };
 
-    private _hideDecksList(): void {
+    public closeModal = (): void => {
+        this.close();
+    };
+
+    private hideDecksList(): void {
         this.deckView.hide();
     }
 
-    private _showFlashcard(): void {
+    private showFlashcard(): void {
         this.plugin.setSRViewInFocus(true);
-        this._hideDecksList();
+        this.hideDecksList();
         this.flashcardView.show();
     }
 
-    private _hideFlashcard(): void {
+    private hideFlashcard(): void {
         this.flashcardView.hide();
     }
 
-    private _startReviewOfDeck(deck: Deck) {
+    private startReviewOfDeck = (deck: Deck): void => {
         this.reviewSequencer.setCurrentDeck(deck.getTopicPath());
         if (this.reviewSequencer.hasCurrentCard) {
-            this._showFlashcard();
+            this.showFlashcard();
         } else {
-            this._showDecksList();
+            this.showDecksList();
         }
-    }
+    };
 
-    private async _doEditQuestionText(): Promise<void> {
+    private doEditQuestionText = async (): Promise<void> => {
         const currentQ: Question = this.reviewSequencer.currentQuestion;
-
-        // Just the question/answer text; without any preceding topic tag
         const textPrompt = currentQ.questionText.actualQuestion;
 
-        const editModal = FlashcardEditModal.Prompt(
-            this.app,
-            textPrompt,
-            currentQ.questionText.textDirection,
-        );
-        editModal
-            .then(async (modifiedCardText) => {
-                this.reviewSequencer.updateCurrentQuestionText(modifiedCardText);
-            })
-            .catch((reason) => console.log(reason));
-    }
+        try {
+            const modifiedCardText = await FlashcardEditModal.Prompt(
+                this.app,
+                textPrompt,
+                currentQ.questionText.textDirection,
+            );
+            this.reviewSequencer.updateCurrentQuestionText(modifiedCardText);
+        } catch (error) {
+            // User cancelled the edit modal
+            if (error !== undefined) {
+                console.error("Failed to edit question text:", error);
+            }
+        }
+    };
 }

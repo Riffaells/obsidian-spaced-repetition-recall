@@ -1,69 +1,73 @@
-This is a modified version of [obsidian-spaced-repetition](https://github.com/st3v3nmw/obsidian-spaced-repetition) and merging [recall plugin](https://github.com/martin-jw/obsidian-recall) to use seperate json data file, and add some interesting features.
+# Obsidian Spaced Repetition Flow
 
-就是 SR 的时间排程信息可以单独保存，~~不修改原笔记文件内容~~(如果卡片复习，开启blockid设置，会在卡片文本后追加BlockID)，以及添加其他功能。
+An enhanced version of Obsidian spaced repititon Recall with improved user experience and modern UI.
 
-# Flashcard-Based and Note-Based Spaced Repetition Plugin
+**Flow** extends the powerful spaced repetition features of Recall with a focus on usability, visual design, and workflow improvements.
 
-## Features
+## ✨ What's New in Flow
 
--   [@st3v3nmw's ReadMe](https://github.com/st3v3nmw/obsidian-spaced-repetition#readme)
--   [中文使用手册](./docs/README_ZH.md)
+### 🎨 Enhanced UI/UX
+- **Modern Sidebar** - Redesigned sidebar with better organization and visual hierarchy
+- **Improved Settings** - Modular settings interface with intuitive tag and folder management
+- **Tag Manager Component** - Add, edit, and remove tags/folders with autocomplete support
+- **Smoother Animations** - Optimized CSS for better performance and softer colors
 
--   merge [recall plugin](https://github.com/martin-jw/obsidian-recall) to use seperate file
-    -   setting where to save schedule info by Data Location
-        -   save on note file, just as used do.
-        -   save on seperate tracked_files.json.
-    -   setting convert tracked note to decks
-    -   switch Algorithm(only work on saving on seperate tracked_files.json.): Default, anki, [Fsrs](https://github.com/open-spaced-repetition/ts-fsrs)
-    -   file menu to tracknote/untracknote
--   show floatbar for reviewing response when reviewing note by click statusbar or review command or sidebar, and can set whether showing the interval or not;
--   Reviewing a Notes directly [#635];
--   when using fsrs, output `ob-revlog.csv`, to optimize the algorithm parameters using [optimizer](https://github.com/open-spaced-repetition/fsrs-optimizer) for better review;
--   Statistics: add note view statistics,and today review statistics;
--   Postpone notes/cards;
--   postpone to review after x days;
--   reschedule all scheduled items;
--   support multi-clozes;
--   setting `burySiblingCards` split into `burySiblingCards`(origin) and `burySiblingCardsByNoteReview`, and multi-clozes will not be buried;
--   Setting: Card index uses BlockID, which appends BlockID (e.g. `^blkid1`) to the card text, **will modify the original notes file**. Off by default, but card index may not be accurate enough;
--   Setting: Mix ondue and new notes queue when reviewing(default: 3 ondue notes, then 2 new notes);
+### 🚀 Core Features (from Recall)
+- **Separate Data Storage** - Schedule information saved in `tracked_files.json` (optional)
+- **Multiple Algorithms** - Choose between Default, Anki, or [FSRS](https://github.com/open-spaced-repetition/ts-fsrs)
+- **Flexible Review Options** - Float bar for quick responses, direct note review
+- **Advanced Scheduling** - Postpone notes/cards, reschedule items, mix queue settings
+- **Multi-Cloze Support** - Enhanced cloze card handling
+- **FSRS Optimization** - Export `ob-revlog.csv` for algorithm optimization
 
-## Maintainers Wanted
+## 📚 Documentation
 
-Since I am not a programmer, I don't know much about typescript programming, so I can only do some bug fixes and small feature updates. but it is difficult to realize some of the proposed features. Welcome to join us if you are interested in this plugin, and work together to maintain and update this plugin.
+- [Usage Guide](./docs/usage.md)
+- [中文使用手册](./docs/README_ZH.md)
+- [Original SR Documentation](https://github.com/st3v3nmw/obsidian-spaced-repetition#readme)
 
-You can join us by submitting an [issue](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/issues)/[PR](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/pulls)、或[论坛讨论](https://forum-zh.obsidian.md/t/topic/20551) directly.
+## 📦 Installation
 
-## How to install the plugin
+### Manual Installation
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/releases/)
+2. Create folder `Vault-name/.obsidian/plugins/obsidian-spaced-repetition-flow`
+3. Place downloaded files in the folder
+4. Reload Obsidian and enable the plugin
 
-1. Download main.js, manifest.json, styles.css from the latest release (see [releases](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/releases/))
-2. Create a new folder `obsidian-spaced-repetition-recall` in `Vault-name/.obsidian/plugins` and put the downloaded files in there
-3. Reload your plugins and enable the plugin
+### BRAT Plugin
+Install using the [BRAT plugin](https://github.com/TfTHacker/obsidian42-brat) for automatic updates.
 
-OR USE BRAT pulgin;
+## 🎯 Quick Start
 
-## Usage
+1. **Configure Tags** - Go to Settings → Flashcards/Notes and add your review tags
+2. **Choose Algorithm** - Select your preferred spaced repetition algorithm (FSRS recommended)
+3. **Set Data Location** - Choose between in-note or separate JSON storage
+4. **Start Reviewing** - Use the sidebar or status bar to begin your review sessions
 
-Check the [docs](./docs/usage.md) for more details.
+For detailed usage instructions, check the [documentation](./docs/usage.md).
 
-## Thanks
+## 🤝 Contributing
 
-I develop this plugin as a hobby, spending my free time doing this. If you find it valuable, then please say THANK YOU or buy me a coffee...
+Contributions are welcome! Whether it's bug fixes, new features, or UI improvements, feel free to:
+- Submit an [issue](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/issues)
+- Create a [pull request](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/pulls)
+- Join the [discussion](https://forum-zh.obsidian.md/t/topic/20551)
 
-<div class="ex-coffee-div" align = "center">
-<a ><img src="https://github.com/Newdea/newdea/blob/main/.github/funding/QR_alipay.png?v=3" height=120></a>
-<a ><img src="https://github.com/Newdea/newdea/blob/main/.github/funding/QR_wechat.png?v=3" height=120></a>
-</div>
+## 💝 Support
 
-or buy original plugin author(@st3v3nmw) a coffee...
+If you find this plugin valuable, consider supporting the development:
 
-<a href='https://ko-fi.com/M4M44DEN6' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi3.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
----
+## 🙏 Acknowledgments
 
-Thank you to everyone who has created a plugin that inspired me and I took code from.
+This plugin builds upon the excellent work of:
 
--   first, thanks to [@st3v3nmw's obsidian-spaced-repetition](https://github.com/st3v3nmw/obsidian-spaced-repetition) and [@martin-jw recall plugin](https://github.com/martin-jw/obsidian-recall)
--   floatbar(thanks to [@chetachi's cMenu](https://github.com/chetachiezikeuzor/cMenu-Plugin))
--   [Fsrs Algorithm](https://github.com/open-spaced-repetition)
--   ReleaseNotes(thanks to [@Zsolt Viczian Excalidraw](https://zsolt.blog))
+- [@martin-jw](https://github.com/martin-jw) - [Recall plugin](https://github.com/martin-jw/obsidian-recall)
+- [@st3v3nmw](https://github.com/st3v3nmw) - [Obsidian Spaced Repetition](https://github.com/st3v3nmw/obsidian-spaced-repetition)
+- [@chetachiezikeuzor](https://github.com/chetachiezikeuzor) - Float bar inspiration from [cMenu](https://github.com/chetachiezikeuzor/cMenu-Plugin)
+- [Open Spaced Repetition](https://github.com/open-spaced-repetition) - FSRS Algorithm
+- [@zsviczian](https://github.com/zsviczian) - Release notes implementation
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

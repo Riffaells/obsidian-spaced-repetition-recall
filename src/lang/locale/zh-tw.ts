@@ -64,14 +64,21 @@ export default {
     GROUP_FLASHCARDS_NOTES: "Flashcards & Notes",
     GROUP_CONTRIBUTING: "Contributing",
     CHECK_WIKI: '瞭解更多, 請點選<a href="${wikiUrl}">wiki</a>.',
-    GITHUB_DISCUSSIONS: 'Visit the <a href="${discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
-    GITHUB_ISSUES: 'Raise an <a href="${issuesUrl}">issue</a> if you have a feature request or a bug report.',
-    GITHUB_ISSUES_MODIFIED_PLUGIN: 'Raise an <a href="${issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
-    GITHUB_SOURCE_CODE: 'The project\'s source code is available on <a href="${githubProjectUrl}">GitHub</a>.',
-    CODE_CONTRIBUTION_INFO: '<a href="${codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
-    TRANSLATION_CONTRIBUTION_INFO: '<a href="${translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
+    GITHUB_DISCUSSIONS:
+        'Visit the <a href="${discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
+    GITHUB_ISSUES:
+        'Raise an <a href="${issuesUrl}">issue</a> if you have a feature request or a bug report.',
+    GITHUB_ISSUES_MODIFIED_PLUGIN:
+        'Raise an <a href="${issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
+    GITHUB_SOURCE_CODE:
+        'The project\'s source code is available on <a href="${githubProjectUrl}">GitHub</a>.',
+    CODE_CONTRIBUTION_INFO:
+        '<a href="${codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
+    TRANSLATION_CONTRIBUTION_INFO:
+        '<a href="${translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
     FOLDERS_TO_IGNORE: "忽略此資料夾",
-    FOLDERS_TO_IGNORE_DESC: "Enter folder paths or glob patterns on separate lines e.g. Templates/Scripts or **/*.excalidraw.md. This setting is common to both flashcards and notes.",
+    FOLDERS_TO_IGNORE_DESC:
+        "Enter folder paths or glob patterns on separate lines e.g. Templates/Scripts or **/*.excalidraw.md. This setting is common to both flashcards and notes.",
     OBSIDIAN_INTEGRATION: "Integration into Obsidian",
     FLASHCARDS: "卡片",
     FLASHCARD_EASY_LABEL: "簡單按鈕文字",
@@ -90,13 +97,15 @@ export default {
     INLINE_SCHEDULING_COMMENTS_DESC: "勾選後HTML註解不會破壞列表格式問題。",
     BURY_SIBLINGS_TILL_NEXT_DAY: "將反轉卡片隱藏至下一天？",
     BURY_SIBLINGS_TILL_NEXT_DAY_DESC: "反轉卡片由同一卡片文字產生，例如：填空克漏字",
-    BURY_SIBLINGS_TILL_NEXT_DAY_BY_NOTE_REVIEW: "Bury sibling cards until the next day by note review",
+    BURY_SIBLINGS_TILL_NEXT_DAY_BY_NOTE_REVIEW:
+        "Bury sibling cards until the next day by note review",
     MULTI_CLOZE: "允許多個完形填空?",
     MULTI_CLOZE_DESC: "將新/到期的關聯卡片組合到一個卡片中.",
     SHOW_CARD_CONTEXT: "在卡片中顯示上下文？",
     SHOW_CARD_CONTEXT_DESC: "例如：標題 > 副標題 > 小標題 > ... > 小標題",
     SHOW_INTERVAL_IN_REVIEW_BUTTONS: "Show next review time in the review buttons",
-    SHOW_INTERVAL_IN_REVIEW_BUTTONS_DESC: "Useful to know how far in the future your cards are being pushed.",
+    SHOW_INTERVAL_IN_REVIEW_BUTTONS_DESC:
+        "Useful to know how far in the future your cards are being pushed.",
     CARD_MODAL_HEIGHT_PERCENT: "卡片高度百分比",
     CARD_MODAL_SIZE_PERCENT_DESC: "在移動端或需要較大圖片時應設定為100%",
     RESET_DEFAULT: "重置為預設值",
@@ -114,13 +123,17 @@ export default {
     REVIEW_DECK_ORDER_RANDOM_DECK_AND_CARD: "牌組及卡片都亂序",
     DISABLE_CLOZE_CARDS: "停用填空克漏字卡片？",
     CONVERT_HIGHLIGHTS_TO_CLOZES: "將 ==高亮== 轉換為填空克漏字？",
-    CONVERT_HIGHLIGHTS_TO_CLOZES_DESC: 'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+    CONVERT_HIGHLIGHTS_TO_CLOZES_DESC:
+        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_BOLD_TEXT_TO_CLOZES: "將 **粗體** 轉換為填空克漏字？",
-    CONVERT_BOLD_TEXT_TO_CLOZES_DESC: 'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+    CONVERT_BOLD_TEXT_TO_CLOZES_DESC:
+        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_CURLY_BRACKETS_TO_CLOZES: "將 {{大括號}} 轉換為填空克漏字？",
-    CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC: 'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+    CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC:
+        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
     CLOZE_PATTERNS: "填空克漏字模式",
-    CLOZE_PATTERNS_DESC: 'Enter cloze patterns separated by newlines. Check the <a href="${docsUrl}">wiki</a> for guidance.',
+    CLOZE_PATTERNS_DESC:
+        'Enter cloze patterns separated by newlines. Check the <a href="${docsUrl}">wiki</a> for guidance.',
     INLINE_CARDS_SEPARATOR: "單行卡片的分隔字元",
     FIX_SEPARATORS_MANUALLY_WARNING: "注意：更改此選項後你將需要自行更改已存在卡片的分隔字元。",
     INLINE_REVERSED_CARDS_SEPARATOR: "單行反轉卡片的分隔字元",
@@ -142,13 +155,16 @@ export default {
     OPEN_IN_TAB: "Open in new tab",
     OPEN_IN_TAB_DESC: "Turn this off to open the plugin in a modal window",
     SHOW_STATUS_BAR: "Show status bar",
-    SHOW_STATUS_BAR_DESC: "Turn this off to hide the flashcard's review status in Obsidian's status bar",
+    SHOW_STATUS_BAR_DESC:
+        "Turn this off to hide the flashcard's review status in Obsidian's status bar",
     SHOW_RIBBON_ICON: "Show icon in the ribbon bar",
     SHOW_RIBBON_ICON_DESC: "Turn this off to hide the plugin icon from Obsidian's ribbon bar",
     ENABLE_FILE_MENU_REVIEW_OPTIONS: "請在檔案選單中啟用檢視選項（例如：檢視：簡單、記得、較難）",
-    ENABLE_FILE_MENU_REVIEW_OPTIONS_DESC: "If you disable the review options in the file menu, you can review your notes using the plugin commands and, if you defined them, the associated command hotkeys.",
+    ENABLE_FILE_MENU_REVIEW_OPTIONS_DESC:
+        "If you disable the review options in the file menu, you can review your notes using the plugin commands and, if you defined them, the associated command hotkeys.",
     INITIALLY_EXPAND_SUBDECKS_IN_TREE: "牌組樹最初應顯示為展開",
-    INITIALLY_EXPAND_SUBDECKS_IN_TREE_DESC: "Turn this off to collapse nested decks in the same card. Useful if you have cards which belong to many decks in the same file.",
+    INITIALLY_EXPAND_SUBDECKS_IN_TREE_DESC:
+        "Turn this off to collapse nested decks in the same card. Useful if you have cards which belong to many decks in the same file.",
     ALGORITHM: "演算法",
     CHECK_ALGORITHM_WIKI: '瞭解更多, 請點選<a href="${algoUrl}">算法實現</a>.',
     SM2_OSR_VARIANT: "OSR's variant of SM-2",
@@ -172,7 +188,8 @@ export default {
     FUZZING: "均衡",
     FUZZING_DESC: "啟用時, 會給新間隔添加個較小的隨機延遲，以免卡片總被堆積在同一天復習。",
     SWITCH_SHORT_TERM: "短期排程",
-    SWITCH_SHORT_TERM_DESC: "When disabled, this allow user to skip the short-term scheduler and directly switch to the long-term scheduler.",
+    SWITCH_SHORT_TERM_DESC:
+        "When disabled, this allow user to skip the short-term scheduler and directly switch to the long-term scheduler.",
     LOGGING: "記錄中",
     DISPLAY_SCHEDULING_DEBUG_INFO: "在開發者控制台中顯示除錯資訊",
     DISPLAY_PARSER_DEBUG_INFO: "Show the parser's debugging information on the developer console",
@@ -193,10 +210,12 @@ export default {
     This change is irreversible. Changing algorithms only takes effect after a restart
     or a plugin reload. Are you sure you want to switch algorithms?
     `,
-    ALGORITHMS_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://github.com/martin-jw/obsidian-recall">algorithms</a>.',
+    ALGORITHMS_DESC:
+        'The algorithm used for spaced repetition. For more information see <a href="https://github.com/martin-jw/obsidian-recall">algorithms</a>.',
     CONVERT_TRACKED_TO_DECK: "將復習筆記轉換為卡牌組?",
     REVIEW_FLOATBAR: "復習懸浮欄",
-    REVIEW_FLOATBAR_DESC: "only working when autoNextNote is true. show it when reviewing note via click statusbar/sidebar/command.",
+    REVIEW_FLOATBAR_DESC:
+        "only working when autoNextNote is true. show it when reviewing note via click statusbar/sidebar/command.",
     REVIEW_NOTE_DIRECTLY: "直接復習筆記?",
     REVIEW_NOTE_DIRECTLY_DESC: "復習筆記時, 不必選擇標籤（多個復習標籤的情況）就直接打開筆記",
     INTERVAL_SHOWHIDE: "顯示復習間隔",
@@ -204,7 +223,8 @@ export default {
     REQUEST_RETENTION: "保留度",
     REQUEST_RETENTION_DESC: "在下次進行復習時，你期望能回想起答案的概率（百分比）",
     REVLOG_TAGS: "輸出到日誌的標籤",
-    REVLOG_TAGS_DESC: "Tags for output review log, could be flashcards tags or/and notes tags(e.g. #review #flashcards #tag1), default empty means it output to the review log file normally without filtered by tags",
+    REVLOG_TAGS_DESC:
+        "Tags for output review log, could be flashcards tags or/and notes tags(e.g. #review #flashcards #tag1), default empty means it output to the review log file normally without filtered by tags",
     FLASHCARD_AGAIN_LABEL: "重來 按鈕文本",
     FLASHCARD_BLACKOUT_LABEL: "忘記 按鈕文本",
     FLASHCARD_INCORRECT_LABEL: "猜錯 按鈕文本",
@@ -237,10 +257,12 @@ export default {
     OVERDUE_BY_DAYS: "Overdue by ${count} days",
     IN_DAYS: "In ${count} days",
     SIDEBAR_DATE_FORMAT: "Sidebar date format",
-    SIDEBAR_DATE_FORMAT_DESC: "Date format for the new sidebar. Use moment.js format. Example: ddd MMM DD.YY",
+    SIDEBAR_DATE_FORMAT_DESC:
+        "Date format for the new sidebar. Use moment.js format. Example: ddd MMM DD.YY",
     SIDEBAR_DATE_FORMAT_PREVIEW: "Preview:",
     SIDEBAR_SHOW_RELATIVE_DAYS: "Show relative days",
-    SIDEBAR_SHOW_RELATIVE_DAYS_DESC: "Show 'In 2 days', 'Overdue by 3 days' instead of dates for groups",
+    SIDEBAR_SHOW_RELATIVE_DAYS_DESC:
+        "Show 'In 2 days', 'Overdue by 3 days' instead of dates for groups",
     NOTES_REVIEW_QUEUE: "筆記復習序列",
     CLOSE: "臨近",
     NEW: "新",
@@ -283,13 +305,17 @@ export default {
     DATE: "日期",
     // cardBlockIDSetting.ts
     CARD_BLOCK_ID: "卡片區塊ID",
-    CARD_BLOCK_ID_DESC: "use Card Block ID instead of line number and text hash.<br>  <b>If set True, block id will append after card text. And block id will keep in note after reset to False again.</b>",
-    CARD_BLOCK_ID_CONFIRM: "**If set True, block id will append after card text. And block id will keep in note after reset to False again. ** \n\nSuggestion： backup your vault before set True. Or try it in sandbox vault. \n\nAfter setting is turned on, blockid will be added after all cards. Even if it is turned off again, the added blockid will still remain in the note and will not be deleted.\n\nIt is recommended to **backup first** the note library, or try it in a sandbox library.",
+    CARD_BLOCK_ID_DESC:
+        "use Card Block ID instead of line number and text hash.<br>  <b>If set True, block id will append after card text. And block id will keep in note after reset to False again.</b>",
+    CARD_BLOCK_ID_CONFIRM:
+        "**If set True, block id will append after card text. And block id will keep in note after reset to False again. ** \n\nSuggestion： backup your vault before set True. Or try it in sandbox vault. \n\nAfter setting is turned on, blockid will be added after all cards. Even if it is turned off again, the added blockid will still remain in the note and will not be deleted.\n\nIt is recommended to **backup first** the note library, or try it in a sandbox library.",
     // mixQueueSetting.ts
     MIX_QUEUE: "混合隊列",
-    MIX_QUEUE_DESC: "mix ondue and new notes when review. **first** slider for total count, second slider for ondue count. And new count is (total - ondue).",
+    MIX_QUEUE_DESC:
+        "mix ondue and new notes when review. **first** slider for total count, second slider for ondue count. And new count is (total - ondue).",
     // trackSetting.ts
-    UNTRACK_WITH_REVIEWTAG_DESC: "When deleting the review tag in the note, synchronously untrack the operation, so that the note will no longer be reviewed<br><b>true</b>: synchronous untrack operation;<br><b>false</b>：After deleting the review tag, you need to untrack again before the note will no longer be reviewed. (same as previous version)",
+    UNTRACK_WITH_REVIEWTAG_DESC:
+        "When deleting the review tag in the note, synchronously untrack the operation, so that the note will no longer be reviewed<br><b>true</b>: synchronous untrack operation;<br><b>false</b>：After deleting the review tag, you need to untrack again before the note will no longer be reviewed. (same as previous version)",
     // trackSetting.ts
     // dataLocation.ts
     DATA_LOCATION_PLUGIN_FOLDER: "在插件文件夾中",
@@ -297,10 +323,13 @@ export default {
     DATA_LOCATION_SPECIFIED_FOLDER: "在下面指定的文件夾中",
     DATA_LOCATION_SAVE_ON_NOTE_FILE: "保存在筆記文件中",
     // fsrs.ts
-    FSRS_ALGORITHM_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://github.com/open-spaced-repetition/ts-fsrs">FSRS algorithm</a>.',
-    FSRS_W_PARAM_DESC: 'See <a href="https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm">FSRS V6 WIKI</a> and <a href="https://open-spaced-repetition.github.io/anki_fsrs_visualizer">FSRS w parameter visualization</a> to set various parameters.',
+    FSRS_ALGORITHM_DESC:
+        'The algorithm used for spaced repetition. For more information see <a href="https://github.com/open-spaced-repetition/ts-fsrs">FSRS algorithm</a>.',
+    FSRS_W_PARAM_DESC:
+        'See <a href="https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm">FSRS V6 WIKI</a> and <a href="https://open-spaced-repetition.github.io/anki_fsrs_visualizer">FSRS w parameter visualization</a> to set various parameters.',
     // anki.ts
-    ANKI_ALGORITHM_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://faqs.ankiweb.net/what-spaced-repetition-algorithm.html">Anki algorithm</a>.',
+    ANKI_ALGORITHM_DESC:
+        'The algorithm used for spaced repetition. For more information see <a href="https://faqs.ankiweb.net/what-spaced-repetition-algorithm.html">Anki algorithm</a>.',
     // fsrs.ts
     // anki.ts
     STARTING_EASE: "起始難度",
@@ -320,9 +349,11 @@ export default {
     EASY_INTERVAL_DESC: "將新項目標記為'簡單'後到下次復習的間隔（天數）。",
     EASY_INTERVAL_ERROR: "間隔必須是正數。",
     // scheduling_default.ts
-    DEFAULT_ALGORITHM_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://www.stephenmwangi.com/obsidian-spaced-repetition/algorithms/">modified Anki algorithm</a>.',
+    DEFAULT_ALGORITHM_DESC:
+        'The algorithm used for spaced repetition. For more information see <a href="https://www.stephenmwangi.com/obsidian-spaced-repetition/algorithms/">modified Anki algorithm</a>.',
     // supermemo.ts
-    SM2_ALGORITHM_DESC: 'The algorithm used for spaced repetition. Currently shares the same parameters as the Anki algorithm (only the algorithm processing method is different). For more information see <a href="https://www.supermemo.com/en/archives1990-2015/english/ol/sm2">SM2 algorithm</a>.',
+    SM2_ALGORITHM_DESC:
+        'The algorithm used for spaced repetition. Currently shares the same parameters as the Anki algorithm (only the algorithm processing method is different). For more information see <a href="https://www.supermemo.com/en/archives1990-2015/english/ol/sm2">SM2 algorithm</a>.',
     // scheduling_default.ts
     // supermemo.ts
     // info.ts
@@ -336,11 +367,14 @@ export default {
     NEW_CARD: "新卡片",
     ITEM_DATA_INFO: "項目數據信息",
     // locationSetting.ts
-    DATA_LOCATION_WARNING_TO_NOTE: "BE CAREFUL!!!\n  if you confirm this, it will convert all your scheduling informations in `tracked_files.json` to note, which will change lots of your note file in the same time.\n Please make sure the setting tags of flashcards and notes is what you are using.",
+    DATA_LOCATION_WARNING_TO_NOTE:
+        "BE CAREFUL!!!\n  if you confirm this, it will convert all your scheduling informations in `tracked_files.json` to note, which will change lots of your note file in the same time.\n Please make sure the setting tags of flashcards and notes is what you are using.",
     // locationSetting.ts
     DATA_LOCATION_WARNING_OTHER_ALGO: "如果您想將數據保存在筆記文件中，您**必須**使用默認算法。",
-    DATA_LOCATION_WARNING_TO_TRACKED: "BE CAREFUL!!! \n if you confirm this, it will converte all your scheduling informations on note(which will be deleted in the same time) TO `tracked_files.json`.",
-    POST_ISSUE_MODIFIED_PLUGIN: 'Post an <a href="${issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
+    DATA_LOCATION_WARNING_TO_TRACKED:
+        "BE CAREFUL!!! \n if you confirm this, it will converte all your scheduling informations on note(which will be deleted in the same time) TO `tracked_files.json`.",
+    POST_ISSUE_MODIFIED_PLUGIN:
+        'Post an <a href="${issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
     // donation.ts
     DONATION_TEXT: "業餘時間折騰的，如果對你有所幫助，可以請我喝瓶飲料或奶茶呀~",
     // locationSetting.ts
@@ -373,14 +407,16 @@ export default {
     MENU_TRACK_NOTE: "追蹤筆記",
     MENU_UNTRACK_NOTE: "取消追蹤筆記",
     // data.ts
-    DATA_TAGGED_FILE_CANT_UNTRACK: "it is taged file, can't untrack by this. You can delete the #review tag in note file.",
+    DATA_TAGGED_FILE_CANT_UNTRACK:
+        "it is taged file, can't untrack by this. You can delete the #review tag in note file.",
     // data.ts
     DATA_UNTRACKED_ITEMS: "已取消追蹤${numItems}個項目${nulrstr}",
     DATA_UNABLE_TO_SAVE: "無法保存數據文件！",
     DATA_FOLDER_UNTRACKED: "在文件夾${folderPath}下，共有${totalRemoved}個文件不再跟踪重複了",
     DATA_ADDED_REMOVED_ITEMS: "添加了${totalAdded}個新項目，刪除了${totalRemoved}個項目。",
     DATA_ADDED_REMOVED_ITEMS_SHORT: "添加了${added}個新項目，刪除了${removed}個項目。",
-    DATA_FILE_UPDATE: "${filePath} update - lineNo: ${lineNo}\nAdded: ${added} new card items, removed ${removed} card items.",
+    DATA_FILE_UPDATE:
+        "${filePath} update - lineNo: ${lineNo}\nAdded: ${added} new card items, removed ${removed} card items.",
     DATA_ALL_ITEMS_UPDATED: "所有項目已更新。",
     RECALCULATE_NOTES: "Recalculate notes",
     RECALCULATING_NOTES_NOTICE_START: "Recalculating notes...",
@@ -396,5 +432,6 @@ export default {
     DATA_LOST_WARNING: "have some data lost, see console for details.",
     // algorithms_switch.ts
     ALGORITHM_SWITCH_FAILED: "conversion failed, old algorithm and data restored, please issue it.",
-    ALGORITHM_SWITCH_SUCCESS: "conversion completed, due to different algorithm parameters, subsequent review intervals will be adjusted"
+    ALGORITHM_SWITCH_SUCCESS:
+        "conversion completed, due to different algorithm parameters, subsequent review intervals will be adjusted",
 };

@@ -9,7 +9,8 @@
 
 ## Single-line Basic
 
-The prompt and the answer are separated by `::` (this can be configured in [settings](../user-options.md#flashcard-separators)).
+The prompt and the answer are separated by `::` (this can be configured
+in [settings](../user-options.md#flashcard-separators)).
 
 ```markdown
 the question goes on this side::answer goes here!
@@ -75,7 +76,8 @@ These two cards are considered sibling cards. See [sibling cards](flashcards-ove
 
 ## Multi-line Basic
 
-The front and the back of the card are separated by `?` (this can be configured in [settings](../user-options.md#flashcard-separators)).
+The front and the back of the card are separated by `?` (this can be configured
+in [settings](../user-options.md#flashcard-separators)).
 
 ```markdown
 As per the definition

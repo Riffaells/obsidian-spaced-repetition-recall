@@ -769,7 +769,7 @@ export class DataStore {
             }
         } else {
             rc[date].new++;
-            console.debug("new:", rc[date].new);
+            // console.debug("new:", rc[date].new);
         }
     }
 

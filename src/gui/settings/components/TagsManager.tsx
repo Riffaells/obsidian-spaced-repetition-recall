@@ -18,11 +18,7 @@ class TagSuggest extends TextInputSuggest<string> {
     private availableItems: string[];
     private requireHashtag: boolean;
 
-    constructor(
-        inputEl: HTMLInputElement,
-        availableItems: string[],
-        requireHashtag: boolean,
-    ) {
+    constructor(inputEl: HTMLInputElement, availableItems: string[], requireHashtag: boolean) {
         super(inputEl);
         this.availableItems = availableItems;
         this.requireHashtag = requireHashtag;
@@ -30,9 +26,9 @@ class TagSuggest extends TextInputSuggest<string> {
 
     getSuggestions(inputStr: string): string[] {
         const searchStr = inputStr.toLowerCase();
-        return this.availableItems.filter((item) =>
-            item.toLowerCase().includes(searchStr)
-        ).slice(0, 10); // Limit to 10 suggestions
+        return this.availableItems
+            .filter((item) => item.toLowerCase().includes(searchStr))
+            .slice(0, 10); // Limit to 10 suggestions
     }
 
     renderSuggestion(item: string, el: HTMLElement): void {
@@ -73,7 +69,7 @@ export class TagsManager {
         this.onTagsChange = props.onTagsChange;
         this.requireHashtag = props.requireHashtag ?? true;
         this.placeholder = props.placeholder ?? (this.requireHashtag ? "#tag" : "folder/path");
-        
+
         // Загружаем автодополнение
         if (this.requireHashtag) {
             this.loadAvailableTags();
@@ -87,25 +83,25 @@ export class TagsManager {
         setTimeout(() => {
             const metadataCache = this.app.metadataCache;
             const allTags = new Set<string>();
-            
-            this.app.vault.getMarkdownFiles().forEach(file => {
+
+            this.app.vault.getMarkdownFiles().forEach((file) => {
                 const cache = metadataCache.getFileCache(file);
                 if (cache) {
                     const fileTags = getAllTags(cache);
                     if (fileTags) {
-                        fileTags.forEach(tag => allTags.add(tag));
+                        fileTags.forEach((tag) => allTags.add(tag));
                     }
                 }
             });
-            
+
             this.allAvailableTags = Array.from(allTags).sort();
-            
+
             // Обновляем suggester если он уже создан
             if (this.suggester && this.inputComponent) {
                 this.suggester = new TagSuggest(
                     this.inputComponent.inputEl,
                     this.allAvailableTags,
-                    this.requireHashtag
+                    this.requireHashtag,
                 );
             }
         }, 0);
@@ -113,28 +109,27 @@ export class TagsManager {
 
     private loadAvailableFolders(): void {
         setTimeout(() => {
-            const folders = this.app.vault.getAllLoadedFiles()
-                .filter(f => f instanceof TFolder) as TFolder[];
+            const folders = this.app.vault
+                .getAllLoadedFiles()
+                .filter((f) => f instanceof TFolder) as TFolder[];
             this.allAvailableTags = folders
-                .map(folder => folder.path)
-                .filter(path => path !== "")
+                .map((folder) => folder.path)
+                .filter((path) => path !== "")
                 .sort();
-            
+
             // Обновляем suggester если он уже создан
             if (this.suggester && this.inputComponent) {
                 this.suggester = new TagSuggest(
                     this.inputComponent.inputEl,
                     this.allAvailableTags,
-                    this.requireHashtag
+                    this.requireHashtag,
                 );
             }
         }, 0);
     }
 
     render(): void {
-        const setting = new Setting(this.containerEl)
-            .setName(this.title)
-            .setDesc(this.description);
+        const setting = new Setting(this.containerEl).setName(this.title).setDesc(this.description);
 
         const controlsContainer = setting.controlEl.createDiv("tags-manager-controls");
 
@@ -144,15 +139,18 @@ export class TagsManager {
 
         this.inputComponent = new TextComponent(inputWrapper);
         this.inputComponent.setPlaceholder(this.placeholder);
-        this.inputComponent.inputEl.setAttribute("aria-label", this.requireHashtag ? "Add tag" : "Add folder");
-        
+        this.inputComponent.inputEl.setAttribute(
+            "aria-label",
+            this.requireHashtag ? "Add tag" : "Add folder",
+        );
+
         // Создаем suggester (будет обновлен после загрузки данных)
         this.suggester = new TagSuggest(
             this.inputComponent.inputEl,
             this.allAvailableTags,
-            this.requireHashtag
+            this.requireHashtag,
         );
-        
+
         this.inputComponent.inputEl.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
                 e.preventDefault();
@@ -201,20 +199,22 @@ export class TagsManager {
 
         if (this.tags.length === 0) {
             const emptyMsg = this.tagsListEl.createDiv("tags-empty-message");
-            emptyMsg.textContent = this.requireHashtag ? "No tags added yet" : "No folders added yet";
+            emptyMsg.textContent = this.requireHashtag
+                ? "No tags added yet"
+                : "No folders added yet";
             return;
         }
 
         for (const tag of this.tags) {
             const tagEl = this.tagsListEl.createDiv("tag-item");
-            
+
             const tagText = tagEl.createSpan({ text: tag });
             tagText.addClass("tag-text");
-            
+
             // Edit button
-            const editBtn = tagEl.createEl("button", { 
+            const editBtn = tagEl.createEl("button", {
                 cls: "tag-action-btn",
-                attr: { "aria-label": `Edit ${tag}` }
+                attr: { "aria-label": `Edit ${tag}` },
             });
             setIcon(editBtn, "pencil");
             editBtn.addEventListener("click", (e) => {
@@ -223,9 +223,9 @@ export class TagsManager {
             });
 
             // Remove button
-            const removeBtn = tagEl.createEl("button", { 
+            const removeBtn = tagEl.createEl("button", {
                 cls: "tag-action-btn tag-remove-btn",
-                attr: { "aria-label": `Remove ${tag}` }
+                attr: { "aria-label": `Remove ${tag}` },
             });
             removeBtn.textContent = "×";
             removeBtn.addEventListener("click", (e) => {

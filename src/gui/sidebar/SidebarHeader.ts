@@ -11,12 +11,13 @@ export class SidebarHeader {
     private readonly onNoteSortChange: (sort: NoteSortType) => void;
     private readonly onRecalculate: () => void;
     private readonly onViewModeChange: (mode: SidebarViewMode) => void;
-    
+
     private currentFilter: FilterType = FilterType.ALL;
     private currentSort: SortType = SortType.DATE_ASC;
     private currentNoteSort: NoteSortType = NoteSortType.DEFAULT;
     private currentViewMode: SidebarViewMode = SidebarViewMode.Notes;
-    private activeCount: number = 0;
+    private activeNotesCount: number = 0;
+    private activeCardsCount: number = 0;
 
     private isRendered = false;
     private readonly filterButtons: Map<FilterType, HTMLElement> = new Map();
@@ -66,7 +67,7 @@ export class SidebarHeader {
 
     private createView(): void {
         this.abortController = new AbortController();
-        
+
         this.containerEl.empty();
         this.containerEl.addClass("sr-new-sidebar-header");
 
@@ -217,7 +218,11 @@ export class SidebarHeader {
         const sortOptions = [
             { type: SortType.DATE_ASC, label: t("SORT_DATE_ASC"), icon: "calendar-arrow-up" },
             { type: SortType.DATE_DESC, label: t("SORT_DATE_DESC"), icon: "calendar-arrow-down" },
-            { type: SortType.COUNT_DESC, label: t("SORT_COUNT_DESC"), icon: "arrow-down-wide-narrow" },
+            {
+                type: SortType.COUNT_DESC,
+                label: t("SORT_COUNT_DESC"),
+                icon: "arrow-down-wide-narrow",
+            },
             { type: SortType.COUNT_ASC, label: t("SORT_COUNT_ASC"), icon: "arrow-up-narrow-wide" },
             { type: SortType.NAME_ASC, label: t("SORT_NAME_ASC"), icon: "sort-asc" },
             { type: SortType.NAME_DESC, label: t("SORT_NAME_DESC"), icon: "sort-desc" },
@@ -313,12 +318,13 @@ export class SidebarHeader {
     private updateActiveCount(): void {
         if (!this.activeCountChip) return;
 
-        if (this.activeCount > 0) {
-            this.activeCountChip.setText(this.activeCount.toString());
-            this.activeCountChip.style.display = "inline-block";
-        } else {
-            this.activeCountChip.style.display = "none";
-        }
+        const count =
+            this.currentViewMode === SidebarViewMode.FlashCards
+                ? this.activeCardsCount
+                : this.activeNotesCount;
+
+        this.activeCountChip.setText(count.toString());
+        this.activeCountChip.style.display = "inline-block";
     }
 
     public setFilter(filter: FilterType): void {
@@ -344,9 +350,20 @@ export class SidebarHeader {
         }
     }
 
-    public setActiveCount(count: number): void {
-        if (this.activeCount !== count) {
-            this.activeCount = count;
+    public setActiveCount(notesCount: number, cardsCount: number = 0): void {
+        let needsUpdate = false;
+
+        if (this.activeNotesCount !== notesCount) {
+            this.activeNotesCount = notesCount;
+            needsUpdate = true;
+        }
+
+        if (this.activeCardsCount !== cardsCount) {
+            this.activeCardsCount = cardsCount;
+            needsUpdate = true;
+        }
+
+        if (needsUpdate) {
             this.updateActiveCount();
         }
     }

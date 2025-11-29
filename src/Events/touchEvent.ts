@@ -25,7 +25,7 @@ export class TouchOnMobile {
     handleStart(evt: TouchEvent): void {
         const touches = evt.changedTouches;
         this.timeStart = Date.now();
-        
+
         for (let i = 0; i < touches.length; i++) {
             this.originTouches.push(copyTouch(touches[i]));
             this.ongoingTouches.push(copyTouch(touches[i]));
@@ -49,7 +49,7 @@ export class TouchOnMobile {
 
         for (let i = 0; i < touches.length; i++) {
             const idx = this.findTouchesIndexById(touches[i].identifier);
-            
+
             if (idx >= 0) {
                 // Check for long click first (higher priority)
                 if (this.isLongClick(idx)) {
@@ -57,7 +57,7 @@ export class TouchOnMobile {
                     if (this.longClickCb) {
                         this.longClickCb();
                     }
-                } 
+                }
                 // Then check for swipe up
                 else if (this.isSwipeUp(idx)) {
                     evt.preventDefault();
@@ -78,7 +78,7 @@ export class TouchOnMobile {
 
         for (let i = 0; i < touches.length; i++) {
             const idx = this.findTouchesIndexById(touches[i].identifier);
-            
+
             if (idx >= 0) {
                 this.originTouches.splice(idx, 1);
                 this.ongoingTouches.splice(idx, 1);
@@ -123,11 +123,7 @@ export class TouchOnMobile {
     }
 
     private isValidIndex(idx: number): boolean {
-        return (
-            idx >= 0 &&
-            idx < this.originTouches.length &&
-            idx < this.ongoingTouches.length
-        );
+        return idx >= 0 && idx < this.originTouches.length && idx < this.ongoingTouches.length;
     }
 
     private getTimeDuration(): number {

@@ -9,7 +9,8 @@ For example, the following does not have an inverse:
 Similar to how with real numbers, 0 does not have an inverse.
 
 ----
-#flashcards/math 
+#flashcards/math
+
 # Questions
 
 What is a matrix that doesn't have an inverse called::Singular matrix

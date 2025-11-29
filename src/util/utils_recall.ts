@@ -212,5 +212,3 @@ export const logExecutionTime = () => {
         return propertyDescriptor;
     };
 };
-
-

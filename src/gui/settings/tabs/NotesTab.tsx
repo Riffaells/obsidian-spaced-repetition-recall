@@ -52,12 +52,10 @@ export class NotesTab {
             .setName(t("OPEN_RANDOM_NOTE"))
             .setDesc(t("OPEN_RANDOM_NOTE_DESC"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(plugin.data.settings.openRandomNote)
-                    .onChange(async (value) => {
-                        plugin.data.settings.openRandomNote = value;
-                        await plugin.savePluginData();
-                    }),
+                toggle.setValue(plugin.data.settings.openRandomNote).onChange(async (value) => {
+                    plugin.data.settings.openRandomNote = value;
+                    await plugin.savePluginData();
+                }),
             );
 
         new Setting(containerEl).setName(t("REVIEW_PANE_ON_STARTUP")).addToggle((toggle) =>

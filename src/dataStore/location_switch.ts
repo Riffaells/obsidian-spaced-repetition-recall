@@ -311,7 +311,9 @@ export class LocationSwitch {
         await Promise.all(
             tracked_files
                 .filter((tkfile) => tkfile != null)
-                .filter((tkfile) => !SettingsUtil.isPathInNoteIgnoreFolder(this.settings, tkfile.path))
+                .filter(
+                    (tkfile) => !SettingsUtil.isPathInNoteIgnoreFolder(this.settings, tkfile.path),
+                )
                 .map(async (tkfile) => {
                     const item = store.getItembyID(tkfile.noteID);
                     const note = Iadapter.instance.vault.getAbstractFileByPath(

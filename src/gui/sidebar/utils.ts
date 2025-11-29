@@ -94,6 +94,34 @@ export function calculateActiveNotesCount(plugin: SRPlugin): number {
 }
 
 /**
+ * Calculates the number of active flashcards
+ * new + due
+ */
+export function calculateActiveFlashcardsCount(plugin: SRPlugin): number {
+    let activeCount = 0;
+
+    if (!plugin.deckTree) {
+        return 0;
+    }
+
+    const allDecks = plugin.deckTree.toDeckArray();
+
+    for (const deck of allDecks) {
+        activeCount += deck.newFlashcards?.length || 0;
+
+        if (deck.dueFlashcards) {
+            for (const card of deck.dueFlashcards) {
+                if (card.isDue) {
+                    activeCount++;
+                }
+            }
+        }
+    }
+
+    return activeCount;
+}
+
+/**
  * Creates a unique key for a group of notes
  */
 export function createGroupKey(deckName: string, groupTitle: string): string {

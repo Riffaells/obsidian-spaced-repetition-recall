@@ -77,7 +77,8 @@
 
 该特性可在设置中开关。
 
-暂不支持 Anki 风格的 `{{c1:This text}} would {{c2:generate}} {{c1:2 cards}}` 挖空语法。该特性正在 [计划中](https://github.com/st3v3nmw/obsidian-spaced-repetition/issues/93/)。
+暂不支持 Anki 风格的 `{{c1:This text}} would {{c2:generate}} {{c1:2 cards}}`
+挖空语法。该特性正在 [计划中](https://github.com/st3v3nmw/obsidian-spaced-repetition/issues/93/)。
 
 ## 卡组
 
@@ -175,11 +176,11 @@ HTML注释在笔记预览页面中不可见。对于单行卡片，你可以在�
 
 你可以在快速复习中使用如下快捷键：
 
--   `Space/Enter` => 显示答案
--   `0` => 重置进度 (等价于 Anki 中的 `Again`)
--   `1` => 标记为 `Hard`
--   `2` 或 `Space` => 标记为 `Good`
--   `3` => 标记为 `Easy`
+- `Space/Enter` => 显示答案
+- `0` => 重置进度 (等价于 Anki 中的 `Again`)
+- `1` => 标记为 `Hard`
+- `2` 或 `Space` => 标记为 `Good`
+- `3` => 标记为 `Easy`
 
 ### 上下文
 
@@ -203,7 +204,8 @@ Kenya::Nairobi
 Canada::Ottawa
 ```
 
-卡片 `Kenya::Nairobi` 将会被附上 `Trivia > Capitals > Africa` 作为上下文标题而卡片 `Canada::Ottawa` 将会被附上 `Trivia > Capitals > North America` 作为上下文标题。
+卡片 `Kenya::Nairobi` 将会被附上 `Trivia > Capitals > Africa` 作为上下文标题而卡片 `Canada::Ottawa` 将会被附上
+`Trivia > Capitals > North America` 作为上下文标题。
 
 ### 删除卡片
 

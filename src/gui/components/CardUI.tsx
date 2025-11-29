@@ -33,6 +33,7 @@ export class CardUI {
     public header: HTMLDivElement;
     public title: HTMLDivElement;
     public backButton: HTMLDivElement;
+    public closeButton: HTMLDivElement;
 
     public controls: HTMLDivElement;
     public editButton: HTMLButtonElement;
@@ -56,6 +57,7 @@ export class CardUI {
     private reviewMode: FlashcardReviewMode;
     private backClickHandler: () => void;
     private editClickHandler: () => void;
+    private closeModalHandler?: () => void;
 
     public cardItem: RepetitionItem;
     public options: string[];
@@ -71,6 +73,7 @@ export class CardUI {
         parentEl: HTMLElement,
         backClickHandler: () => void,
         editClickHandler: () => void,
+        closeModalHandler?: () => void,
     ) {
         // Init properties
         this.app = app;
@@ -81,6 +84,7 @@ export class CardUI {
         this.reviewMode = reviewMode;
         this.backClickHandler = backClickHandler;
         this.editClickHandler = editClickHandler;
+        this.closeModalHandler = closeModalHandler;
         this.contentEl = contentEl;
         this.parentEl = parentEl;
 
@@ -99,6 +103,7 @@ export class CardUI {
         this.header.addClass("sr-header");
 
         this._createBackButton();
+        this._createCloseButton();
 
         this.title = this.header.createDiv();
         this.title.addClass("sr-title");
@@ -164,6 +169,9 @@ export class CardUI {
         }
         this.view.removeClass("sr-is-hidden");
         this.backButton.removeClass("sr-is-hidden");
+        if (this.closeButton) {
+            this.closeButton.removeClass("sr-is-hidden");
+        }
         document.addEventListener("keydown", this._keydownHandler);
     }
 
@@ -177,6 +185,9 @@ export class CardUI {
         }
         this.view.addClass("sr-is-hidden");
         this.backButton.addClass("sr-is-hidden");
+        if (this.closeButton) {
+            this.closeButton.addClass("sr-is-hidden");
+        }
         document.removeEventListener("keydown", this._keydownHandler);
     }
 
@@ -206,6 +217,12 @@ export class CardUI {
         };
 
         switch (e.code) {
+            case "Escape":
+                if (this.closeModalHandler) {
+                    this.closeModalHandler();
+                    consumeKeyEvent();
+                }
+                break;
             case "KeyS":
                 this._skipCurrentCard();
                 consumeKeyEvent();
@@ -396,7 +413,14 @@ export class CardUI {
             ) {
                 this._showAnswer();
             }
-        } else this.backClickHandler();
+        } else {
+            // No more cards - close modal if handler provided, otherwise show deck list
+            if (this.closeModalHandler) {
+                this.closeModalHandler();
+            } else {
+                this.backClickHandler();
+            }
+        }
     }
 
     private _formatQuestionContextText(questionContext: string[]): string {
@@ -429,8 +453,42 @@ export class CardUI {
         });
     }
 
+    private _createCloseButton() {
+        if (!this.closeModalHandler) return;
+
+        this.closeButton = this.parentEl.createDiv();
+        this.closeButton.addClasses(["sr-close-button", "sr-is-hidden"]);
+        setIcon(this.closeButton, "x");
+        this.closeButton.setAttribute("aria-label", "Close");
+        this.closeButton.addEventListener("click", () => {
+            if (this.closeModalHandler) {
+                this.closeModalHandler();
+            }
+        });
+    }
+
     private _setTitle(deck: Deck) {
-        this.title.setText(`${deck.deckName}: ${deck.getCardCount(CardListType.All, true)}`);
+        const totalCards = deck.getCardCount(CardListType.All, true);
+        const reviewedInSession = this._getReviewedCount();
+        
+        if (reviewedInSession > 0) {
+            this.title.setText(
+                `${deck.deckName}: ${totalCards} (${reviewedInSession} изучено)`
+            );
+        } else {
+            this.title.setText(`${deck.deckName}: ${totalCards}`);
+        }
+    }
+
+    private _getReviewedCount(): number {
+        // Calculate how many cards were reviewed in this session
+        const currentDeck = this.reviewSequencer.currentDeck;
+        if (!currentDeck) return 0;
+        
+        const originalStats = this.reviewSequencer.getDeckStats(currentDeck.getTopicPath());
+        const currentTotal = currentDeck.getCardCount(CardListType.All, true);
+        
+        return Math.max(0, originalStats.totalCount - currentTotal);
     }
 
     // -> Controls

@@ -105,7 +105,8 @@ export default {
     BURY_SIBLINGS_TILL_NEXT_DAY: "Bury sibling cards until the next day",
     BURY_SIBLINGS_TILL_NEXT_DAY_DESC:
         "Siblings are cards generated from the same card text i.e. cloze deletions",
-    BURY_SIBLINGS_TILL_NEXT_DAY_BY_NOTE_REVIEW: "Bury sibling cards until the next day by note review",
+    BURY_SIBLINGS_TILL_NEXT_DAY_BY_NOTE_REVIEW:
+        "Bury sibling cards until the next day by note review",
     MULTI_CLOZE: "enable multi-cloze card?",
     MULTI_CLOZE_DESC: "Combine new/ondue sibling clozes into one card.",
     SHOW_CARD_CONTEXT: "Show context in cards",
@@ -280,10 +281,12 @@ export default {
     OVERDUE_BY_DAYS: "Overdue by ${count} days",
     IN_DAYS: "In ${count} days",
     SIDEBAR_DATE_FORMAT: "Sidebar date format",
-    SIDEBAR_DATE_FORMAT_DESC: "Date format for the new sidebar. Use moment.js format. Example: ddd MMM DD.YY",
+    SIDEBAR_DATE_FORMAT_DESC:
+        "Date format for the new sidebar. Use moment.js format. Example: ddd MMM DD.YY",
     SIDEBAR_DATE_FORMAT_PREVIEW: "Preview:",
     SIDEBAR_SHOW_RELATIVE_DAYS: "Show relative days",
-    SIDEBAR_SHOW_RELATIVE_DAYS_DESC: "Show 'In 2 days', 'Overdue by 3 days' instead of dates for groups",
+    SIDEBAR_SHOW_RELATIVE_DAYS_DESC:
+        "Show 'In 2 days', 'Overdue by 3 days' instead of dates for groups",
     NOTES_REVIEW_QUEUE: "Notes Review Queue",
     CLOSE: "Close",
     NEW: "New",
@@ -408,7 +411,8 @@ export default {
         'Post an <a href="${issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
 
     // donation.ts
-    DONATION_TEXT: "This is a hobby project. If it helps you, you can buy me a drink or bubble tea~",
+    DONATION_TEXT:
+        "This is a hobby project. If it helps you, you can buy me a drink or bubble tea~",
 
     // locationSetting.ts
     FOLDER_PLACEHOLDER: "Example: folder1/folder2",
@@ -472,5 +476,6 @@ export default {
 
     // algorithms_switch.ts
     ALGORITHM_SWITCH_FAILED: "conversion failed, old algorithm and data restored, please issue it.",
-    ALGORITHM_SWITCH_SUCCESS: "conversion completed, due to different algorithm parameters, subsequent review intervals will be adjusted",
+    ALGORITHM_SWITCH_SUCCESS:
+        "conversion completed, due to different algorithm parameters, subsequent review intervals will be adjusted",
 };

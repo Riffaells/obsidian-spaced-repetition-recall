@@ -36,7 +36,9 @@ The Note Review Queue can also be shown by using the `Open Notes Review Queue in
 
 ## Reviewing
 
-Open a file, read & review it. Once done, choose either the `Review: Easy`, `Review: Good`, or the `Review: Hard` option on the file menu (the three dots). Select `Easy`, `Good`, or `Hard` depend on how well you comprehend the material being reviewed.
+Open a file, read & review it. Once done, choose either the `Review: Easy`, `Review: Good`, or the `Review: Hard` option
+on the file menu (the three dots). Select `Easy`, `Good`, or `Hard` depend on how well you comprehend the material being
+reviewed.
 
 ![file-three-dots-menu](https://github.com/user-attachments/assets/5f37ab88-30f9-477d-b39c-eb86ba15abdb)
 
@@ -59,24 +61,26 @@ You can create custom hotkeys for the review result in `Settings -> HotKeys`.
 
 There are a few ways to open a note for review:
 
--   Open a note via the standard Obsidian features
--   Double click on a note title from the Note Review Queue
--   Click on the `Spaced Repetition Status Area` in the status bar at the bottom of the screen
--   Select the command [Open a note to review review](plugin-commands.md)
+- Open a note via the standard Obsidian features
+- Double click on a note title from the Note Review Queue
+- Click on the `Spaced Repetition Status Area` in the status bar at the bottom of the screen
+- Select the command [Open a note to review review](plugin-commands.md)
 
 There are also the following relevant options:
 
--   [Open a random note for review](user-options.md)
--   [Open next note automatically after a review](user-options.md)
+- [Open a random note for review](user-options.md)
+- [Open next note automatically after a review](user-options.md)
 
 ## Multiple Note Review Decks
 
 By default, there is a single review deck called `#review`.
 
-This default tag can be changed in the [settings](user-options.md#note-settings). Multiple review decks can also be specified.
+This default tag can be changed in the [settings](user-options.md#note-settings). Multiple review decks can also be
+specified.
 
 ## Spaced Repetition Status Area
 
-`Review: N note(s)` on the status bar at the bottom of the screen shows how many notes one has to review today (Today's notes + overdue notes).
+`Review: N note(s)` on the status bar at the bottom of the screen shows how many notes one has to review today (Today's
+notes + overdue notes).
 
 Clicking on that opens one of the notes for review.

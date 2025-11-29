@@ -1,7 +1,10 @@
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
 import { addDataLocationSettings } from "src/settings/locationSetting";
-import { addAlgorithmSetting, addAlgorithmSpecificDisplaySetting } from "src/settings/algorithmSetting";
+import {
+    addAlgorithmSetting,
+    addAlgorithmSpecificDisplaySetting,
+} from "src/settings/algorithmSetting";
 
 export class SchedulingTab {
     static async render(containerEl: HTMLElement, plugin: SRPlugin): Promise<void> {

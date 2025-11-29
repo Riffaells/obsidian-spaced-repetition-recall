@@ -4,12 +4,15 @@
 
 Fight the forgetting curve & note aging by reviewing flashcards & notes using spaced repetition on Obsidian.md
 
--   阅读 [文档](https://www.stephenmwangi.com/obsidian-spaced-repetition/).
--   查看新特性和故障修复 [规划](https://github.com/st3v3nmw/obsidian-spaced-repetition/projects/2/)
--   如果您有新建议或故障报告，请提出 [请求](https://github.com/st3v3nmw/obsidian-spaced-repetition/issues/)
--   访问 [讨论](https://github.com/st3v3nmw/obsidian-spaced-repetition/discussions/) 板块以获取问答帮助，意见反馈
--   感谢Obsidian社区 😄 的贡献，本插件已支持 _Arabic / العربية, Chinese (Simplified) / 简体中文, Chinese (Traditional) / 繁體中文, Czech / čeština, German / Deutsch, Italian / Italiano, Korean / 한국어, Japanese / 日本語, Polish / Polski, Portuguese (Brazil) / Português do Brasil, Spanish / Español, and Russian / русский_
-    -   如果您愿意提供翻译上的帮助，请阅读 [翻译指南](https://www.stephenmwangi.com/obsidian-spaced-repetition/contributing/#translating_1).
+- 阅读 [文档](https://www.stephenmwangi.com/obsidian-spaced-repetition/).
+- 查看新特性和故障修复 [规划](https://github.com/st3v3nmw/obsidian-spaced-repetition/projects/2/)
+- 如果您有新建议或故障报告，请提出 [请求](https://github.com/st3v3nmw/obsidian-spaced-repetition/issues/)
+- 访问 [讨论](https://github.com/st3v3nmw/obsidian-spaced-repetition/discussions/) 板块以获取问答帮助，意见反馈
+- 感谢Obsidian社区 😄 的贡献，本插件已支持 _Arabic / العربية, Chinese (Simplified) / 简体中文, Chinese (Traditional) /
+  繁體中文, Czech / čeština, German / Deutsch, Italian / Italiano, Korean / 한국어, Japanese / 日本語, Polish / Polski,
+  Portuguese (Brazil) / Português do Brasil, Spanish / Español, and Russian / русский_
+    -
+    如果您愿意提供翻译上的帮助，请阅读 [翻译指南](https://www.stephenmwangi.com/obsidian-spaced-repetition/contributing/#translating_1).
 
 ## 视频演示
 
@@ -23,7 +26,9 @@ Fight the forgetting curve & note aging by reviewing flashcards & notes using sp
 
 ### 手动安装
 
-在您的Obsidian仓库中的 `.obsidian/plugins` 下创建 `obsidian-spaced-repetition` 目录。将 [最新发布的软件包](https://github.com/st3v3nmw/obsidian-spaced-repetition/releases) 解压并移动 `main.js`, `manifest.json` 和 `styles.css` 到该目录下。
+在您的Obsidian仓库中的 `.obsidian/plugins` 下创建 `obsidian-spaced-repetition`
+目录。将 [最新发布的软件包](https://github.com/st3v3nmw/obsidian-spaced-repetition/releases) 解压并移动 `main.js`,
+`manifest.json` 和 `styles.css` 到该目录下。
 
 ## 相关资源
 
@@ -31,20 +36,20 @@ Fight the forgetting curve & note aging by reviewing flashcards & notes using sp
 
 #### 卡片
 
--   [PRODUCTIVELY Learning New Things Using Obsidian by @FromSergio](https://youtu.be/DwSNZEW6jCU)
+- [PRODUCTIVELY Learning New Things Using Obsidian by @FromSergio](https://youtu.be/DwSNZEW6jCU)
 
 #### 笔记
 
 ##### 渐进式写作
 
--   [Obsidian: inbox review with spaced repetition by @aviskase](https://youtu.be/zG5r7QIY_TM)
--   [Разгребатель инбокса заметок как у Andy Matuschak в Obsidian by @YuliyaBagriy_ru](https://youtu.be/CF6SSHB74cs)
+- [Obsidian: inbox review with spaced repetition by @aviskase](https://youtu.be/zG5r7QIY_TM)
+- [Разгребатель инбокса заметок как у Andy Matuschak в Obsidian by @YuliyaBagriy_ru](https://youtu.be/CF6SSHB74cs)
 
 ### 间隔重复系统
 
--   [How to Remember Anything Forever-Ish by Nicky Case](https://ncase.me/remember/)
--   [Spaced Repetition for Efficient Learning by Gwern](https://www.gwern.net/Spaced-repetition/)
--   [20 rules of knowledge formulation by Dr. Piotr Wozniak](https://supermemo.guru/wiki/20_rules_of_knowledge_formulation)
+- [How to Remember Anything Forever-Ish by Nicky Case](https://ncase.me/remember/)
+- [Spaced Repetition for Efficient Learning by Gwern](https://www.gwern.net/Spaced-repetition/)
+- [20 rules of knowledge formulation by Dr. Piotr Wozniak](https://supermemo.guru/wiki/20_rules_of_knowledge_formulation)
 
 ### 赞助
 

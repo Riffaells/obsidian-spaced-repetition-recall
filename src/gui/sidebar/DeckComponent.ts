@@ -122,98 +122,92 @@ export class DeckComponent {
         }
     }
 
-    public update(
-        activeFile: TFile | null,
-        filter: FilterType,
-        shouldAutoExpand: boolean,
-        noteSort: NoteSortType,
-        deck?: ReviewDeck,
-    ): void {
-        this.activeFile = activeFile;
-        this.filter = filter;
-        this.shouldAutoExpand = shouldAutoExpand;
-        this.noteSort = noteSort;
-
-        // Update deck reference if provided
-        if (deck) {
-            this.deck = deck;
-        }
-
-        // START of checks from render()
-        if (!this.deck || (!this.deck.newNotes?.length && !this.deck.scheduledNotes?.length)) {
-            this.removeElement();
-            return;
-        }
-
-        // Аre there any "active" notes?
-        if (this.filter === FilterType.ACTIVE) {
-            const hasActiveNotes = this.checkIfDeckHasActiveNotes();
-            if (!hasActiveNotes) {
+        public update(
+            activeFile: TFile | null,
+            filter: FilterType,
+            shouldAutoExpand: boolean,
+            noteSort: NoteSortType,
+            deck?: ReviewDeck,
+        ): void {
+            this.activeFile = activeFile;
+            this.filter = filter;
+            this.shouldAutoExpand = shouldAutoExpand;
+            this.noteSort = noteSort;
+    
+            // Update deck reference if provided
+            if (deck) {
+                this.deck = deck;
+            }
+    
+            // Determine if the component should be rendered
+            let shouldRender = true;
+            if (!this.deck || (!this.deck.newNotes?.length && !this.deck.scheduledNotes?.length)) {
+                shouldRender = false;
+            }
+            if (this.filter === FilterType.ACTIVE && !this.checkIfDeckHasActiveNotes()) {
+                shouldRender = false;
+            }
+            if (this.filter === FilterType.REVIEWED && !this.checkIfDeckHasReviewedNotes()) {
+                shouldRender = false;
+            }
+    
+            if (!shouldRender) {
                 this.removeElement();
                 return;
             }
-        }
-
-        // are there any "revied" notes?
-        if (this.filter === FilterType.REVIEWED) {
-            const hasReviewedNotes = this.checkIfDeckHasReviewedNotes();
-            if (!hasReviewedNotes) {
-                this.removeElement();
+    
+            // If we are here, the component should be visible.
+            // If it's not in the DOM, render it.
+            if (!this.deckEl) {
+                this.render();
+                // After render, the element is created and fully configured.
                 return;
             }
-        }
-        
-        // If element was removed by filter, but now should be visible, we must re-render it.
-        if (!this.deckEl) {
-             this.render(); // This will create it if needed
-             if (!this.deckEl) {
-                // Still null, so must be empty after all, so do nothing.
-                return;
-             }
-        }
-
-        // Auto-expand deck if it contains the active file
-        if (this.shouldAutoExpand) {
-            const hasActiveFile = this.checkIfDeckContainsActiveFile();
-            if (hasActiveFile) {
-                this.expandedDecks.add(this.deck.deckName);
+            
+            // --- If we are here, the element already exists, so we just update it ---
+    
+            // Auto-expand deck if it contains the active file
+            if (this.shouldAutoExpand) {
+                const hasActiveFile = this.checkIfDeckContainsActiveFile();
+                if (hasActiveFile) {
+                    this.expandedDecks.add(this.deck.deckName);
+                }
+            }
+    
+            // Update header stats and expanded class
+            const header = this.deckEl.querySelector(".sr-new-deck-header");
+            if (header) {
+                const detailedStats = this.calculateDetailedStats();
+                const stats = header.querySelector(".sr-new-deck-stats");
+                if (stats) {
+                    stats.setText(
+                        `${detailedStats.newCount} / ${detailedStats.dueCount} / ${detailedStats.reviewedCount}`,
+                    );
+                    stats.setAttribute(
+                        "aria-label",
+                        `${t("NEW")}: ${detailedStats.newCount}, ${t("DUE_CARDS")}: ${detailedStats.dueCount}, ${t("REVIEWED")}: ${detailedStats.reviewedCount}`,
+                    );
+                }
+    
+                if (this.expandedDecks.has(this.deck.deckName)) {
+                    header.addClass("sr-deck-expanded");
+                } else {
+                    header.removeClass("sr-deck-expanded");
+                }
+            }
+    
+            // Update content visibility and reconcile groups
+            const content = this.deckEl.querySelector(".sr-new-deck-content") as HTMLElement;
+            if (content) {
+                if (this.expandedDecks.has(this.deck.deckName)) {
+                    content.style.display = "block";
+                } else {
+                    content.style.display = "none";
+                }
+    
+                this.reconcileGroups(content);
             }
         }
-
-        // Update header stats
-        const header = this.deckEl.querySelector(".sr-new-deck-header");
-        if (header) {
-            const detailedStats = this.calculateDetailedStats();
-            const stats = header.querySelector(".sr-new-deck-stats");
-            if (stats) {
-                stats.setText(
-                    `${detailedStats.newCount} / ${detailedStats.dueCount} / ${detailedStats.reviewedCount}`,
-                );
-                stats.setAttribute(
-                    "aria-label",
-                    `${t("NEW")}: ${detailedStats.newCount}, ${t("DUE_CARDS")}: ${detailedStats.dueCount}, ${t("REVIEWED")}: ${detailedStats.reviewedCount}`,
-                );
-            }
-
-            if (this.expandedDecks.has(this.deck.deckName)) {
-                header.addClass("sr-deck-expanded");
-            } else {
-                header.removeClass("sr-deck-expanded");
-            }
-        }
-
-        const content = this.deckEl.querySelector(".sr-new-deck-content") as HTMLElement;
-        if (content) {
-            if (this.expandedDecks.has(this.deck.deckName)) {
-                content.style.display = "block";
-            } else {
-                content.style.display = "none";
-            }
-
-            this.reconcileGroups(content);
-        }
-    }
-
     private checkIfDeckHasActiveNotes(): boolean {
         if (this.deck.newNotes && this.deck.newNotes.length > 0) {
             return true;

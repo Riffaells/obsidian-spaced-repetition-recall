@@ -54,12 +54,10 @@ export class FlashcardsTab {
             .setName(t("BURY_SIBLINGS_TILL_NEXT_DAY"))
             .setDesc(t("BURY_SIBLINGS_TILL_NEXT_DAY_DESC"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(plugin.data.settings.burySiblingCards)
-                    .onChange(async (value) => {
-                        plugin.data.settings.burySiblingCards = value;
-                        await plugin.savePluginData();
-                    }),
+                toggle.setValue(plugin.data.settings.burySiblingCards).onChange(async (value) => {
+                    plugin.data.settings.burySiblingCards = value;
+                    await plugin.savePluginData();
+                }),
             );
 
         this.addCardOrderSettings(containerEl, plugin, settingsTab);
@@ -172,7 +170,9 @@ export class FlashcardsTab {
             setting.addToggle((toggle) =>
                 toggle.setValue(plugin.data.settings[config.key]).onChange(async (value) => {
                     const clozePatternSet = new Set(plugin.data.settings.clozePatterns);
-                    value ? clozePatternSet.add(config.pattern) : clozePatternSet.delete(config.pattern);
+                    value
+                        ? clozePatternSet.add(config.pattern)
+                        : clozePatternSet.delete(config.pattern);
                     plugin.data.settings.clozePatterns = [...clozePatternSet];
                     plugin.data.settings[config.key] = value;
                     await plugin.savePluginData();

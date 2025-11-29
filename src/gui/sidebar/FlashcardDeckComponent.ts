@@ -1,7 +1,6 @@
 import type SRPlugin from "src/main";
 import { Deck } from "src/Deck";
 import { FilterType } from "./types";
-import { FlashcardReviewMode } from "src/FlashcardReviewSequencer";
 import { t } from "src/lang/helpers";
 import { CardGroupComponent } from "./CardGroupComponent";
 
@@ -61,7 +60,10 @@ export class FlashcardDeckComponent {
     }
 
     private shouldRender(): boolean {
-        if (!this.deck || (this.deck.newFlashcards.length === 0 && this.deck.dueFlashcards.length === 0)) {
+        if (
+            !this.deck ||
+            (this.deck.newFlashcards.length === 0 && this.deck.dueFlashcards.length === 0)
+        ) {
             return false;
         }
 
@@ -96,24 +98,9 @@ export class FlashcardDeckComponent {
         if (!this.abortController) return;
 
         // Expand/collapse handler on header
-        header.addEventListener(
-            "click",
-            () => this.onToggleDeck(this.deck.deckName),
-            { signal: this.abortController.signal }
-        );
-
-        // Deck review handler on title
-        const title = header.querySelector(".sr-flashcard-deck-title");
-        if (title) {
-            title.addEventListener(
-                "click",
-                (e: Event) => {
-                    e.stopPropagation();
-                    this.openDeckReview();
-                },
-                { signal: this.abortController.signal }
-            );
-        }
+        header.addEventListener("click", () => this.onToggleDeck(this.deck.deckName), {
+            signal: this.abortController.signal,
+        });
     }
 
     private removeElement(): void {
@@ -121,7 +108,7 @@ export class FlashcardDeckComponent {
             this.deckEl.remove();
             this.deckEl = null;
         }
-        
+
         if (this.abortController) {
             this.abortController.abort();
             this.abortController = null;
@@ -150,7 +137,7 @@ export class FlashcardDeckComponent {
 
         const deckStats = this.getStats();
         const stats = header.querySelector(".sr-flashcard-deck-stats");
-        
+
         if (stats) {
             this.updateStatsElement(stats, deckStats);
         }
@@ -216,11 +203,11 @@ export class FlashcardDeckComponent {
 
     private updateStatsElement(statsEl: Element, deckStats: FlashcardDeckStats): void {
         statsEl.setText(
-            `${deckStats.newCount} / ${deckStats.dueCount} / ${deckStats.reviewedCount}`
+            `${deckStats.newCount} / ${deckStats.dueCount} / ${deckStats.reviewedCount}`,
         );
         statsEl.setAttribute(
             "aria-label",
-            `${t("NEW_CARDS")}: ${deckStats.newCount}, ${t("DUE_CARDS")}: ${deckStats.dueCount}, Reviewed: ${deckStats.reviewedCount}`
+            `${t("NEW_CARDS")}: ${deckStats.newCount}, ${t("DUE_CARDS")}: ${deckStats.dueCount}, Reviewed: ${deckStats.reviewedCount}`,
         );
     }
 
@@ -362,7 +349,7 @@ export class FlashcardDeckComponent {
         }
 
         if (this.deck.dueFlashcards && this.deck.dueFlashcards.length > 0) {
-            return this.deck.dueFlashcards.some(card => card.isDue);
+            return this.deck.dueFlashcards.some((card) => card.isDue);
         }
 
         return false;
@@ -370,16 +357,9 @@ export class FlashcardDeckComponent {
 
     private hasReviewedCards(): boolean {
         if (this.deck.dueFlashcards && this.deck.dueFlashcards.length > 0) {
-            return this.deck.dueFlashcards.some(card => !card.isDue);
+            return this.deck.dueFlashcards.some((card) => !card.isDue);
         }
 
         return false;
-    }
-
-    private async openDeckReview(): Promise<void> {
-        await this.plugin.sync();
-        
-        // Open the review interface - the plugin will handle deck selection
-        this.plugin.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
     }
 }

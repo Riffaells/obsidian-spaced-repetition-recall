@@ -15,6 +15,7 @@ import {
 } from "./types";
 import {
     calculateActiveNotesCount,
+    calculateActiveFlashcardsCount,
     calculateDaysUntilDue,
     calculateSidebarStats,
     createGroupKey,
@@ -28,7 +29,7 @@ export const REVIEW_QUEUE_VIEW_TYPE = "review-queue-list-view";
 export class ReviewQueueListView extends ItemView {
     private readonly plugin: SRPlugin;
     private readonly debouncedRedraw: () => void;
-    
+
     // Sidebar state
     private currentFilter: FilterType = FilterType.ALL;
     private currentSort: SortType = SortType.DATE_ASC;
@@ -36,7 +37,7 @@ export class ReviewQueueListView extends ItemView {
     private currentViewMode: SidebarViewMode = SidebarViewMode.Notes;
     private expandedDecks: Set<string> = new Set();
     private expandedGroups: Set<string> = new Set();
-    
+
     // UI components
     private header: SidebarHeader | null = null;
     private stats: SidebarStats | null = null;
@@ -44,7 +45,7 @@ export class ReviewQueueListView extends ItemView {
     private flashcardDeckComponents: Map<string, FlashcardDeckComponent> = new Map();
     private mainContainer: HTMLElement | null = null;
     private decksContainer: HTMLElement | null = null;
-    
+
     // Cache and state tracking
     private cachedStats: Stats | null = null;
     private lastActiveFilePath: string | null = null;
@@ -104,7 +105,7 @@ export class ReviewQueueListView extends ItemView {
         if (!this.mainContainer) {
             this.initializeStructure();
         }
-        
+
         const currentPath = activeFile?.path || null;
         const shouldScroll = currentPath !== this.lastActiveFilePath;
         const shouldResort = this.sortedDecks.length === 0;
@@ -228,8 +229,9 @@ export class ReviewQueueListView extends ItemView {
             this.header.setSort(this.currentSort);
             this.header.setNoteSort(this.currentNoteSort);
             this.header.setViewMode(this.currentViewMode);
-            const activeCount = calculateActiveNotesCount(this.plugin);
-            this.header.setActiveCount(activeCount);
+            const activeNotesCount = calculateActiveNotesCount(this.plugin);
+            const activeCardsCount = calculateActiveFlashcardsCount(this.plugin);
+            this.header.setActiveCount(activeNotesCount, activeCardsCount);
             this.header.render();
         }
 
@@ -242,7 +244,11 @@ export class ReviewQueueListView extends ItemView {
         }
     }
 
-    private reconcileDecks(activeFile: TFile | null, resort = true, shouldAutoExpand = false): void {
+    private reconcileDecks(
+        activeFile: TFile | null,
+        resort = true,
+        shouldAutoExpand = false,
+    ): void {
         if (!this.decksContainer) return;
 
         const currentPath = activeFile?.path || null;
@@ -272,7 +278,7 @@ export class ReviewQueueListView extends ItemView {
                     this.deckComponents.delete(name);
                 }
             }
-            
+
             for (let i = 0; i < this.sortedDecks.length; i++) {
                 const deck = this.sortedDecks[i];
                 let component = this.deckComponents.get(deck.deckName);

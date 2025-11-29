@@ -17,18 +17,16 @@ export class UiPreferencesTab {
             .setName(t("OPEN_IN_TAB"))
             .setDesc(t("OPEN_IN_TAB_DESC"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(plugin.data.settings.openViewInNewTab)
-                    .onChange(async (value) => {
-                        if (value) {
-                            plugin.registerSRFocusListener();
-                        } else {
-                            plugin.tabViewManager.closeAllTabViews();
-                            plugin.removeSRFocusListener();
-                        }
-                        plugin.data.settings.openViewInNewTab = value;
-                        await plugin.savePluginData();
-                    }),
+                toggle.setValue(plugin.data.settings.openViewInNewTab).onChange(async (value) => {
+                    if (value) {
+                        plugin.registerSRFocusListener();
+                    } else {
+                        plugin.tabViewManager.closeAllTabViews();
+                        plugin.removeSRFocusListener();
+                    }
+                    plugin.data.settings.openViewInNewTab = value;
+                    await plugin.savePluginData();
+                }),
             );
 
         new Setting(containerEl)
@@ -75,12 +73,10 @@ export class UiPreferencesTab {
             .setName(t("SHOW_CARD_CONTEXT"))
             .setDesc(t("SHOW_CARD_CONTEXT_DESC"))
             .addToggle((toggle) =>
-                toggle
-                    .setValue(plugin.data.settings.showContextInCards)
-                    .onChange(async (value) => {
-                        plugin.data.settings.showContextInCards = value;
-                        await plugin.savePluginData();
-                    }),
+                toggle.setValue(plugin.data.settings.showContextInCards).onChange(async (value) => {
+                    plugin.data.settings.showContextInCards = value;
+                    await plugin.savePluginData();
+                }),
             );
 
         new Setting(containerEl)
@@ -177,8 +173,7 @@ export class UiPreferencesTab {
                     .setIcon("reset")
                     .setTooltip(t("RESET_DEFAULT"))
                     .onClick(async () => {
-                        plugin.data.settings.sidebarDateFormat =
-                            DEFAULT_SETTINGS.sidebarDateFormat;
+                        plugin.data.settings.sidebarDateFormat = DEFAULT_SETTINGS.sidebarDateFormat;
                         await plugin.savePluginData();
                         settingsTab.redisplay();
                     });

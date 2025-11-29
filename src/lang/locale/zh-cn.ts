@@ -64,14 +64,21 @@ export default {
     GROUP_FLASHCARDS_NOTES: "闪卡和笔记",
     GROUP_CONTRIBUTING: "Contributing",
     CHECK_WIKI: '了解更多, 请点击<a href="${wikiUrl}">wiki</a>.',
-    GITHUB_DISCUSSIONS: 'Visit the <a href="${discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
-    GITHUB_ISSUES: 'Raise an <a href="${issuesUrl}">issue</a> if you have a feature request or a bug report.',
-    GITHUB_ISSUES_MODIFIED_PLUGIN: 'Raise an <a href="${issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
-    GITHUB_SOURCE_CODE: 'The project\'s source code is available on <a href="${githubProjectUrl}">GitHub</a>.',
-    CODE_CONTRIBUTION_INFO: '<a href="${codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
-    TRANSLATION_CONTRIBUTION_INFO: '<a href="${translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
+    GITHUB_DISCUSSIONS:
+        'Visit the <a href="${discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
+    GITHUB_ISSUES:
+        'Raise an <a href="${issuesUrl}">issue</a> if you have a feature request or a bug report.',
+    GITHUB_ISSUES_MODIFIED_PLUGIN:
+        'Raise an <a href="${issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
+    GITHUB_SOURCE_CODE:
+        'The project\'s source code is available on <a href="${githubProjectUrl}">GitHub</a>.',
+    CODE_CONTRIBUTION_INFO:
+        '<a href="${codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
+    TRANSLATION_CONTRIBUTION_INFO:
+        '<a href="${translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
     FOLDERS_TO_IGNORE: "忽略此文件夹",
-    FOLDERS_TO_IGNORE_DESC: "Enter folder paths or glob patterns on separate lines e.g. Templates/Scripts or **/*.excalidraw.md. This setting is common to both flashcards and notes.",
+    FOLDERS_TO_IGNORE_DESC:
+        "Enter folder paths or glob patterns on separate lines e.g. Templates/Scripts or **/*.excalidraw.md. This setting is common to both flashcards and notes.",
     OBSIDIAN_INTEGRATION: "Integration into Obsidian",
     FLASHCARDS: "卡片",
     FLASHCARD_EASY_LABEL: "“简单”按钮文本",
@@ -90,7 +97,8 @@ export default {
     INLINE_SCHEDULING_COMMENTS_DESC: "HTML注释不再破坏列表格式",
     BURY_SIBLINGS_TILL_NEXT_DAY: "将关联卡片隐藏至下一天",
     BURY_SIBLINGS_TILL_NEXT_DAY_DESC: "关联卡片是来自同一卡片的不同形式， 例如：完形填空卡片",
-    BURY_SIBLINGS_TILL_NEXT_DAY_BY_NOTE_REVIEW: "Bury sibling cards until the next day by note review",
+    BURY_SIBLINGS_TILL_NEXT_DAY_BY_NOTE_REVIEW:
+        "Bury sibling cards until the next day by note review",
     MULTI_CLOZE: "允许多个完形填空?",
     MULTI_CLOZE_DESC: "将新/到期的关联卡片组合到一个卡片中.",
     SHOW_CARD_CONTEXT: "在卡片中显示上下文",
@@ -114,13 +122,17 @@ export default {
     REVIEW_DECK_ORDER_RANDOM_DECK_AND_CARD: "卡片组及卡片都乱序",
     DISABLE_CLOZE_CARDS: "不进行完形填空",
     CONVERT_HIGHLIGHTS_TO_CLOZES: "将 ==高亮== 转换为完形填空",
-    CONVERT_HIGHLIGHTS_TO_CLOZES_DESC: 'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+    CONVERT_HIGHLIGHTS_TO_CLOZES_DESC:
+        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_BOLD_TEXT_TO_CLOZES: "将 **粗体** 转换为完形填空",
-    CONVERT_BOLD_TEXT_TO_CLOZES_DESC: 'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+    CONVERT_BOLD_TEXT_TO_CLOZES_DESC:
+        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_CURLY_BRACKETS_TO_CLOZES: "将 {{大括号}} 转换为完形填空",
-    CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC: 'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+    CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC:
+        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
     CLOZE_PATTERNS: "完形填空模式",
-    CLOZE_PATTERNS_DESC: 'Enter cloze patterns separated by newlines. Check the <a href="${docsUrl}">wiki</a> for guidance.',
+    CLOZE_PATTERNS_DESC:
+        'Enter cloze patterns separated by newlines. Check the <a href="${docsUrl}">wiki</a> for guidance.',
     INLINE_CARDS_SEPARATOR: "单行卡片的分隔符",
     FIX_SEPARATORS_MANUALLY_WARNING: "注意：更改此选项后你将需要自行更改已存在卡片的分隔符。",
     INLINE_REVERSED_CARDS_SEPARATOR: "单行翻转卡片的分隔符",
@@ -146,9 +158,11 @@ export default {
     SHOW_RIBBON_ICON: "在功能区中显示图标",
     SHOW_RIBBON_ICON_DESC: "关闭此选项可隐藏 Obsidian 功能区栏中的插件图标",
     ENABLE_FILE_MENU_REVIEW_OPTIONS: "请在文件菜单中启用复习选项（例如：复习：简单、良好、困难",
-    ENABLE_FILE_MENU_REVIEW_OPTIONS_DESC: "If you disable the review options in the file menu, you can review your notes using the plugin commands and, if you defined them, the associated command hotkeys.",
+    ENABLE_FILE_MENU_REVIEW_OPTIONS_DESC:
+        "If you disable the review options in the file menu, you can review your notes using the plugin commands and, if you defined them, the associated command hotkeys.",
     INITIALLY_EXPAND_SUBDECKS_IN_TREE: "默认在列表中展开嵌套子牌组",
-    INITIALLY_EXPAND_SUBDECKS_IN_TREE_DESC: "Turn this off to collapse nested decks in the same card. Useful if you have cards which belong to many decks in the same file.",
+    INITIALLY_EXPAND_SUBDECKS_IN_TREE_DESC:
+        "Turn this off to collapse nested decks in the same card. Useful if you have cards which belong to many decks in the same file.",
     ALGORITHM: "算法",
     CHECK_ALGORITHM_WIKI: '了解更多, 请点击<a href="${algoUrl}">算法实现</a>.',
     SM2_OSR_VARIANT: "OSR's variant of SM-2",
@@ -172,7 +186,8 @@ export default {
     FUZZING: "均衡",
     FUZZING_DESC: "启用时, 会给新间隔添加个较小的随机延迟，以免卡片总被堆积在同一天复习。",
     SWITCH_SHORT_TERM: "短期排程",
-    SWITCH_SHORT_TERM_DESC: "When disabled, this allow user to skip the short-term scheduler and directly switch to the long-term scheduler.",
+    SWITCH_SHORT_TERM_DESC:
+        "When disabled, this allow user to skip the short-term scheduler and directly switch to the long-term scheduler.",
     LOGGING: "记录中",
     DISPLAY_SCHEDULING_DEBUG_INFO: "在开发者控制台中显示调试信息",
     DISPLAY_PARSER_DEBUG_INFO: "Show the parser's debugging information on the developer console",
@@ -193,10 +208,12 @@ export default {
     This change is irreversible. Changing algorithms only takes effect after a restart
     or a plugin reload. Are you sure you want to switch algorithms?
     `,
-    ALGORITHMS_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://github.com/martin-jw/obsidian-recall">algorithms</a>.',
+    ALGORITHMS_DESC:
+        'The algorithm used for spaced repetition. For more information see <a href="https://github.com/martin-jw/obsidian-recall">algorithms</a>.',
     CONVERT_TRACKED_TO_DECK: "将复习笔记转换为卡牌组?",
     REVIEW_FLOATBAR: "复习悬浮栏",
-    REVIEW_FLOATBAR_DESC: "only working when autoNextNote is true. show it when reviewing note via click statusbar/sidebar/command.",
+    REVIEW_FLOATBAR_DESC:
+        "only working when autoNextNote is true. show it when reviewing note via click statusbar/sidebar/command.",
     REVIEW_NOTE_DIRECTLY: "直接复习笔记?",
     REVIEW_NOTE_DIRECTLY_DESC: "复习笔记时, 不必选择标签（多个复习标签的情况）就直接打开笔记",
     INTERVAL_SHOWHIDE: "显示复习间隔",
@@ -204,7 +221,8 @@ export default {
     REQUEST_RETENTION: "保留度",
     REQUEST_RETENTION_DESC: "在下次进行复习时，你期望能回想起答案的概率（百分比）",
     REVLOG_TAGS: "输出到日志的标签",
-    REVLOG_TAGS_DESC: "Tags for output review log, could be flashcards tags or/and notes tags(e.g. #review #flashcards #tag1), default empty means it output to the review log file normally without filtered by tags",
+    REVLOG_TAGS_DESC:
+        "Tags for output review log, could be flashcards tags or/and notes tags(e.g. #review #flashcards #tag1), default empty means it output to the review log file normally without filtered by tags",
     FLASHCARD_AGAIN_LABEL: "重来 按钮文本",
     FLASHCARD_BLACKOUT_LABEL: "忘记 按钮文本",
     FLASHCARD_INCORRECT_LABEL: "猜错 按钮文本",
@@ -237,10 +255,12 @@ export default {
     OVERDUE_BY_DAYS: "Overdue by ${count} days",
     IN_DAYS: "In ${count} days",
     SIDEBAR_DATE_FORMAT: "Sidebar date format",
-    SIDEBAR_DATE_FORMAT_DESC: "Date format for the new sidebar. Use moment.js format. Example: ddd MMM DD.YY",
+    SIDEBAR_DATE_FORMAT_DESC:
+        "Date format for the new sidebar. Use moment.js format. Example: ddd MMM DD.YY",
     SIDEBAR_DATE_FORMAT_PREVIEW: "Preview:",
     SIDEBAR_SHOW_RELATIVE_DAYS: "Show relative days",
-    SIDEBAR_SHOW_RELATIVE_DAYS_DESC: "Show 'In 2 days', 'Overdue by 3 days' instead of dates for groups",
+    SIDEBAR_SHOW_RELATIVE_DAYS_DESC:
+        "Show 'In 2 days', 'Overdue by 3 days' instead of dates for groups",
     NOTES_REVIEW_QUEUE: "笔记复习序列",
     CLOSE: "临近",
     NEW: "新",
@@ -283,23 +303,30 @@ export default {
     DATE: "日期",
     // cardBlockIDSetting.ts
     CARD_BLOCK_ID: "Card Block ID",
-    CARD_BLOCK_ID_DESC: "use Card Block ID instead of line number and text hash.<br>  <b>If set True, block id will append after card text. And block id will keep in note after reset to False again.</b>",
-    CARD_BLOCK_ID_CONFIRM: "**If set True, block id will append after card text. And block id will keep in note after reset to False again. ** \n\nSuggestion： backup your vault before set True. Or try it in sandbox vault. \n\nAfter setting is turned on, blockid will be added after all cards. Even if it is turned off again, the added blockid will still remain in the note and will not be deleted.\n\nIt is recommended to **backup first** the note library, or try it in a sandbox library.",
+    CARD_BLOCK_ID_DESC:
+        "use Card Block ID instead of line number and text hash.<br>  <b>If set True, block id will append after card text. And block id will keep in note after reset to False again.</b>",
+    CARD_BLOCK_ID_CONFIRM:
+        "**If set True, block id will append after card text. And block id will keep in note after reset to False again. ** \n\nSuggestion： backup your vault before set True. Or try it in sandbox vault. \n\nAfter setting is turned on, blockid will be added after all cards. Even if it is turned off again, the added blockid will still remain in the note and will not be deleted.\n\nIt is recommended to **backup first** the note library, or try it in a sandbox library.",
     // mixQueueSetting.ts
     MIX_QUEUE: "Mix queue",
-    MIX_QUEUE_DESC: "mix ondue and new notes when review. **first** slider for total count, second slider for ondue count. And new count is (total - ondue).",
+    MIX_QUEUE_DESC:
+        "mix ondue and new notes when review. **first** slider for total count, second slider for ondue count. And new count is (total - ondue).",
     // trackSetting.ts
-    UNTRACK_WITH_REVIEWTAG_DESC: "When deleting the review tag in the note, synchronously untrack the operation, so that the note will no longer be reviewed<br><b>true</b>: synchronous untrack operation;<br><b>false</b>：After deleting the review tag, you need to untrack again before the note will no longer be reviewed. (same as previous version)",
+    UNTRACK_WITH_REVIEWTAG_DESC:
+        "When deleting the review tag in the note, synchronously untrack the operation, so that the note will no longer be reviewed<br><b>true</b>: synchronous untrack operation;<br><b>false</b>：After deleting the review tag, you need to untrack again before the note will no longer be reviewed. (same as previous version)",
     // dataLocation.ts
     DATA_LOCATION_PLUGIN_FOLDER: "In Plugin Folder",
     DATA_LOCATION_ROOT_FOLDER: "In Vault Folder",
     DATA_LOCATION_SPECIFIED_FOLDER: "In the folder specified below",
     DATA_LOCATION_SAVE_ON_NOTE_FILE: "Save On Note File",
     // fsrs.ts
-    FSRS_ALGORITHM_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://github.com/open-spaced-repetition/ts-fsrs">FSRS algorithm</a>.',
-    FSRS_W_PARAM_DESC: 'See <a href="https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm">FSRS V6 WIKI</a> and <a href="https://open-spaced-repetition.github.io/anki_fsrs_visualizer">FSRS w parameter visualization</a> to set various parameters.',
+    FSRS_ALGORITHM_DESC:
+        'The algorithm used for spaced repetition. For more information see <a href="https://github.com/open-spaced-repetition/ts-fsrs">FSRS algorithm</a>.',
+    FSRS_W_PARAM_DESC:
+        'See <a href="https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm">FSRS V6 WIKI</a> and <a href="https://open-spaced-repetition.github.io/anki_fsrs_visualizer">FSRS w parameter visualization</a> to set various parameters.',
     // anki.ts
-    ANKI_ALGORITHM_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://faqs.ankiweb.net/what-spaced-repetition-algorithm.html">Anki algorithm</a>.',
+    ANKI_ALGORITHM_DESC:
+        'The algorithm used for spaced repetition. For more information see <a href="https://faqs.ankiweb.net/what-spaced-repetition-algorithm.html">Anki algorithm</a>.',
     STARTING_EASE: "Starting Ease",
     STARTING_EASE_DESC: "The initial ease given to an item.",
     STARTING_EASE_ERROR: "Starting ease must be a positive number.",
@@ -308,18 +335,23 @@ export default {
     EASY_BONUS_ANKI_DESC: "A bonus multiplier for items reviewed as easy.",
     EASY_BONUS_ANKI_ERROR: "Easy bonus must be a number greater than or equal to 1.",
     LAPSE_INTERVAL_MODIFIER: "Lapse Interval Modifier",
-    LAPSE_INTERVAL_MODIFIER_DESC: "A factor to modify the review interval with when an item is reviewed as wrong.",
+    LAPSE_INTERVAL_MODIFIER_DESC:
+        "A factor to modify the review interval with when an item is reviewed as wrong.",
     LAPSE_INTERVAL_ERROR: "Lapse interval must be a positive number.",
     GRADUATING_INTERVAL: "Graduating Interval",
-    GRADUATING_INTERVAL_DESC: "The interval (in days) to the next review after reviewing a new item as 'Good'.",
+    GRADUATING_INTERVAL_DESC:
+        "The interval (in days) to the next review after reviewing a new item as 'Good'.",
     GRADUATING_INTERVAL_ERROR: "Interval must be a positive number.",
     EASY_INTERVAL: "Easy Interval",
-    EASY_INTERVAL_DESC: "The interval (in days) to the next review after reviewing a new item as 'Easy'.",
+    EASY_INTERVAL_DESC:
+        "The interval (in days) to the next review after reviewing a new item as 'Easy'.",
     EASY_INTERVAL_ERROR: "Interval must be a positive number.",
     // scheduling_default.ts
-    DEFAULT_ALGORITHM_DESC: 'The algorithm used for spaced repetition. For more information see <a href="https://www.stephenmwangi.com/obsidian-spaced-repetition/algorithms/">modified Anki algorithm</a>.',
+    DEFAULT_ALGORITHM_DESC:
+        'The algorithm used for spaced repetition. For more information see <a href="https://www.stephenmwangi.com/obsidian-spaced-repetition/algorithms/">modified Anki algorithm</a>.',
     // supermemo.ts
-    SM2_ALGORITHM_DESC: 'The algorithm used for spaced repetition. Currently shares the same parameters as the Anki algorithm (only the algorithm processing method is different). For more information see <a href="https://www.supermemo.com/en/archives1990-2015/english/ol/sm2">SM2 algorithm</a>.',
+    SM2_ALGORITHM_DESC:
+        'The algorithm used for spaced repetition. Currently shares the same parameters as the Anki algorithm (only the algorithm processing method is different). For more information see <a href="https://www.supermemo.com/en/archives1990-2015/english/ol/sm2">SM2 algorithm</a>.',
     // info.ts
     ITEM_INFO_TITLE: "Item info of",
     CARDS_IN_NOTE: "Cards in this Note",
@@ -331,10 +363,14 @@ export default {
     NEW_CARD: "NewCard",
     ITEM_DATA_INFO: "Item.data info",
     // locationSetting.ts
-    DATA_LOCATION_WARNING_TO_NOTE: "BE CAREFUL!!!\n  if you confirm this, it will convert all your scheduling informations in `tracked_files.json` to note, which will change lots of your note file in the same time.\n Please make sure the setting tags of flashcards and notes is what you are using.",
-    DATA_LOCATION_WARNING_OTHER_ALGO: "if you want to save data on notefile, you **have to** use Default Algorithm.",
-    DATA_LOCATION_WARNING_TO_TRACKED: "BE CAREFUL!!! \n if you confirm this, it will converte all your scheduling informations on note(which will be deleted in the same time) TO `tracked_files.json`.",
-    POST_ISSUE_MODIFIED_PLUGIN: 'Post an <a href="${issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
+    DATA_LOCATION_WARNING_TO_NOTE:
+        "BE CAREFUL!!!\n  if you confirm this, it will convert all your scheduling informations in `tracked_files.json` to note, which will change lots of your note file in the same time.\n Please make sure the setting tags of flashcards and notes is what you are using.",
+    DATA_LOCATION_WARNING_OTHER_ALGO:
+        "if you want to save data on notefile, you **have to** use Default Algorithm.",
+    DATA_LOCATION_WARNING_TO_TRACKED:
+        "BE CAREFUL!!! \n if you confirm this, it will converte all your scheduling informations on note(which will be deleted in the same time) TO `tracked_files.json`.",
+    POST_ISSUE_MODIFIED_PLUGIN:
+        'Post an <a href="${issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
     // donation.ts
     DONATION_TEXT: "业余时间折腾的，如果对你有所帮助，可以请我喝瓶饮料或奶茶呀~",
     // locationSetting.ts
@@ -367,13 +403,16 @@ export default {
     MENU_TRACK_NOTE: "Track Note",
     MENU_UNTRACK_NOTE: "Untrack Note",
     // data.ts
-    DATA_TAGGED_FILE_CANT_UNTRACK: "it is taged file, can't untrack by this. You can delete the #review tag in note file.",
+    DATA_TAGGED_FILE_CANT_UNTRACK:
+        "it is taged file, can't untrack by this. You can delete the #review tag in note file.",
     DATA_UNTRACKED_ITEMS: "Untracked ${numItems} items${nulrstr}",
     DATA_UNABLE_TO_SAVE: "Unable to save data file!",
-    DATA_FOLDER_UNTRACKED: "In folder ${folderPath}, ${totalRemoved} files are no longer tracked for repetition",
+    DATA_FOLDER_UNTRACKED:
+        "In folder ${folderPath}, ${totalRemoved} files are no longer tracked for repetition",
     DATA_ADDED_REMOVED_ITEMS: "Added ${totalAdded} new items, removed ${totalRemoved} items.",
     DATA_ADDED_REMOVED_ITEMS_SHORT: "Added ${added} new items, removed ${removed} items.",
-    DATA_FILE_UPDATE: "${filePath} update - lineNo: ${lineNo}\nAdded: ${added} new card items, removed ${removed} card items.",
+    DATA_FILE_UPDATE:
+        "${filePath} update - lineNo: ${lineNo}\nAdded: ${added} new card items, removed ${removed} card items.",
     DATA_ALL_ITEMS_UPDATED: "all items have been updated.",
     RECALCULATE_NOTES: "Recalculate notes",
     RECALCULATING_NOTES_NOTICE_START: "Recalculating notes...",
@@ -389,5 +428,6 @@ export default {
     DATA_LOST_WARNING: "have some data lost, see console for details.",
     // algorithms_switch.ts
     ALGORITHM_SWITCH_FAILED: "conversion failed, old algorithm and data restored, please issue it.",
-    ALGORITHM_SWITCH_SUCCESS: "conversion completed, due to different algorithm parameters, subsequent review intervals will be adjusted"
+    ALGORITHM_SWITCH_SUCCESS:
+        "conversion completed, due to different algorithm parameters, subsequent review intervals will be adjusted",
 };

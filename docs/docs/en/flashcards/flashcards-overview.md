@@ -2,7 +2,8 @@
 
 Flashcards are defined within standard Obsidian markdown files.
 
-A markdown file containing flashcards must identify the [deck](decks.md) (or decks) into which the flashcards are placed.
+A markdown file containing flashcards must identify the [deck](decks.md) (or decks) into which the flashcards are
+placed.
 However, the file does not need to be tagged as a [note](../notes.md) for it to have flashcards defined.
 
 Two types of flashcards are supported:
@@ -43,7 +44,7 @@ For some flashcard types, the flashcard text defines a single card. For other fl
 cards are defined.
 
 | Flashcard Type                                                        | Cards Defined                                                                                 |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+|-----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | [Single-line Basic](qanda-cards.md#single-line-basic)                 | flashcard defines the front and back of a single card.                                        |
 | [Single-line Bidirectional](qanda-cards.md#single-line-bidirectional) | flashcard defines two cards.                                                                  |
 | [Multi-line Basic](qanda-cards.md#multi-line-basic)                   | flashcard defines the front and back of a single card.                                        |
@@ -54,7 +55,8 @@ cards are defined.
 
 If there are multiple cards defined by a single flashcard, those cards are known as `sibling` cards.
 
-A special scheduling option is available for the review of sibling cards. If the [Bury sibling cards until the next day](../user-options.md#flashcard-review) setting is turned on,
+A special scheduling option is available for the review of sibling cards. If
+the [Bury sibling cards until the next day](../user-options.md#flashcard-review) setting is turned on,
 only one sibling card is available for review on a single day.
 
 ### Including Blank Lines within Multiline and Cloze Flashcards
@@ -72,7 +74,8 @@ There are two ways that the plugin can be used with RTL languages, such as Arabi
 
 If all cards are in a RTL language, then simply enable the global Obsidian option `Editor → Right-to-left (RTL)`.
 
-If all cards within a single note have the same LTR/RTL direction, then frontmatter can be used to specify the text direction. For example:
+If all cards within a single note have the same LTR/RTL direction, then frontmatter can be used to specify the text
+direction. For example:
 
 ```
 ---
@@ -94,4 +97,5 @@ To delete a card, simply delete the scheduling information & the card text.
 
 ### Ignoring cards
 
-You can wrap flashcards in HTML comments e.g. `<!--Card text <!--SR:2021-08-20,13,290--> -->` to prevent it from showing up in your review queues. You can always remove the wrapping comment later.
+You can wrap flashcards in HTML comments e.g. `<!--Card text <!--SR:2021-08-20,13,290--> -->` to prevent it from showing
+up in your review queues. You can always remove the wrapping comment later.

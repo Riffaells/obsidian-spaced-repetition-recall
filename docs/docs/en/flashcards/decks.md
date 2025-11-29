@@ -35,9 +35,11 @@ Question6 (in deckC)::Answer6
 
 ### A Single Card Within Multiple Decks
 
-Usually the content of a card is only relevant to a single deck. However, sometimes content doesn't fall neatly into a single deck of the hierarchy.
+Usually the content of a card is only relevant to a single deck. However, sometimes content doesn't fall neatly into a
+single deck of the hierarchy.
 
-In these cases, a card can be tagged as being part of multiple decks. The following card is specified as being in the three different decks listed.
+In these cases, a card can be tagged as being part of multiple decks. The following card is specified as being in the
+three different decks listed.
 
 ```markdown
 #flashcards/language/words #flashcards/trivia #flashcards/learned-from-tv

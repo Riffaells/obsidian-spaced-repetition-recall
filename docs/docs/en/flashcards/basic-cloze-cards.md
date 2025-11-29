@@ -1,8 +1,10 @@
 # Basic Cloze Cards
 
-With [Single & Multiline Cards](../flashcards/qanda-cards.md) the text of both the front and back of each card is specified.
+With [Single & Multiline Cards](../flashcards/qanda-cards.md) the text of both the front and back of each card is
+specified.
 
-With `cloze` cards a single text is specified, together with an identification of which parts of the text should be obscured.
+With `cloze` cards a single text is specified, together with an identification of which parts of the text should be
+obscured.
 
 The front of the card is displayed as the text with (one or more) `cloze deletions` obscured.
 
@@ -34,7 +36,8 @@ The first female prime minister of Australia was ==Julia Gillard==
 
 ### Multiple Cloze Deletions
 
-If the card text identifies multiple parts as cloze deletions, then multiple cards will be shown for review, each one occluding one deletion, while leaving the other deletions visible.
+If the card text identifies multiple parts as cloze deletions, then multiple cards will be shown for review, each one
+occluding one deletion, while leaving the other deletions visible.
 
 For instance, the following note:
 
@@ -65,7 +68,8 @@ These two cards are considered sibling cards. See [sibling cards](flashcards-ove
 
 ## Cloze Delimiter
 
-The cloze delimiter can be modified in [settings](../user-options.md#flashcard-review), e.g. to `**`, or curly braces `{{text in curly braces}}`.
+The cloze delimiter can be modified in [settings](../user-options.md#flashcard-review), e.g. to `**`, or curly braces
+`{{text in curly braces}}`.
 
 <!--
 ## Cloze Hints
@@ -109,4 +113,5 @@ and this also ==in group 1==[^1]
 ## Anki style
 
 !!! warning
-Anki style `{{c1:This text}} would {{c2:generate}} {{c1:2 cards}}` cloze deletions are not currently supported. This feature is being tracked [here](https://github.com/st3v3nmw/obsidian-spaced-repetition/issues/93/).
+Anki style `{{c1:This text}} would {{c2:generate}} {{c1:2 cards}}` cloze deletions are not currently supported. This
+feature is being tracked [here](https://github.com/st3v3nmw/obsidian-spaced-repetition/issues/93/).
