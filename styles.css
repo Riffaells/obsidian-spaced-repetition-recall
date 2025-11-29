@@ -664,9 +664,6 @@ button.sr-tab-header-button:hover {
     width: 100%;
     box-sizing: border-box;
     align-content: flex-start;
-    background-color: var(--background-primary-alt);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 4px;
 }
 
 .tag-item {
@@ -675,7 +672,7 @@ button.sr-tab-header-button:hover {
     gap: 4px;
     padding: 4px 8px;
     background-color: var(--background-modifier-border);
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 0.9em;
     flex: 0 0 auto;
     flex-shrink: 0;
