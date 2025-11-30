@@ -404,7 +404,8 @@ Q2::A2
     });
 
     test("SingleLineBasic: Note topic applies to all questions when not overriden", async () => {
-        const noteText: string = `
+        const noteText: string = `#flashcards/science
+
 Q1::A1
 Q2::A2
 Q3::A3
@@ -425,7 +426,8 @@ Q3::A3
     });
 
     test("SingleLineBasic: Note topic applies to all questions when trackedNoteToDecks", async () => {
-        const noteText: string = `
+        const noteText: string = `#flashcards/science
+
 Q1::A1
 Q2::A2
 Q3::A3
@@ -533,7 +535,8 @@ describe("Handling tags within note", () => {
         const parser2: NoteQuestionParser = createTest_NoteQuestionParser(settings);
 
         test("Folder path applies to all questions within note", async () => {
-            const noteText: string = `
+            const noteText: string = `#flashcards
+
     Q1::A1
     Q2::A2
     Q3::A3
@@ -960,3 +963,107 @@ function checkQuestion2(question: Question) {
     expect(question.cards[0]).toMatchObject(card1);
     return question;
 }
+
+describe("Header-based flashcards integration", () => {
+    test("Header-based cards are parsed when enabled", async () => {
+        const settings: SRSettings = { ...DEFAULT_SETTINGS };
+        settings.enableHeaderBasedCards = true;
+        settings.headerCardBaseConfig = {
+            headingLevels: [2],
+            mode: "qa",
+            nestingMode: "nested",
+        };
+        const parser: NoteQuestionParser = createTest_NoteQuestionParser(settings);
+
+        const noteText: string = `#flashcards
+
+## What is React?
+React is a JavaScript library.
+
+Q1::A1
+`;
+        const noteFile: ISRFile = new UnitTestSRFile(noteText);
+        const folderTopicPath: TopicPath = TopicPath.emptyPath;
+        const questionList: Question[] = await parser.createQuestionList(
+            noteFile,
+            TextDirection.Ltr,
+            folderTopicPath,
+            true,
+        );
+
+        // Should have 2 questions: 1 header-based + 1 inline
+        expect(questionList.length).toEqual(2);
+        
+        // First question should be header-based (MultiLineBasic)
+        expect(questionList[0].questionType).toBe(CardType.MultiLineBasic);
+        expect(questionList[0].questionText.actualQuestion).toContain("What is React?");
+        
+        // Second question should be inline (SingleLineBasic)
+        expect(questionList[1].questionType).toBe(CardType.SingleLineBasic);
+        expect(questionList[1].questionText.actualQuestion).toBe("Q1::A1");
+    });
+
+    test("Header-based cards are not parsed when disabled", async () => {
+        const settings: SRSettings = { ...DEFAULT_SETTINGS };
+        settings.enableHeaderBasedCards = false;
+        const parser: NoteQuestionParser = createTest_NoteQuestionParser(settings);
+
+        const noteText: string = `#flashcards
+
+## What is React?
+React is a JavaScript library.
+
+Q1::A1
+`;
+        const noteFile: ISRFile = new UnitTestSRFile(noteText);
+        const folderTopicPath: TopicPath = TopicPath.emptyPath;
+        const questionList: Question[] = await parser.createQuestionList(
+            noteFile,
+            TextDirection.Ltr,
+            folderTopicPath,
+            true,
+        );
+
+        // Should have only 1 question: the inline card
+        expect(questionList.length).toEqual(1);
+        expect(questionList[0].questionType).toBe(CardType.SingleLineBasic);
+    });
+
+    test("Header-based cards work with custom tags", async () => {
+        const settings: SRSettings = { ...DEFAULT_SETTINGS };
+        settings.enableHeaderBasedCards = true;
+        settings.headerCardBaseConfig = {
+            headingLevels: [2],
+            mode: "qa",
+            nestingMode: "nested",
+        };
+        settings.headerCardCustomTags = {
+            "#flashcards/h3": {
+                headingLevels: [3],
+                nestingMode: "nested",
+                mode: "qa",
+                enabled: true,
+            },
+        };
+        const parser: NoteQuestionParser = createTest_NoteQuestionParser(settings);
+
+        const noteText: string = `#flashcards/h3
+
+### What is Vue?
+Vue is a progressive framework.
+`;
+        const noteFile: ISRFile = new UnitTestSRFile(noteText);
+        const folderTopicPath: TopicPath = TopicPath.emptyPath;
+        const questionList: Question[] = await parser.createQuestionList(
+            noteFile,
+            TextDirection.Ltr,
+            folderTopicPath,
+            true,
+        );
+
+        // Should have 1 header-based question from h3
+        expect(questionList.length).toEqual(1);
+        expect(questionList[0].questionType).toBe(CardType.MultiLineBasic);
+        expect(questionList[0].questionText.actualQuestion).toContain("What is Vue?");
+    });
+});
