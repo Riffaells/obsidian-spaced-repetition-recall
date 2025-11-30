@@ -43,6 +43,7 @@ export default {
     RESPONSE_RECEIVED: "Response received.",
     NO_DECK_EXISTS: "No deck exists for ${deckName}",
     ALL_CAUGHT_UP: "You're all caught up now :D.",
+    NO_FLASHCARD_DECKS_FOUND: "No flashcard decks found",
     // scheduling.ts
     DAYS_STR_IVL: "${interval} day(s)",
     MONTHS_STR_IVL: "${interval} month(s)",

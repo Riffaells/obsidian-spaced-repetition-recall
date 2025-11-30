@@ -43,6 +43,7 @@ export default {
     RESPONSE_RECEIVED: "反馈已收到",
     NO_DECK_EXISTS: "没有 ${deckName} 卡组",
     ALL_CAUGHT_UP: "都复习完啦，你真棒！\n去接触点新东西吧~",
+    NO_FLASHCARD_DECKS_FOUND: "No flashcard decks found",
     // scheduling.ts
     DAYS_STR_IVL: "${interval}天",
     MONTHS_STR_IVL: "${interval}月",

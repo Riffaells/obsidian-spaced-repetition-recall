@@ -437,6 +437,7 @@ export default {
     RECALCULATING_NOTES_NOTICE_START: "Recalculating notes...",
     RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Recalculation finished. Found ${count} new note(s).",
     RECALCULATING_NOTES_NOTICE_DONE_NONE: "Recalculation finished. No new notes found.",
+    NO_FLASHCARD_DECKS_FOUND: "Nessun mazzo di flashcard trovato.",
     // reviewView.ts
     NEXT_REVIEW_MINUTES: "You can review in ${interval} minutes",
     NEXT_REVIEW_HOURS: "You can review in ${interval} hours",

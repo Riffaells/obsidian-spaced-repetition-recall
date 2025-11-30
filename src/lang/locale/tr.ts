@@ -43,6 +43,7 @@ export default {
     RESPONSE_RECEIVED: "Yanıt alındı.",
     NO_DECK_EXISTS: "${deckName} adında bir deste yok",
     ALL_CAUGHT_UP: "🏆 Şampiyon gibi bitirdin! 😄",
+    NO_FLASHCARD_DECKS_FOUND: "No flashcard decks found",
     // scheduling.ts
     DAYS_STR_IVL: "${interval} gün",
     MONTHS_STR_IVL: "${interval} ay",

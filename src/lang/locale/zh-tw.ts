@@ -43,6 +43,7 @@ export default {
     RESPONSE_RECEIVED: "回饋已收到",
     NO_DECK_EXISTS: "沒有 ${deckName} 牌組",
     ALL_CAUGHT_UP: "都復習完啦，你真棒！",
+    NO_FLASHCARD_DECKS_FOUND: "No flashcard decks found",
     // scheduling.ts
     DAYS_STR_IVL: "${interval}天",
     MONTHS_STR_IVL: "${interval}月",
