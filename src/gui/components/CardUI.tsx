@@ -113,7 +113,7 @@ export class CardUI {
 
         this._createCardControls();
 
-        if (this.settings.showContextInCards) {
+        if (this.settings.showContextInCards || this.settings.headerCardShowContext) {
             this.context = this.view.createDiv();
             this.context.addClass("sr-context");
         }
@@ -139,10 +139,14 @@ export class CardUI {
         this.resetButton.disabled = true;
 
         // Setup context
-        if (this.settings.showContextInCards) {
-            this.context.setText(
-                this._formatQuestionContextText(this._currentQuestion.questionContext),
-            );
+        if (this.context) {
+            const contextText = this._getContextText();
+            if (contextText) {
+                this.context.setText(contextText);
+                this.context.style.display = "";
+            } else {
+                this.context.style.display = "none";
+            }
         }
 
         // Setup card content
@@ -421,6 +425,25 @@ export class CardUI {
                 this.backClickHandler();
             }
         }
+    }
+
+    private _getContextText(): string {
+        const question = this._currentQuestion;
+        
+        // For header-based flashcards, show heading context if enabled
+        if (question.isHeaderBased && this.settings.headerCardShowContext) {
+            const headingContext = question.getDisplayContext();
+            if (headingContext) {
+                return this._currentNote.file.basename + " > " + headingContext;
+            }
+        }
+        
+        // For regular flashcards, show question context if enabled
+        if (this.settings.showContextInCards && question.questionContext?.length > 0) {
+            return this._formatQuestionContextText(question.questionContext);
+        }
+        
+        return "";
     }
 
     private _formatQuestionContextText(questionContext: string[]): string {

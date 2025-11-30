@@ -279,6 +279,7 @@ export default {
     YESTERDAY: "البارحة",
     TODAY: "اليوم",
     TOMORROW: "الغد",
+    NO_FLASHCARD_DECKS_FOUND: "لم يتم العثور على رزم البطاقات التعليمية",
     // stats-modal.tsx
     STATS_TITLE: "إحصائيات",
     MONTH: "شهر",

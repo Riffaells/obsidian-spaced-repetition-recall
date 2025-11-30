@@ -198,6 +198,11 @@ export class Question {
     cards: Card[];
     hasChanged: boolean;
 
+    // Header-based flashcard fields
+    headingContext?: string[];
+    isHeaderBased: boolean;
+    isQAFormat: boolean;
+
     get questionType(): CardType {
         return this.parsedQuestionInfo.cardType;
     }
@@ -207,6 +212,20 @@ export class Question {
 
     constructor(init?: Partial<Question>) {
         Object.assign(this, init);
+    }
+
+    /**
+     * Returns the display context for the question.
+     * For header-based flashcards, returns the full heading hierarchy path.
+     * For regular flashcards, returns an empty string.
+     * 
+     * @returns The formatted context string (e.g., "JavaScript > React > Что такое хуки?")
+     */
+    getDisplayContext(): string {
+        if (!this.isHeaderBased || !this.headingContext || this.headingContext.length === 0) {
+            return "";
+        }
+        return this.headingContext.join(" > ");
     }
 
     getHtmlCommentSeparator(settings: SRSettings): string {
@@ -344,6 +363,9 @@ export class Question {
             questionContext: context,
             cards: null,
             hasChanged: false,
+            headingContext: parsedQuestionInfo.headingContext,
+            isHeaderBased: parsedQuestionInfo.isHeaderBased || false,
+            isQAFormat: parsedQuestionInfo.isQAFormat || false,
         });
 
         return result;

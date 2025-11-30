@@ -55,7 +55,7 @@ export default {
     HOURS_STR_IVL_MOBILE: "${interval}h",
     MINUTES_STR_IVL_MOBILE: "${interval}min",
     // settings.ts
-    SETTINGS_HEADER: "Spaced Repetition Recall",
+    SETTINGS_HEADER: "Spaced Repetition Flow",
     GROUP_TAGS_FOLDERS: "Tags & Folders",
     GROUP_FLASHCARD_REVIEW: "Flashcard Review",
     GROUP_FLASHCARD_SEPARATORS: "Flashcard Separators",
@@ -286,6 +286,7 @@ export default {
     YESTERDAY: "Yesterday",
     TODAY: "Today",
     TOMORROW: "Tomorrow",
+    NO_FLASHCARD_DECKS_FOUND: "No flashcard decks found",
     // stats-modal.tsx
     STATS_TITLE: "Statistics",
     MONTH: "Month",

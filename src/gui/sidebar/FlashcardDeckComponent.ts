@@ -1,8 +1,9 @@
 import type SRPlugin from "src/main";
 import { Deck } from "src/Deck";
 import { FilterType } from "./types";
+import { groupFlashcards } from "./grouping";
+import { CardGroupComponent } from "src/gui/sidebar/CardGroupComponent";
 import { t } from "src/lang/helpers";
-import { CardGroupComponent } from "./CardGroupComponent";
 
 export interface FlashcardDeckStats {
     deckName: string;
@@ -304,7 +305,7 @@ export class FlashcardDeckComponent {
 
         // Group due cards
         if (this.deck.dueFlashcards && this.deck.dueFlashcards.length > 0) {
-            const groupedCards = this.groupDueCards();
+            const groupedCards = groupFlashcards(this.deck.dueFlashcards, this.plugin, this.filter);
 
             for (const [title, cards] of Object.entries(groupedCards)) {
                 if (cards && cards.length > 0) {
@@ -315,28 +316,6 @@ export class FlashcardDeckComponent {
         }
 
         return groupsData;
-    }
-
-    private groupDueCards(): Record<string, any[]> {
-        const groupedCards: Record<string, any[]> = {};
-
-        for (const card of this.deck.dueFlashcards) {
-            if (this.filter === FilterType.ACTIVE && !card.isDue) {
-                continue;
-            }
-            if (this.filter === FilterType.REVIEWED && card.isDue) {
-                continue;
-            }
-
-            const groupTitle = card.isDue ? t("DUE_CARDS") : "Reviewed";
-
-            if (!groupedCards[groupTitle]) {
-                groupedCards[groupTitle] = [];
-            }
-            groupedCards[groupTitle].push(card);
-        }
-
-        return groupedCards;
     }
 
     private createGroupKey(groupTitle: string): string {

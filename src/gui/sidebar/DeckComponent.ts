@@ -1,10 +1,11 @@
-import { TFile } from "obsidian";
-import type SRPlugin from "src/main";
-import { ReviewDeck, SchedNote } from "src/ReviewDeck";
-import { t } from "src/lang/helpers";
-import { NoteGroupComponent } from "./NoteGroupComponent";
-import { FilterType, NoteSortType } from "./types";
+import { groupNotes } from "./grouping";
 import { calculateDaysUntilDue, createGroupKey, getGroupTitle, isNoteActive } from "./utils";
+import SRPlugin from "src/main";
+import { ReviewDeck, SchedNote } from "src/ReviewDeck";
+import { TFile } from "obsidian";
+import { FilterType, NoteSortType } from "src/gui/sidebar/types";
+import { NoteGroupComponent } from "src/gui/sidebar/NoteGroupComponent";
+import { t } from "src/lang/helpers";
 
 export class DeckComponent {
     private readonly plugin: SRPlugin;
@@ -21,6 +22,7 @@ export class DeckComponent {
     private deckEl: HTMLElement | null = null;
     private headerClickHandler: (() => void) | null = null;
     private noteSort: NoteSortType;
+    private abortController = new AbortController();
 
     constructor(
         plugin: SRPlugin,
@@ -49,29 +51,22 @@ export class DeckComponent {
     }
 
     public render(): HTMLElement | null {
-        if (!this.deck || (!this.deck.newNotes?.length && !this.deck.scheduledNotes?.length)) {
+        if (!this.shouldRender()) {
             this.removeElement();
             return null;
         }
 
-        // Аre there any "active" notes?
-        if (this.filter === FilterType.ACTIVE) {
-            const hasActiveNotes = this.checkIfDeckHasActiveNotes();
-            if (!hasActiveNotes) {
-                this.removeElement();
-                return null;
-            }
+        if (!this.deckEl) {
+            this.createDeckElement();
         }
 
-        // are there any "revied" notes?
-        if (this.filter === FilterType.REVIEWED) {
-            const hasReviewedNotes = this.checkIfDeckHasReviewedNotes();
-            if (!hasReviewedNotes) {
-                this.removeElement();
-                return null;
-            }
-        }
+        return this.deckEl;
+    }
 
+    private createDeckElement(): void {
+        this.deckEl = this.containerEl.createDiv("sr-new-deck");
+
+        // Auto-expand if contains active file
         if (this.shouldAutoExpand) {
             const hasActiveFile = this.checkIfDeckContainsActiveFile();
             if (hasActiveFile) {
@@ -79,33 +74,26 @@ export class DeckComponent {
             }
         }
 
-        if (!this.deckEl) {
-            this.deckEl = this.containerEl.createDiv("sr-new-deck");
+        const isExpanded = this.expandedDecks.has(this.deck.deckName);
+        const header = this.renderHeader(this.deckEl, isExpanded);
+        const content = this.deckEl.createDiv("sr-new-deck-content");
 
-            const isExpanded = this.expandedDecks.has(this.deck.deckName);
-            const header = this.renderHeader(this.deckEl, isExpanded);
-            const content = this.deckEl.createDiv("sr-new-deck-content");
-
-            if (!isExpanded) {
-                content.style.display = "none";
-            }
-
-            this.headerClickHandler = () => {
-                this.onToggleDeck(this.deck.deckName);
-            };
-
-            header.addEventListener("click", this.headerClickHandler, {
-                signal: this.abortController.signal,
-            });
-
-            this.reconcileGroups(content);
-        } else {
-            // Ensure listeners are attached if for some reason they were lost (unlikely if we just reuse)
-            // But we do need to return the element.
-            // We rely on update() to have updated the content.
+        if (!isExpanded) {
+            content.style.display = "none";
         }
 
-        return this.deckEl;
+        this.attachEventListeners(header);
+        this.reconcileGroups(content);
+    }
+
+    private attachEventListeners(header: HTMLElement): void {
+        this.headerClickHandler = () => {
+            this.onToggleDeck(this.deck.deckName);
+        };
+
+        header.addEventListener("click", this.headerClickHandler, {
+            signal: this.abortController.signal,
+        });
     }
 
     private removeElement(): void {
@@ -122,92 +110,100 @@ export class DeckComponent {
         }
     }
 
-        public update(
-            activeFile: TFile | null,
-            filter: FilterType,
-            shouldAutoExpand: boolean,
-            noteSort: NoteSortType,
-            deck?: ReviewDeck,
-        ): void {
-            this.activeFile = activeFile;
-            this.filter = filter;
-            this.shouldAutoExpand = shouldAutoExpand;
-            this.noteSort = noteSort;
-    
-            // Update deck reference if provided
-            if (deck) {
-                this.deck = deck;
-            }
-    
-            // Determine if the component should be rendered
-            let shouldRender = true;
-            if (!this.deck || (!this.deck.newNotes?.length && !this.deck.scheduledNotes?.length)) {
-                shouldRender = false;
-            }
-            if (this.filter === FilterType.ACTIVE && !this.checkIfDeckHasActiveNotes()) {
-                shouldRender = false;
-            }
-            if (this.filter === FilterType.REVIEWED && !this.checkIfDeckHasReviewedNotes()) {
-                shouldRender = false;
-            }
-    
-            if (!shouldRender) {
-                this.removeElement();
-                return;
-            }
-    
-            // If we are here, the component should be visible.
-            // If it's not in the DOM, render it.
-            if (!this.deckEl) {
-                this.render();
-                // After render, the element is created and fully configured.
-                return;
-            }
-            
-            // --- If we are here, the element already exists, so we just update it ---
-    
-            // Auto-expand deck if it contains the active file
-            if (this.shouldAutoExpand) {
-                const hasActiveFile = this.checkIfDeckContainsActiveFile();
-                if (hasActiveFile) {
-                    this.expandedDecks.add(this.deck.deckName);
-                }
-            }
-    
-            // Update header stats and expanded class
-            const header = this.deckEl.querySelector(".sr-new-deck-header");
-            if (header) {
-                const detailedStats = this.calculateDetailedStats();
-                const stats = header.querySelector(".sr-new-deck-stats");
-                if (stats) {
-                    stats.setText(
-                        `${detailedStats.newCount} / ${detailedStats.dueCount} / ${detailedStats.reviewedCount}`,
-                    );
-                    stats.setAttribute(
-                        "aria-label",
-                        `${t("NEW")}: ${detailedStats.newCount}, ${t("DUE_CARDS")}: ${detailedStats.dueCount}, ${t("REVIEWED")}: ${detailedStats.reviewedCount}`,
-                    );
-                }
-    
-                if (this.expandedDecks.has(this.deck.deckName)) {
-                    header.addClass("sr-deck-expanded");
-                } else {
-                    header.removeClass("sr-deck-expanded");
-                }
-            }
-    
-            // Update content visibility and reconcile groups
-            const content = this.deckEl.querySelector(".sr-new-deck-content") as HTMLElement;
-            if (content) {
-                if (this.expandedDecks.has(this.deck.deckName)) {
-                    content.style.display = "block";
-                } else {
-                    content.style.display = "none";
-                }
-    
-                this.reconcileGroups(content);
+    public update(
+        activeFile: TFile | null,
+        filter: FilterType,
+        shouldAutoExpand: boolean,
+        noteSort: NoteSortType,
+        deck?: ReviewDeck,
+    ): void {
+        this.activeFile = activeFile;
+        this.filter = filter;
+        this.shouldAutoExpand = shouldAutoExpand;
+        this.noteSort = noteSort;
+
+        // Update deck reference if provided
+        if (deck) {
+            this.deck = deck;
+        }
+
+        // Check if component should be rendered
+        if (!this.shouldRender()) {
+            this.removeElement();
+            return;
+        }
+
+        // If element doesn't exist, render it
+        if (!this.deckEl) {
+            this.render();
+            return;
+        }
+
+        // Update existing element
+        this.updateHeader();
+        this.updateContent();
+    }
+
+    private shouldRender(): boolean {
+        if (!this.deck || (!this.deck.newNotes?.length && !this.deck.scheduledNotes?.length)) {
+            return false;
+        }
+
+        if (this.filter === FilterType.ACTIVE && !this.checkIfDeckHasActiveNotes()) {
+            return false;
+        }
+
+        if (this.filter === FilterType.REVIEWED && !this.checkIfDeckHasReviewedNotes()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private updateHeader(): void {
+        if (!this.deckEl) return;
+
+        // Auto-expand deck if it contains the active file
+        if (this.shouldAutoExpand) {
+            const hasActiveFile = this.checkIfDeckContainsActiveFile();
+            if (hasActiveFile) {
+                this.expandedDecks.add(this.deck.deckName);
             }
         }
+
+        const header = this.deckEl.querySelector(".sr-new-deck-header");
+        if (!header) return;
+
+        const detailedStats = this.calculateDetailedStats();
+        const stats = header.querySelector(".sr-new-deck-stats");
+        if (stats) {
+            stats.setText(
+                `${detailedStats.newCount} / ${detailedStats.dueCount} / ${detailedStats.reviewedCount}`,
+            );
+            stats.setAttribute(
+                "aria-label",
+                `${t("NEW")}: ${detailedStats.newCount}, ${t("DUE_CARDS")}: ${detailedStats.dueCount}, ${t("REVIEWED")}: ${detailedStats.reviewedCount}`,
+            );
+        }
+
+        if (this.expandedDecks.has(this.deck.deckName)) {
+            header.addClass("sr-deck-expanded");
+        } else {
+            header.removeClass("sr-deck-expanded");
+        }
+    }
+
+    private updateContent(): void {
+        if (!this.deckEl) return;
+
+        const content = this.deckEl.querySelector(".sr-new-deck-content") as HTMLElement;
+        if (!content) return;
+
+        const isExpanded = this.expandedDecks.has(this.deck.deckName);
+        content.style.display = isExpanded ? "block" : "none";
+
+        this.reconcileGroups(content);
+    }
     private checkIfDeckHasActiveNotes(): boolean {
         if (this.deck.newNotes && this.deck.newNotes.length > 0) {
             return true;
@@ -324,36 +320,7 @@ export class DeckComponent {
         }
 
         if (this.deck.scheduledNotes && this.deck.scheduledNotes.length > 0) {
-            const maxDaysToRender = this.plugin.data.settings.maxNDaysNotesReviewQueue;
-            const groupedNotes: { [key: string]: SchedNote[] } = {};
-
-            const sortedNotes =
-                this.filter === FilterType.REVIEWED
-                    ? [...this.deck.scheduledNotes].sort((a, b) => b.dueUnix - a.dueUnix)
-                    : [...this.deck.scheduledNotes].sort((a, b) => a.dueUnix - b.dueUnix);
-
-            for (const sNote of sortedNotes) {
-                const nDays = calculateDaysUntilDue(sNote.dueUnix, this.plugin);
-
-                if (nDays > maxDaysToRender) {
-                    continue;
-                }
-
-                if (this.filter === FilterType.ACTIVE && nDays > 0) {
-                    continue;
-                }
-
-                if (this.filter === FilterType.REVIEWED && nDays <= 0) {
-                    continue;
-                }
-
-                const folderTitle = getGroupTitle(nDays, sNote.dueUnix, this.plugin);
-
-                if (!groupedNotes[folderTitle]) {
-                    groupedNotes[folderTitle] = [];
-                }
-                groupedNotes[folderTitle].push(sNote);
-            }
+            const groupedNotes = groupNotes(this.deck.scheduledNotes, this.plugin, this.filter);
 
             for (const [title, notes] of Object.entries(groupedNotes)) {
                 if (!notes || notes.length === 0) continue;
@@ -422,8 +389,6 @@ export class DeckComponent {
 
         return false;
     }
-
-    private abortController = new AbortController();
 
     public destroy(): void {
         for (const group of this.groupComponents.values()) {

@@ -9,6 +9,7 @@ import { frontmatterTagPseudoLineNum, ISRFile } from "./SRFile";
 import { TopicPath, TopicPathList } from "./TopicPath";
 import { TextDirection } from "./util/TextDirection";
 import { extractFrontmatter, splitTextIntoLineArray } from "./util/utils";
+import { HeaderBasedCardParser, HeaderBasedCardParserOptions } from "./parser/header-based/HeaderBasedCardParser";
 
 export class NoteQuestionParser {
     settings: SRSettings;
@@ -34,9 +35,24 @@ export class NoteQuestionParser {
     contentTopicPathInfo: TopicPathList[];
 
     questionList: Question[];
+    
+    // Header-based card parser
+    private headerBasedCardParser: HeaderBasedCardParser;
 
     constructor(settings: SRSettings) {
         this.settings = settings;
+        
+        // Initialize header-based card parser
+        const headerParserOptions: HeaderBasedCardParserOptions = {
+            enableHeaderCards: settings.enableHeaderBasedCards,
+            defaultConfig: {
+                ...settings.headerCardBaseConfig,
+                enabled: true,
+            },
+            customTags: new Map(Object.entries(settings.headerCardCustomTags)),
+            showContext: settings.headerCardShowContext,
+        };
+        this.headerBasedCardParser = new HeaderBasedCardParser(headerParserOptions);
     }
 
     async createQuestionList(
@@ -53,9 +69,9 @@ export class NoteQuestionParser {
             SettingsUtil.isFlashcardTag(this.settings, item),
         );
 
-        // Only process files that have flashcard tags
-        // Note: If convertFoldersToDecks or trackedNoteToDecks is enabled, files without flashcard tags
-        // will still be processed, but they won't create any cards unless they contain flashcard syntax
+        // Process files that have flashcard tags
+        // Note: convertFoldersToDecks and trackedNoteToDecks affect deck organization, not card parsing
+        // Cards are only parsed from notes that have explicit flashcard tags
         if (hasFlashcardTags) {
             // Reading the file is relatively an expensive operation, so we only do this when needed
             const noteText: string = await noteFile.read();
@@ -139,6 +155,16 @@ export class NoteQuestionParser {
 
     private parseQuestions(): ParsedQuestionInfo[] {
         const settings = this.settings;
+        
+        // Parse header-based cards first
+        const tagCacheList: string[] = this.noteFile.getAllTagsFromCache();
+        const headerBasedCards = this.headerBasedCardParser.parse(
+            this.noteText,
+            tagCacheList,
+            this.noteLines
+        );
+        
+        // Parse traditional cards (inline and multiline)
         const parserOptions: ParserOptions = {
             singleLineCardSeparator: settings.singleLineCardSeparator,
             singleLineReversedCardSeparator: settings.singleLineReversedCardSeparator,
@@ -149,7 +175,10 @@ export class NoteQuestionParser {
         };
 
         // We pass contentText which has the frontmatter blanked out; see extractFrontmatter for reasoning
-        return parse(this.contentText, parserOptions);
+        const traditionalCards = parse(this.contentText, parserOptions);
+        
+        // Merge results: header-based cards first, then traditional cards
+        return [...headerBasedCards, ...traditionalCards];
     }
 
     private createQuestionObject(

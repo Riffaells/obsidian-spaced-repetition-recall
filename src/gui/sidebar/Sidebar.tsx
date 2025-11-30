@@ -143,7 +143,12 @@ export class ReviewQueueListView extends ItemView {
 
         const statsContainer = this.mainContainer.createDiv();
         this.cachedStats = calculateSidebarStats(this.plugin);
-        this.stats = new SidebarStats(statsContainer, this.cachedStats);
+        this.stats = new SidebarStats(
+            statsContainer,
+            this.cachedStats,
+            () => this.openRandomNew(),
+            () => this.openRandomDue(),
+        );
         this.stats.render();
 
         this.decksContainer = this.mainContainer.createDiv("sr-new-sidebar-decks");
@@ -736,6 +741,166 @@ export class ReviewQueueListView extends ItemView {
         this.update(currentFile, false, false);
     }
 
+    private openRandomNew = async (): Promise<void> => {
+        if (this.currentViewMode === SidebarViewMode.FlashCards) {
+            await this.openRandomNewCard();
+        } else {
+            await this.openRandomNewNote();
+        }
+    };
+
+    private openRandomDue = async (): Promise<void> => {
+        if (this.currentViewMode === SidebarViewMode.FlashCards) {
+            await this.openRandomDueCard();
+        } else {
+            await this.openRandomDueNote();
+        }
+    };
+
+    private async openRandomNewCard(): Promise<void> {
+        if (!this.plugin.deckTree) {
+            return;
+        }
+
+        const allDecks = this.plugin.deckTree.toDeckArray();
+        const allNewCards: Array<{ card: any; deck: Deck }> = [];
+
+        for (const deck of allDecks) {
+            if (deck.newFlashcards && deck.newFlashcards.length > 0) {
+                for (const card of deck.newFlashcards) {
+                    allNewCards.push({ card, deck });
+                }
+            }
+        }
+
+        if (allNewCards.length === 0) {
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * allNewCards.length);
+        const { card, deck } = allNewCards[randomIndex];
+
+        await this.plugin.sync();
+
+        const tempDeck = new Deck(deck.deckName, null);
+        tempDeck.newFlashcards.push(card);
+
+        const rootDeck = new Deck(deck.deckName, null);
+        rootDeck.subdecks.push(tempDeck);
+
+        if (this.plugin.data.settings.openViewInNewTab) {
+            await this.plugin.tabViewManager.openSRTabView(
+                import("src/FlashcardReviewSequencer").then((m) => m.FlashcardReviewMode.Review),
+            );
+        } else {
+            (this.plugin as any).openFlashcardModal(
+                rootDeck,
+                rootDeck,
+                import("src/FlashcardReviewSequencer").then((m) => m.FlashcardReviewMode.Review),
+            );
+        }
+    }
+
+    private async openRandomDueCard(): Promise<void> {
+        if (!this.plugin.deckTree) {
+            return;
+        }
+
+        const allDecks = this.plugin.deckTree.toDeckArray();
+        const allDueCards: Array<{ card: any; deck: Deck }> = [];
+
+        for (const deck of allDecks) {
+            if (deck.dueFlashcards && deck.dueFlashcards.length > 0) {
+                for (const card of deck.dueFlashcards) {
+                    if (card.isDue) {
+                        allDueCards.push({ card, deck });
+                    }
+                }
+            }
+        }
+
+        if (allDueCards.length === 0) {
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * allDueCards.length);
+        const { card, deck } = allDueCards[randomIndex];
+
+        await this.plugin.sync();
+
+        const tempDeck = new Deck(deck.deckName, null);
+        tempDeck.dueFlashcards.push(card);
+
+        const rootDeck = new Deck(deck.deckName, null);
+        rootDeck.subdecks.push(tempDeck);
+
+        if (this.plugin.data.settings.openViewInNewTab) {
+            await this.plugin.tabViewManager.openSRTabView(
+                (await import("src/FlashcardReviewSequencer")).FlashcardReviewMode.Review,
+            );
+        } else {
+            (this.plugin as any).openFlashcardModal(
+                rootDeck,
+                rootDeck,
+                (await import("src/FlashcardReviewSequencer")).FlashcardReviewMode.Review,
+            );
+        }
+    }
+
+    private async openRandomNewNote(): Promise<void> {
+        const allNewNotes: SchedNote[] = [];
+
+        for (const deck of Object.values(this.plugin.reviewDecks)) {
+            if (deck.newNotes && deck.newNotes.length > 0) {
+                allNewNotes.push(...deck.newNotes);
+            }
+        }
+
+        if (allNewNotes.length === 0) {
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * allNewNotes.length);
+        const randomNote = allNewNotes[randomIndex];
+
+        this.plugin.lastSelectedReviewDeck = randomNote.note.path;
+        await this.plugin.app.workspace.getLeaf().openFile(randomNote.note);
+
+        const { DataLocation } = await import("src/dataStore/dataLocation");
+        if (this.plugin.data.settings.dataLocation !== DataLocation.SaveOnNoteFile) {
+            this.plugin.reviewFloatBar.display(randomNote.item);
+        }
+    }
+
+    private async openRandomDueNote(): Promise<void> {
+        const allDueNotes: SchedNote[] = [];
+
+        for (const deck of Object.values(this.plugin.reviewDecks)) {
+            if (deck.scheduledNotes && deck.scheduledNotes.length > 0) {
+                for (const note of deck.scheduledNotes) {
+                    if (note.dueUnix <= Date.now()) {
+                        allDueNotes.push(note);
+                    }
+                }
+            }
+        }
+
+        if (allDueNotes.length === 0) {
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * allDueNotes.length);
+        const randomNote = allDueNotes[randomIndex];
+
+        this.plugin.lastSelectedReviewDeck = randomNote.note.path;
+        await this.plugin.app.workspace.getLeaf().openFile(randomNote.note);
+
+        const { DataLocation } = await import("src/dataStore/dataLocation");
+        if (this.plugin.data.settings.dataLocation !== DataLocation.SaveOnNoteFile) {
+            this.plugin.reviewFloatBar.display(randomNote.item);
+        }
+    }
+
     public onunload(): void {
         for (const component of this.deckComponents.values()) {
             component.destroy();
@@ -746,6 +911,10 @@ export class ReviewQueueListView extends ItemView {
             component.destroy();
         }
         this.flashcardDeckComponents.clear();
+
+        if (this.stats) {
+            this.stats.destroy();
+        }
 
         this.header = null;
         this.stats = null;

@@ -1,12 +1,11 @@
 import { Platform } from "obsidian";
 import { t } from "src/lang/helpers";
 import { NoteSortType, SidebarViewMode, SortType } from "./gui/sidebar/types";
-// import { pathMatchesPattern } from "src/utils/fs";
-// https://github.com/martin-jw/obsidian-recall/blob/main/src/settings.ts
 import { algorithms } from "./algorithms/algorithms_switch";
 import { DataLocation } from "./dataStore/dataLocation";
 import { DEFAULT_responseOptionBtnsText } from "./settings/algorithmSetting";
 import { pathMatchesPattern } from "src/utils/fs";
+import { HeaderCardConfig } from "./parser/header-based/types";
 
 export interface SRSettings {
     // flashcards
@@ -32,6 +31,26 @@ export interface SRSettings {
     multilineCardEndMarker: string;
     editLaterTag: string;
     intervalShowHide: boolean;
+    
+    // header-based flashcards
+    enableHeaderBasedCards: boolean;
+    /** 
+     * Base configuration for header-based flashcards.
+     * This replaces headerCardDefaultConfig in v2.
+     * These settings define the default behavior for predefined tags.
+     */
+    headerCardBaseConfig: {
+        headingLevels: number[];        // [2] by default
+        mode: "qa" | "all";             // "qa" by default
+        nestingMode: "nested" | "flat"; // "nested" by default
+    };
+    /**
+     * Custom tags with their configurations.
+     * Supports regex patterns (e.g., "#flashcards/h[123]", "#вопросы/h[2-4]")
+     */
+    headerCardCustomTags: Record<string, HeaderCardConfig>;
+    headerCardShowContext: boolean;
+    
     // notes
     enableNoteReviewPaneOnStartup: boolean;
     tagsToReview: string[];
@@ -124,6 +143,17 @@ export const DEFAULT_SETTINGS: SRSettings = {
     multilineCardEndMarker: "",
     editLaterTag: "#edit-later",
     intervalShowHide: true,
+    
+    // header-based flashcards
+    enableHeaderBasedCards: false,
+    headerCardBaseConfig: {
+        headingLevels: [2],
+        mode: "qa",
+        nestingMode: "nested",
+    },
+    headerCardCustomTags: {},
+    headerCardShowContext: true,
+    
     // notes
     enableNoteReviewPaneOnStartup: true,
     tagsToReview: ["#review"],
@@ -236,6 +266,37 @@ export function upgradeSettings(settings: SRSettings) {
     ) {
         console.log(`Invalid sidebarViewMode: ${settings.sidebarViewMode}, defaulting to Notes`);
         settings.sidebarViewMode = SidebarViewMode.Notes;
+    }
+
+    // Migrate header-based flashcard settings
+    if (settings.enableHeaderBasedCards == null) {
+        settings.enableHeaderBasedCards = DEFAULT_SETTINGS.enableHeaderBasedCards;
+    }
+    
+    // Migrate from v1 (headerCardDefaultConfig) to v2 (headerCardBaseConfig)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const settingsAny = settings as any;
+    if (settingsAny.headerCardDefaultConfig != null && settings.headerCardBaseConfig == null) {
+        // Migrate from old format to new format
+        settings.headerCardBaseConfig = {
+            headingLevels: settingsAny.headerCardDefaultConfig.headingLevels || [2],
+            mode: settingsAny.headerCardDefaultConfig.mode || "qa",
+            nestingMode: settingsAny.headerCardDefaultConfig.nestingMode || "nested",
+        };
+        // Remove old property
+        delete settingsAny.headerCardDefaultConfig;
+        console.log("Migrated headerCardDefaultConfig to headerCardBaseConfig");
+    }
+    
+    if (settings.headerCardBaseConfig == null) {
+        settings.headerCardBaseConfig = DEFAULT_SETTINGS.headerCardBaseConfig;
+    }
+    
+    if (settings.headerCardCustomTags == null) {
+        settings.headerCardCustomTags = DEFAULT_SETTINGS.headerCardCustomTags;
+    }
+    if (settings.headerCardShowContext == null) {
+        settings.headerCardShowContext = DEFAULT_SETTINGS.headerCardShowContext;
     }
 }
 

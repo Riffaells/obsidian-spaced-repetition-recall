@@ -1,9 +1,17 @@
 /** @type {import('@ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
-    verbose: true,
+    verbose: false,
     preset: "ts-jest",
     testEnvironment: "jsdom",
     setupFilesAfterEnv: ["jest-expect-message"],
+    reporters: [
+        [
+            "default",
+            {
+                summaryThreshold: 0, // Всегда показывать краткую сводку
+            },
+        ],
+    ],
     moduleNameMapper: {
         "src/(.*)": "<rootDir>/src/$1",
     },

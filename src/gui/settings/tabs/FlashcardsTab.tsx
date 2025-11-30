@@ -9,6 +9,7 @@ import { addIntervalShowHideSetting } from "src/settings/intervalShowHideSetting
 import { applySettingsUpdate } from "../utils";
 import { createFoldersToIgnoreSetting } from "../components/FoldersToIgnoreSetting";
 import { createTagsManager } from "../components/TagsManager";
+import { createHeaderCardSettings } from "src/settings/headerCardSettings";
 
 export class FlashcardsTab {
     static async render(
@@ -44,6 +45,9 @@ export class FlashcardsTab {
             );
 
         createFoldersToIgnoreSetting(containerEl, plugin, settingsTab);
+
+        // Header-based flashcards settings
+        createHeaderCardSettings(containerEl, plugin);
 
         containerEl.createEl("h3", { text: t("GROUP_FLASHCARD_REVIEW") });
         addMultiClozeSetting(containerEl, plugin);

@@ -7,8 +7,6 @@ import SRPlugin from "src/main";
 // @ts-ignore
 import README from "README.md";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import README_ZH from "docs/README_ZH.md";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import RELEASE_changelog from "docs/docs/changelog.md";
@@ -19,16 +17,9 @@ import { buildDonation } from "src/settings/donation";
 const local = moment.locale();
 let README_LOC: string;
 let readme: string[];
-// let readme_tks: string[];
-if (local === "zh-cn" || local === "zh-tw") {
-    README_LOC = README_ZH;
-    readme = README_LOC.match(/^(.|\r?\n)*(?=\r?\n## 下载)/gm);
-    // readme_tks = README_LOC.match(/^(## Thanks(?:.|\r?\n)*)$/gm);
-} else {
-    README_LOC = README;
-    readme = README_LOC.match(/^(.|\r?\n)*(?=\r?\n## How)/gm);
-    // readme_tks = README_LOC.match(/^(## Thanks(?:.|\r?\n)*)$/gm);
-}
+README_LOC = README;
+readme = README_LOC.match(/^(.|\r?\n)*(?=\r?\n## How)/gm);
+
 const latestRelease = RELEASE_changelog.match(/## \[(?:.|\r?\n)*?(?=\r?\n## \[)/gm);
 let PLUGIN_VERSION: string;
 

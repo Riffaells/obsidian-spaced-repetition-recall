@@ -283,6 +283,7 @@ export default {
     YESTERDAY: "Včera",
     TODAY: "Dnes",
     TOMORROW: "Zítra",
+    NO_FLASHCARD_DECKS_FOUND: "Nebyly nalezeny žádné balíčky kartiček",
     // stats-modal.tsx
     STATS_TITLE: "Statistiky",
     MONTH: "Měsíc",

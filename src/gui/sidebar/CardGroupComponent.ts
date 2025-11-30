@@ -2,6 +2,7 @@ import type SRPlugin from "src/main";
 import { Card } from "src/Card";
 import { Deck } from "src/Deck";
 import { FlashcardReviewMode } from "src/FlashcardReviewSequencer";
+import { MarkdownFormatter } from "src/util/markdown-formatter";
 
 export class CardGroupComponent {
     private plugin: SRPlugin;
@@ -131,8 +132,8 @@ export class CardGroupComponent {
         // Card content
         const cardContent = cardEl.createDiv("sr-card-content-wrapper");
         const cardFront = cardContent.createDiv("sr-card-front");
-        const frontText = this.extractPlainText(card.front);
-        cardFront.setText(frontText);
+        const frontText = MarkdownFormatter.extractDisplayText(card.front);
+        cardFront.innerHTML = frontText;
 
         // Card status indicator
         if (card.isDue) {
@@ -155,14 +156,7 @@ export class CardGroupComponent {
         return cardEl;
     }
 
-    private extractPlainText(html: string): string {
-        // Remove HTML tags using regex
-        const text = html.replace(/<[^>]*>/g, "").trim();
 
-        // Truncate if too long
-        const maxLength = 100;
-        return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
-    }
 
     private async openCardReview(card: Card): Promise<void> {
         await this.plugin.sync();

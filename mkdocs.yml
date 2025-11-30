@@ -1,41 +1,43 @@
-site_name: Obsidian Spaced Repetition
+site_name: Obsidian Spaced Repetition Flow
 site_url: https://www.stephenmwangi.com/obsidian-spaced-repetition/
-site_author: Stephen Mwangi
+site_author: Riffaells
 site_description: >-
-  Documentation for the Obsidian Spaced Repetition plugin
+  Documentation for the Obsidian Spaced Repetition Flow plugin - A comprehensive fork with 15+ enhancements including FSRS algorithm, separate data storage, float bar, and advanced review features
 
-repo_name: st3v3nmw/obsidian-spaced-repetition
-repo_url: https://github.com/st3v3nmw/obsidian-spaced-repetition/
+repo_name: Riffaells/obsidian-spaced-repetition-flow
+repo_url: https://github.com/Riffaells/obsidian-spaced-repetition-flow/
 edit_uri: ""
 docs_dir: docs/docs
 # use_directory_urls: false
 
 theme:
   name: material
-  logo: assets/favicon.ico
-  favicon: assets/favicon.ico
-  icon:
-    repo: fontawesome/brands/github
+  language: ru
   palette:
     - scheme: default
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
+      primary: indigo
+      accent: cyan
     - scheme: slate
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+      primary: indigo
+      accent: cyan
   features:
+    - navigation.instant
+    - navigation.tabs
     - navigation.top
-    - navigation.expand
-    - toc.follow
+    - navigation.sections
+    - toc.integrate
+    - search.suggest
+    - search.highlight
 
 nav:
   - Index: index.md
+  - What's New in Flow: en/flow-features.md
+  - Usage Guide: usage.md
   - Flashcards:
       - Flashcards Overview: flashcards/flashcards-overview.md
       - Question & Answer Cards: flashcards/qanda-cards.md
       - Cloze Cards: flashcards/basic-cloze-cards.md
+      - Header-Based Cards: flashcards/header-based-cards.md
       - Cards with Blank Lines: flashcards/cards-with-blank-lines.md
       - Organizing into Decks: flashcards/decks.md
       - Reviewing & Cramming: flashcards/reviewing.md
@@ -61,8 +63,6 @@ plugins:
         - locale: en
           name: English
           default: true
-        - locale: zh
-          name: 简体中文
 
 markdown_extensions:
   - toc:

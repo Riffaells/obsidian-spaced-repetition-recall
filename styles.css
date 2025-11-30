@@ -538,6 +538,9 @@ button.sr-tab-header-button:hover {
 /* Statistics */
 .sr-new-sidebar-stats { display: flex; gap: 8px; }
 .sr-stat-card { flex: 1; padding: 10px; border-radius: 6px; background: var(--background-secondary); border: 2px solid var(--background-modifier-border); text-align: center; }
+.sr-stat-card-clickable { cursor: pointer; }
+.sr-stat-card-clickable:hover { background: var(--background-modifier-hover); }
+.sr-stat-card-clickable:active { opacity: 0.8; }
 .sr-stat-due { border-left: 2px solid var(--text-error); }
 .sr-stat-new { border-left: 2px solid var(--text-accent); }
 .sr-stat-number { font-size: 18px; font-weight: 700; color: var(--text-normal); margin-bottom: 2px; }
@@ -723,4 +726,86 @@ button.sr-tab-header-button:hover {
     font-size: 0.9em;
     font-style: italic;
     padding: 4px 0;
+}
+
+/* === Header Card Tag Config Modal === */
+.header-card-tag-config-modal .modal-content {
+    padding: 20px;
+}
+
+.header-card-tag-config-modal h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* === Custom Tags Manager === */
+.custom-tags-container {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.custom-tags-add-button-container {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.custom-tags-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.custom-tags-empty-message {
+    padding: 12px;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.custom-tag-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    background-color: var(--background-secondary);
+    transition: background-color 0.2s;
+}
+
+.custom-tag-item:hover {
+    background-color: var(--background-secondary-alt);
+}
+
+.custom-tag-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.custom-tag-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--text-normal);
+}
+
+.custom-tag-details {
+    font-size: 0.9em;
+    color: var(--text-muted);
+}
+
+.custom-tag-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.custom-tag-actions .clickable-icon {
+    padding: 4px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.custom-tag-actions .clickable-icon:hover {
+    opacity: 1;
 }

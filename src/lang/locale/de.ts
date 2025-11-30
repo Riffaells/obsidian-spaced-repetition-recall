@@ -285,6 +285,7 @@ export default {
     YESTERDAY: "Gestern",
     TODAY: "Heute",
     TOMORROW: "Morgen",
+    NO_FLASHCARD_DECKS_FOUND: "Keine Karteikarten-Decks gefunden",
     // stats-modal.tsx
     STATS_TITLE: "Statistiken",
     MONTH: "Monat",
