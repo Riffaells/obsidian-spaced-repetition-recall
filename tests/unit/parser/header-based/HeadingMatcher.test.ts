@@ -20,6 +20,8 @@ describe("HeadingMatcher", () => {
         lineNumber,
         isQuestion,
         context: [],
+        index: 0,
+        indexInLevel: 0,
     });
 
     describe("matchHeadings - filtering by heading level", () => {

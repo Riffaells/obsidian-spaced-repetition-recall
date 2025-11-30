@@ -4,25 +4,85 @@
  * @module parser/header-based/types
  */
 
+// ============================================================================
+// Core Types
+// ============================================================================
+
 /**
- * Configuration for header-based flashcard parsing
+ * Уникальный идентификатор правила.
  */
-export interface HeaderCardConfig {
-    /** Array of heading levels to process (1-6 for h1-h6) */
-    headingLevels: number[];
-    
-    /** How to handle nested content under headings */
-    nestingMode: "nested" | "flat";
-    
-    /** Which headings to convert to cards */
-    mode: "qa" | "all";
-    
-    /** Whether this configuration is enabled */
+export type RuleId = string;
+
+/**
+ * Типы селекторов для позиционирования.
+ * Убираем неоднозначность строк типа "last-2".
+ */
+export type PositionalSelector =
+    | { type: "first"; count: number }          // Первые N (напр. first: 3)
+    | { type: "last"; count: number }           // Последние N (напр. last: 2)
+    | { type: "nth"; index: number }            // Конкретный по порядку (1-based)
+    | { type: "nthFromEnd"; offset: number };   // Конкретный с конца (0 = последний)
+
+/**
+ * Основное правило конфигурации (то, что храним в data.json).
+ * Полностью сериализуемо (никаких RegExp объектов).
+ */
+export interface FlashcardTagRule {
+    id: RuleId;
+    name: string;               // Для отображения в UI (напр. "Exam Mode")
     enabled: boolean;
+    priority: number;           // 0 - default, 100 - override. Для разрешения конфликтов.
+
+    // --- Matching Strategy ---
+    // Либо точное совпадение тега, либо Regex-строка
+    tagExact?: string;          // Напр: "#flashcards/exam"
+    tagPattern?: string;        // Напр: "^#flashcards/.*" (храним как строку!)
+    patternFlags?: string;      // Напр: "i"
+
+    // --- Content Extraction Rules ---
+    source: "header" | "inline" | "multiline";
+
+    // Настройки для header-based карточек
+    headerRules?: {
+        headingLevels: number[];       // [1, 2]
+        nestingMode: "nested" | "flat";
+        
+        // Селекторы: какие именно заголовки брать
+        selectors: PositionalSelector[];
+        
+        // Контекст
+        includeParents: number;        // 0 = нет, 1 = родитель, -1 = все родители
+        
+        // Режим генерации
+        cardMode: "qa" | "cloze" | "visual";
+        qaSeparator?: string;          // Разделитель вопроса/ответа
+    };
+
+    // Настройки для inline (опционально, на будущее)
+    inlineRules?: {
+        separator: string; // "::"
+    };
 }
 
 /**
- * Information about a heading found in the note
+ * Итоговый конфиг для конкретного заголовка в рантайме.
+ * Получается после слияния всех подходящих правил.
+ */
+export interface ResolvedHeaderConfig {
+    ruleIds: RuleId[];               // Какие правила применились (для отладки)
+    nestingMode: "nested" | "flat";
+    cardMode: "qa" | "cloze" | "visual";
+    includeParents: number;
+    qaSeparator: string;
+    // headingLevels и selectors здесь уже не нужны, так как мы уже нашли заголовок
+}
+
+// ============================================================================
+// Parsing Types (AST-based)
+// ============================================================================
+
+/**
+ * Information about a heading found in the note (from AST)
  */
 export interface HeadingInfo {
     /** Heading level (1-6 for h1-h6) */
@@ -40,8 +100,11 @@ export interface HeadingInfo {
     /** Path of parent headings for context */
     context: string[];
     
-    /** Index among headings of the same level (0-based, optional) */
-    index?: number;
+    /** Index among all headings in document (0-based) */
+    index: number;
+    
+    /** Index among headings of the same level (0-based) */
+    indexInLevel: number;
 }
 
 /**
@@ -56,44 +119,6 @@ export interface ContentBoundary {
     
     /** Whether the answer includes subheadings */
     includesSubheadings: boolean;
-}
-
-/**
- * Resolved configuration after merging multiple tags
- * This is the final configuration used for parsing after all tags are processed
- */
-export interface ResolvedTagConfig {
-    /** Combined heading levels from all matching tags (union) */
-    headingLevels: number[];
-    
-    /** Recognition mode: "qa" for headings with "?", "all" for all headings */
-    mode: "qa" | "all";
-    
-    /** Nesting mode: "nested" includes subheadings, "flat" stops at first subheading */
-    nestingMode: "nested" | "flat";
-    
-    /** Positional selectors to filter headings by position */
-    positionalSelectors: PositionalSelector[];
-    
-    /** Whether this configuration is active */
-    enabled: boolean;
-}
-
-/**
- * Positional selector for filtering headings by their position in the document
- * Examples: first-3 (first 3 headings), last-2 (last 2 headings), nth-5 (5th heading)
- */
-export interface PositionalSelector {
-    /** Type of positional selection */
-    type: "first" | "last" | "nth";
-    
-    /** 
-     * Count for first/last selectors, or 1-based index for nth selector
-     * For first-3: count = 3 (select first 3 headings)
-     * For last-2: count = 2 (select last 2 headings)
-     * For nth-5: count = 5 (select the 5th heading, 1-based)
-     */
-    count: number;
 }
 
 /**
@@ -117,20 +142,31 @@ export interface QAContent {
     answerLineEnd: number;
 }
 
+// ============================================================================
+// Legacy Types (For Migration)
+// ============================================================================
+
 /**
- * Tag pattern for regex-based tag matching
- * Allows custom tags to match multiple tag variations using regex
+ * Legacy configuration for header-based flashcard parsing
+ * @deprecated Use FlashcardTagRule instead
  */
-export interface TagPattern {
-    /** Compiled regex pattern for matching tags */
-    pattern: RegExp;
+export interface HeaderCardConfig {
+    /** Array of heading levels to process (1-6 for h1-h6) */
+    headingLevels: number[];
     
-    /** Configuration to apply when the pattern matches */
-    config: HeaderCardConfig;
+    /** How to handle nested content under headings */
+    nestingMode: "nested" | "flat";
+    
+    /** Which headings to convert to cards */
+    mode: "qa" | "all";
+    
+    /** Whether this configuration is enabled */
+    enabled: boolean;
 }
 
 /**
- * Options for the HeaderBasedCardParser
+ * Legacy options for the HeaderBasedCardParser
+ * @deprecated Use new rule-based system
  */
 export interface HeaderBasedCardParserOptions {
     /** Whether header-based card parsing is enabled */
@@ -144,4 +180,37 @@ export interface HeaderBasedCardParserOptions {
     
     /** Whether to show heading context in cards */
     showContext: boolean;
+}
+
+/**
+ * Resolved configuration after merging multiple tags (legacy)
+ * @deprecated Use ResolvedHeaderConfig instead
+ */
+export interface ResolvedTagConfig {
+    /** Combined heading levels from all matching tags (union) */
+    headingLevels: number[];
+    
+    /** Recognition mode: "qa" for headings with "?", "all" for all headings */
+    mode: "qa" | "all";
+    
+    /** Nesting mode: "nested" includes subheadings, "flat" stops at first subheading */
+    nestingMode: "nested" | "flat";
+    
+    /** Positional selectors to filter headings by position */
+    positionalSelectors: PositionalSelector[];
+    
+    /** Whether this configuration is active */
+    enabled: boolean;
+}
+
+/**
+ * Tag pattern for regex-based tag matching (legacy)
+ * @deprecated Use FlashcardTagRule with tagPattern instead
+ */
+export interface TagPattern {
+    /** Compiled regex pattern for matching tags */
+    pattern: RegExp;
+    
+    /** Configuration to apply when the pattern matches */
+    config: HeaderCardConfig;
 }

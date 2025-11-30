@@ -28,3 +28,7 @@ export { HeadingMatcher } from "./header-based/HeadingMatcher";
 export { ContentBoundaryDetector } from "./header-based/ContentBoundaryDetector";
 export { mergeConfigs } from "./header-based/config";
 export { HeaderCardConfig, HeadingInfo, ContentBoundary } from "./header-based/types";
+
+// Re-export note parsers
+export { NoteParser } from "./NoteParser";
+export { NoteQuestionParser } from "./NoteQuestionParser";

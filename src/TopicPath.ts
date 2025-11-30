@@ -165,7 +165,7 @@ export class TopicPathList {
     //
     // tagList is a list of tags such as:
     //      ["#flashcards/computing", "#boring-stuff", "#news-worthy"]
-    // validTopicPathList is a list of valid tags, such as those from settings.flashcardTags,E.g.
+    // validTopicPathList is a list of valid tags, such as those from settings.flashcardTagRules, e.g.
     //      ["#flashcards"]
     //
     // This returns a filtered version of tagList, containing only topic paths that are considered valid.

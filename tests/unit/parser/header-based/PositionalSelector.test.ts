@@ -17,6 +17,7 @@ function createHeading(
         isQuestion,
         context: [],
         index: 0,
+        indexInLevel: 0,
     };
 }
 
@@ -43,7 +44,17 @@ describe("PositionalSelectorUtil", () => {
 
         test("Parses nth-N selector correctly", () => {
             const result = PositionalSelectorUtil.parseSelector("nth-5");
-            expect(result).toEqual({ type: "nth", count: 5 });
+            expect(result).toEqual({ type: "nth", index: 5 });
+        });
+
+        test("Parses nthFromEnd-N selector correctly", () => {
+            const result = PositionalSelectorUtil.parseSelector("nthFromEnd-0");
+            expect(result).toEqual({ type: "nthFromEnd", offset: 0 });
+        });
+
+        test("Parses nthFromEnd-N selector with positive offset", () => {
+            const result = PositionalSelectorUtil.parseSelector("nthFromEnd-2");
+            expect(result).toEqual({ type: "nthFromEnd", offset: 2 });
         });
 
         test("Parses single digit counts", () => {
@@ -155,7 +166,7 @@ describe("PositionalSelectorUtil", () => {
 
     describe("applySelectors - nth-N selector", () => {
         test("Selects the Nth heading (1-based)", () => {
-            const selectors: PositionalSelector[] = [{ type: "nth", count: 3 }];
+            const selectors: PositionalSelector[] = [{ type: "nth", index: 3 }];
             const result = PositionalSelectorUtil.applySelectors(sampleHeadings, selectors);
 
             expect(result).toHaveLength(1);
@@ -163,7 +174,7 @@ describe("PositionalSelectorUtil", () => {
         });
 
         test("Selects the first heading with nth-1", () => {
-            const selectors: PositionalSelector[] = [{ type: "nth", count: 1 }];
+            const selectors: PositionalSelector[] = [{ type: "nth", index: 1 }];
             const result = PositionalSelectorUtil.applySelectors(sampleHeadings, selectors);
 
             expect(result).toHaveLength(1);
@@ -171,7 +182,7 @@ describe("PositionalSelectorUtil", () => {
         });
 
         test("Selects the last heading with nth-5", () => {
-            const selectors: PositionalSelector[] = [{ type: "nth", count: 5 }];
+            const selectors: PositionalSelector[] = [{ type: "nth", index: 5 }];
             const result = PositionalSelectorUtil.applySelectors(sampleHeadings, selectors);
 
             expect(result).toHaveLength(1);
@@ -179,7 +190,39 @@ describe("PositionalSelectorUtil", () => {
         });
 
         test("Returns empty array when N > available headings", () => {
-            const selectors: PositionalSelector[] = [{ type: "nth", count: 10 }];
+            const selectors: PositionalSelector[] = [{ type: "nth", index: 10 }];
+            const result = PositionalSelectorUtil.applySelectors(sampleHeadings, selectors);
+
+            expect(result).toHaveLength(0);
+        });
+    });
+
+    describe("applySelectors - nthFromEnd-N selector", () => {
+        test("Selects the Nth from end heading (0-based offset)", () => {
+            const selectors: PositionalSelector[] = [{ type: "nthFromEnd", offset: 0 }]; // Last element
+            const result = PositionalSelectorUtil.applySelectors(sampleHeadings, selectors);
+
+            expect(result).toHaveLength(1);
+            expect(result[0].text).toBe("Heading 5");
+        });
+
+        test("Selects the second from end heading", () => {
+            const selectors: PositionalSelector[] = [{ type: "nthFromEnd", offset: 1 }];
+            const result = PositionalSelectorUtil.applySelectors(sampleHeadings, selectors);
+
+            expect(result).toHaveLength(1);
+            expect(result[0].text).toBe("Heading 4");
+        });
+
+        test("Returns empty array when offset exceeds available headings", () => {
+            const selectors: PositionalSelector[] = [{ type: "nthFromEnd", offset: 10 }];
+            const result = PositionalSelectorUtil.applySelectors(sampleHeadings, selectors);
+
+            expect(result).toHaveLength(0);
+        });
+
+        test("Returns empty array when offset is exactly headings.length", () => {
+            const selectors: PositionalSelector[] = [{ type: "nthFromEnd", offset: sampleHeadings.length }];
             const result = PositionalSelectorUtil.applySelectors(sampleHeadings, selectors);
 
             expect(result).toHaveLength(0);
@@ -204,7 +247,7 @@ describe("PositionalSelectorUtil", () => {
             // First get first 3, then get 2nd of those
             const selectors: PositionalSelector[] = [
                 { type: "first", count: 3 },
-                { type: "nth", count: 2 },
+                { type: "nth", index: 2 },
             ];
             const result = PositionalSelectorUtil.applySelectors(sampleHeadings, selectors);
 
@@ -229,7 +272,7 @@ describe("PositionalSelectorUtil", () => {
             // Get first 2, then try to get 5th (doesn't exist)
             const selectors: PositionalSelector[] = [
                 { type: "first", count: 2 },
-                { type: "nth", count: 5 },
+                { type: "nth", index: 5 },
             ];
             const result = PositionalSelectorUtil.applySelectors(sampleHeadings, selectors);
 
@@ -272,7 +315,7 @@ describe("PositionalSelectorUtil", () => {
 
         test("Handles single heading with nth-1 selector", () => {
             const singleHeading = [createHeading(2, "Only Heading", 0)];
-            const selectors: PositionalSelector[] = [{ type: "nth", count: 1 }];
+            const selectors: PositionalSelector[] = [{ type: "nth", index: 1 }];
             const result = PositionalSelectorUtil.applySelectors(singleHeading, selectors);
 
             expect(result).toHaveLength(1);
@@ -281,7 +324,7 @@ describe("PositionalSelectorUtil", () => {
 
         test("Handles single heading with nth-2 selector (out of bounds)", () => {
             const singleHeading = [createHeading(2, "Only Heading", 0)];
-            const selectors: PositionalSelector[] = [{ type: "nth", count: 2 }];
+            const selectors: PositionalSelector[] = [{ type: "nth", index: 2 }];
             const result = PositionalSelectorUtil.applySelectors(singleHeading, selectors);
 
             expect(result).toHaveLength(0);
@@ -298,8 +341,8 @@ describe("PositionalSelectorUtil", () => {
 
         test("Preserves heading properties after selection", () => {
             const headingsWithContext: HeadingInfo[] = [
-                { level: 2, text: "Question?", lineNumber: 5, isQuestion: true, context: ["Parent"], index: 0 },
-                { level: 3, text: "Regular", lineNumber: 10, isQuestion: false, context: ["Parent", "Child"], index: 1 },
+                { level: 2, text: "Question?", lineNumber: 5, isQuestion: true, context: ["Parent"], index: 0, indexInLevel: 0 },
+                { level: 3, text: "Regular", lineNumber: 10, isQuestion: false, context: ["Parent", "Child"], index: 1, indexInLevel: 0 },
             ];
             const selectors: PositionalSelector[] = [{ type: "first", count: 1 }];
             const result = PositionalSelectorUtil.applySelectors(headingsWithContext, selectors);

@@ -506,7 +506,11 @@ export class DataStore {
             const fileCachedData = Iadapter.instance.metadataCache.getFileCache(note) || {};
             const tags = getAllTags(fileCachedData) || [];
             const deckname = Tags.getNoteDeckName(note, this.settings);
-            cardName = Tags.getTagFromSettingTags(tags, this.settings.flashcardTags);
+            // Use new flashcard tag rules system instead of deprecated flashcardTags
+            const flashcardTags = this.settings.flashcardTagRules
+                .filter(rule => rule.enabled && rule.tagExact)
+                .map(rule => rule.tagExact);
+            cardName = Tags.getTagFromSettingTags(tags, flashcardTags);
             if (deckname !== null) {
                 // || cardName !== null
                 // it's taged file, can't untrack by this.

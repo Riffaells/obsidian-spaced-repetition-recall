@@ -8,8 +8,7 @@ import { addcardBlockIDSetting } from "src/settings/cardBlockIDSetting";
 import { addIntervalShowHideSetting } from "src/settings/intervalShowHideSetting";
 import { applySettingsUpdate } from "../utils";
 import { createFoldersToIgnoreSetting } from "../components/FoldersToIgnoreSetting";
-import { createTagsManager } from "../components/TagsManager";
-import { createHeaderCardSettings } from "src/settings/headerCardSettings";
+import { createFlashcardRulesManager } from "../components/FlashcardRulesManager";
 
 export class FlashcardsTab {
     static async render(
@@ -19,18 +18,8 @@ export class FlashcardsTab {
     ): Promise<void> {
         containerEl.createEl("h3", { text: t("GROUP_TAGS_FOLDERS") });
 
-        createTagsManager(
-            containerEl,
-            plugin,
-            plugin.app,
-            t("FLASHCARD_TAGS"),
-            t("FLASHCARD_TAGS_DESC"),
-            plugin.data.settings.flashcardTags,
-            async (tags: string[]) => {
-                plugin.data.settings.flashcardTags = tags;
-                await plugin.savePluginData();
-            },
-        );
+        // Unified flashcard rules manager
+        createFlashcardRulesManager(containerEl, plugin);
 
         new Setting(containerEl)
             .setName(t("CONVERT_FOLDERS_TO_DECKS"))
@@ -45,9 +34,6 @@ export class FlashcardsTab {
             );
 
         createFoldersToIgnoreSetting(containerEl, plugin, settingsTab);
-
-        // Header-based flashcards settings
-        createHeaderCardSettings(containerEl, plugin);
 
         containerEl.createEl("h3", { text: t("GROUP_FLASHCARD_REVIEW") });
         addMultiClozeSetting(containerEl, plugin);
@@ -172,16 +158,22 @@ export class FlashcardsTab {
                 t(config.desc, { defaultPattern: config.pattern }),
             );
             setting.addToggle((toggle) =>
-                toggle.setValue(plugin.data.settings[config.key]).onChange(async (value) => {
-                    const clozePatternSet = new Set(plugin.data.settings.clozePatterns);
-                    value
-                        ? clozePatternSet.add(config.pattern)
-                        : clozePatternSet.delete(config.pattern);
-                    plugin.data.settings.clozePatterns = [...clozePatternSet];
-                    plugin.data.settings[config.key] = value;
-                    await plugin.savePluginData();
-                    settingsTab.redisplay();
-                }),
+                toggle
+                    .setValue(
+                        plugin.data.settings[
+                            config.key as keyof typeof plugin.data.settings
+                        ] as boolean,
+                    )
+                    .onChange(async (value) => {
+                        const clozePatternSet = new Set(plugin.data.settings.clozePatterns);
+                        value
+                            ? clozePatternSet.add(config.pattern)
+                            : clozePatternSet.delete(config.pattern);
+                        plugin.data.settings.clozePatterns = [...clozePatternSet];
+                        (plugin.data.settings as any)[config.key] = value;
+                        await plugin.savePluginData();
+                        settingsTab.redisplay();
+                    }),
             );
         }
     }
@@ -245,19 +237,25 @@ export class FlashcardsTab {
                 .setName(t(sep.name))
                 .setDesc(t("FIX_SEPARATORS_MANUALLY_WARNING"))
                 .addText((text) =>
-                    text.setValue(plugin.data.settings[sep.key]).onChange((value) => {
-                        applySettingsUpdate(async () => {
-                            plugin.data.settings[sep.key] = value;
-                            await plugin.savePluginData();
-                        });
-                    }),
+                    text
+                        .setValue(
+                            plugin.data.settings[sep.key as keyof typeof plugin.data.settings] as string,
+                        )
+                        .onChange((value) => {
+                            applySettingsUpdate(async () => {
+                                (plugin.data.settings as any)[sep.key] = value;
+                                await plugin.savePluginData();
+                            });
+                        }),
                 )
                 .addExtraButton((button) => {
                     button
                         .setIcon("reset")
                         .setTooltip(t("RESET_DEFAULT"))
                         .onClick(async () => {
-                            plugin.data.settings[sep.key] = DEFAULT_SETTINGS[sep.key];
+                            (plugin.data.settings as any)[sep.key] = (DEFAULT_SETTINGS as any)[
+                                sep.key
+                            ];
                             await plugin.savePluginData();
                             settingsTab.redisplay();
                         });

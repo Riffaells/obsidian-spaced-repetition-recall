@@ -128,17 +128,20 @@ export class TagResolver {
     resolve(noteTags: string[]): ResolvedTagConfig {
         const configs: HeaderCardConfig[] = [];
         const positionalSelectors: PositionalSelector[] = [];
+        const processedTags = new Set<string>();
         
         for (const tag of noteTags) {
             // 1. Check predefined tags first
             if (this.predefinedTags.has(tag)) {
                 configs.push(this.predefinedTags.get(tag)!);
+                processedTags.add(tag);
                 continue;
             }
             
             // 2. Check exact match in custom tags (non-regex)
             if (this.customTags.has(tag) && !this.isRegexPattern(tag)) {
                 configs.push(this.customTags.get(tag)!);
+                processedTags.add(tag);
                 continue;
             }
             
@@ -148,6 +151,7 @@ export class TagResolver {
                 if (this.matchesPattern(tag, pattern)) {
                     configs.push(config);
                     matchedRegex = true;
+                    processedTags.add(tag);
                     break;
                 }
             }
@@ -162,31 +166,35 @@ export class TagResolver {
                 if (compositeResult.positionalSelector) {
                     positionalSelectors.push(compositeResult.positionalSelector);
                 }
+                processedTags.add(tag);
             }
         }
         
-        // If no configs found, return disabled config
+        // Extract positional selectors from tags that weren't processed yet
+        // This handles standalone positional selector tags like #flashcards/first-3
+        const unprocessedTags = noteTags.filter(tag => !processedTags.has(tag));
+        const extractedSelectors = this.extractPositionalSelectors(unprocessedTags);
+        const allPositionalSelectors = [...positionalSelectors, ...extractedSelectors];
+        
+        // If no configs found, return disabled config (unless we have positional selectors)
         if (configs.length === 0) {
             return {
                 headingLevels: this.baseConfig.headingLevels,
                 mode: this.baseConfig.mode,
                 nestingMode: this.baseConfig.nestingMode,
-                positionalSelectors: [],
-                enabled: false,
+                positionalSelectors: allPositionalSelectors,
+                enabled: allPositionalSelectors.length > 0,
             };
         }
         
         // Merge all configs
         const merged = mergeConfigs(configs);
         
-        // Extract positional selectors from tags that weren't parsed as composite
-        const extractedSelectors = this.extractPositionalSelectors(noteTags);
-        
         return {
             headingLevels: merged.headingLevels,
             mode: merged.mode,
             nestingMode: merged.nestingMode,
-            positionalSelectors: [...positionalSelectors, ...extractedSelectors],
+            positionalSelectors: allPositionalSelectors,
             enabled: merged.enabled,
         };
     }
@@ -218,13 +226,24 @@ export class TagResolver {
         const selectors: PositionalSelector[] = [];
         
         for (const tag of tags) {
-            // Match standalone positional selector tags like #flashcards/last-3
-            const match = tag.match(/^#[^/]+\/(first|last|nth)-(\d+)$/);
+            // Match standalone positional selector tags like #flashcards/last-3, #flashcards/nth-5, #flashcards/nthFromEnd-0
+            const match = tag.match(/^#[^/]+\/(first|last|nth|nthFromEnd)-(\d+)$/);
             if (match) {
-                const type = match[1] as "first" | "last" | "nth";
-                const count = parseInt(match[2], 10);
-                if (count > 0) {
-                    selectors.push({ type, count });
+                const type = match[1] as PositionalSelector["type"];
+                const value = parseInt(match[2], 10);
+                if (value > 0 || (type === "nthFromEnd" && value === 0)) { // Allow offset: 0 for nthFromEnd
+                    switch (type) {
+                        case "first":
+                        case "last":
+                            selectors.push({ type, count: value });
+                            break;
+                        case "nth":
+                            selectors.push({ type, index: value });
+                            break;
+                        case "nthFromEnd":
+                            selectors.push({ type, offset: value });
+                            break;
+                    }
                 }
             }
         }
@@ -310,14 +329,25 @@ export class TagResolver {
                 config.nestingMode = part;
                 hasValidComponent = true;
             }
-            // Positional selector: first-3, last-2, nth-5
-            else if (/^(first|last|nth)-\d+$/.test(part)) {
-                const selectorMatch = part.match(/^(first|last|nth)-(\d+)$/);
+            // Positional selector: first-3, last-2, nth-5, nthFromEnd-0
+            else if (/^(first|last|nth|nthFromEnd)-\d+$/.test(part)) {
+                const selectorMatch = part.match(/^(first|last|nth|nthFromEnd)-(\d+)$/);
                 if (selectorMatch) {
-                    const type = selectorMatch[1] as "first" | "last" | "nth";
-                    const count = parseInt(selectorMatch[2], 10);
-                    if (count > 0) {
-                        positionalSelector = { type, count };
+                    const type = selectorMatch[1] as PositionalSelector["type"];
+                    const value = parseInt(selectorMatch[2], 10);
+                    if (value > 0 || (type === "nthFromEnd" && value === 0)) { // Allow offset: 0 for nthFromEnd
+                        switch (type) {
+                            case "first":
+                            case "last":
+                                positionalSelector = { type, count: value };
+                                break;
+                            case "nth":
+                                positionalSelector = { type, index: value };
+                                break;
+                            case "nthFromEnd":
+                                positionalSelector = { type, offset: value };
+                                break;
+                        }
                         hasValidComponent = true;
                     }
                 }

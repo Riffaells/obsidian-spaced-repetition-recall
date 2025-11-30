@@ -1017,6 +1017,8 @@ export default class SRPlugin extends Plugin {
     }
 
     async savePluginData(): Promise<void> {
+        // Clear pattern cache when settings change
+        SettingsUtil.clearPatternCache();
         await this.saveData(this.data);
     }
 

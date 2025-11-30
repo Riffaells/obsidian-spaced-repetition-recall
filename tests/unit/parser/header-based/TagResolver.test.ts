@@ -309,7 +309,7 @@ describe("TagResolver", () => {
             const result = resolver.resolve(["#flashcards/h2/nth-3"]);
 
             expect(result.headingLevels).toEqual([2]);
-            expect(result.positionalSelectors).toEqual([{ type: "nth", count: 3 }]);
+            expect(result.positionalSelectors).toEqual([{ type: "nth", index: 3 }]);
             expect(result.enabled).toEqual(true);
         });
 
@@ -363,7 +363,7 @@ describe("TagResolver", () => {
 
             const selectors = resolver.extractPositionalSelectors(["#flashcards/nth-5"]);
 
-            expect(selectors).toEqual([{ type: "nth", count: 5 }]);
+            expect(selectors).toEqual([{ type: "nth", index: 5 }]);
         });
 
         test("Extracts multiple positional selectors", () => {

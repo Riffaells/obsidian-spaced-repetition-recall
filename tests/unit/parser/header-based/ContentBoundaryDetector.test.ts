@@ -24,6 +24,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -31,6 +33,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 3,
                     isQuestion: false,
                     context: [],
+                    index: 1,
+                    indexInLevel: 0,
                 },
             ];
 
@@ -62,6 +66,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 3,
@@ -69,6 +75,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 2,
                     isQuestion: false,
                     context: ["Question?"],
+                    index: 1,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -76,6 +84,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 4,
                     isQuestion: false,
                     context: [],
+                    index: 2,
+                    indexInLevel: 1,
                 },
             ];
 
@@ -109,6 +119,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 3,
@@ -116,6 +128,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 2,
                     isQuestion: false,
                     context: ["Question?"],
+                    index: 1,
+                    indexInLevel: 0,
                 },
                 {
                     level: 4,
@@ -123,6 +137,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 4,
                     isQuestion: false,
                     context: ["Question?", "Level 3"],
+                    index: 2,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -130,6 +146,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 6,
                     isQuestion: false,
                     context: [],
+                    index: 3,
+                    indexInLevel: 1,
                 },
             ];
 
@@ -161,6 +179,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 3,
@@ -168,6 +188,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 2,
                     isQuestion: false,
                     context: ["Question?"],
+                    index: 1,
+                    indexInLevel: 0,
                 },
                 {
                     level: 1,
@@ -175,6 +197,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 4,
                     isQuestion: false,
                     context: [],
+                    index: 2,
+                    indexInLevel: 0,
                 },
             ];
 
@@ -205,6 +229,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
             ];
 
@@ -235,6 +261,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 3,
@@ -242,6 +270,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 2,
                     isQuestion: false,
                     context: ["Question?"],
+                    index: 1,
+                    indexInLevel: 0,
                 },
             ];
 
@@ -274,6 +304,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 3,
@@ -281,6 +313,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 2,
                     isQuestion: false,
                     context: ["Question?"],
+                    index: 1,
+                    indexInLevel: 0,
                 },
             ];
 
@@ -310,6 +344,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -317,6 +353,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 2,
                     isQuestion: false,
                     context: [],
+                    index: 1,
+                    indexInLevel: 1,
                 },
             ];
 
@@ -346,6 +384,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
             ];
 
@@ -376,6 +416,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 3,
@@ -383,6 +425,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 2,
                     isQuestion: false,
                     context: ["Question?"],
+                    index: 1,
+                    indexInLevel: 0,
                 },
             ];
 
@@ -411,6 +455,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -418,6 +464,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 1,
                     isQuestion: false,
                     context: [],
+                    index: 1,
+                    indexInLevel: 1,
                 },
             ];
 
@@ -447,6 +495,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -454,6 +504,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 3,
                     isQuestion: false,
                     context: [],
+                    index: 1,
+                    indexInLevel: 1,
                 },
             ];
 
@@ -481,6 +533,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
             ];
 
@@ -514,6 +568,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -521,6 +577,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 5,
                     isQuestion: false,
                     context: [],
+                    index: 1,
+                    indexInLevel: 1,
                 },
             ];
 
@@ -552,6 +610,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -559,6 +619,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 5,
                     isQuestion: false,
                     context: [],
+                    index: 1,
+                    indexInLevel: 1,
                 },
             ];
 
@@ -589,6 +651,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -596,6 +660,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 4,
                     isQuestion: false,
                     context: [],
+                    index: 1,
+                    indexInLevel: 1,
                 },
             ];
 
@@ -626,6 +692,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -633,6 +701,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 4,
                     isQuestion: false,
                     context: [],
+                    index: 1,
+                    indexInLevel: 1,
                 },
             ];
 
@@ -664,6 +734,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: false,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -671,6 +743,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 2,
                     isQuestion: true,
                     context: [],
+                    index: 1,
+                    indexInLevel: 1,
                 },
             ];
 
@@ -698,6 +772,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
             ];
 
@@ -726,6 +802,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 0,
                     isQuestion: true,
                     context: [],
+                    index: 0,
+                    indexInLevel: 0,
                 },
                 {
                     level: 2,
@@ -733,6 +811,8 @@ describe("ContentBoundaryDetector", () => {
                     lineNumber: 2,
                     isQuestion: false,
                     context: [],
+                    index: 1,
+                    indexInLevel: 1,
                 },
             ];
 
@@ -762,12 +842,12 @@ describe("ContentBoundaryDetector", () => {
             ];
 
             const headings: HeadingInfo[] = [
-                { level: 1, text: "Top", lineNumber: 0, isQuestion: false, context: [] },
-                { level: 2, text: "Question?", lineNumber: 1, isQuestion: true, context: ["Top"] },
-                { level: 3, text: "Level 3", lineNumber: 3, isQuestion: false, context: ["Top", "Question?"] },
-                { level: 4, text: "Level 4", lineNumber: 5, isQuestion: false, context: ["Top", "Question?", "Level 3"] },
-                { level: 3, text: "Another 3", lineNumber: 7, isQuestion: false, context: ["Top", "Question?"] },
-                { level: 2, text: "Same as Question", lineNumber: 9, isQuestion: false, context: ["Top"] },
+                { level: 1, text: "Top", lineNumber: 0, isQuestion: false, context: [], index: 0, indexInLevel: 0 },
+                { level: 2, text: "Question?", lineNumber: 1, isQuestion: true, context: ["Top"], index: 1, indexInLevel: 0 },
+                { level: 3, text: "Level 3", lineNumber: 3, isQuestion: false, context: ["Top", "Question?"], index: 2, indexInLevel: 0 },
+                { level: 4, text: "Level 4", lineNumber: 5, isQuestion: false, context: ["Top", "Question?", "Level 3"], index: 3, indexInLevel: 0 },
+                { level: 3, text: "Another 3", lineNumber: 7, isQuestion: false, context: ["Top", "Question?"], index: 4, indexInLevel: 1 },
+                { level: 2, text: "Same as Question", lineNumber: 9, isQuestion: false, context: ["Top"], index: 5, indexInLevel: 1 },
             ];
 
             const boundary = detector.detectBoundary(
@@ -792,9 +872,9 @@ describe("ContentBoundaryDetector", () => {
             ];
 
             const headings: HeadingInfo[] = [
-                { level: 1, text: "Question?", lineNumber: 0, isQuestion: true, context: [] },
-                { level: 2, text: "Subheading", lineNumber: 2, isQuestion: false, context: ["Question?"] },
-                { level: 1, text: "Next Top", lineNumber: 4, isQuestion: false, context: [] },
+                { level: 1, text: "Question?", lineNumber: 0, isQuestion: true, context: [], index: 0, indexInLevel: 0 },
+                { level: 2, text: "Subheading", lineNumber: 2, isQuestion: false, context: ["Question?"], index: 1, indexInLevel: 0 },
+                { level: 1, text: "Next Top", lineNumber: 4, isQuestion: false, context: [], index: 2, indexInLevel: 1 },
             ];
 
             const boundary = detector.detectBoundary(
@@ -817,8 +897,8 @@ describe("ContentBoundaryDetector", () => {
             ];
 
             const headings: HeadingInfo[] = [
-                { level: 6, text: "Question?", lineNumber: 0, isQuestion: true, context: [] },
-                { level: 6, text: "Next", lineNumber: 2, isQuestion: false, context: [] },
+                { level: 6, text: "Question?", lineNumber: 0, isQuestion: true, context: [], index: 0, indexInLevel: 0 },
+                { level: 6, text: "Next", lineNumber: 2, isQuestion: false, context: [], index: 1, indexInLevel: 1 },
             ];
 
             const boundary = detector.detectBoundary(

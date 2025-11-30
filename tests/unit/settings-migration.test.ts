@@ -103,6 +103,7 @@ describe("Settings Migration - Header-Based Flashcards", () => {
                 },
                 headerCardCustomTags: {},
                 headerCardShowContext: true,
+                flashcardTagRules: [], // Added this line
             } as unknown as SRSettings;
 
             upgradeSettings(oldSettings);
@@ -152,7 +153,6 @@ describe("Settings Migration - Header-Based Flashcards", () => {
 
             upgradeSettings(oldSettings);
 
-            // Should migrate with defaults for missing fields
             expect(oldSettings.headerCardBaseConfig).toEqual({
                 headingLevels: [3],
                 mode: "qa",

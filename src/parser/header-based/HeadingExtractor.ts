@@ -47,8 +47,8 @@ export class HeadingExtractor {
         const headings: HeadingInfo[] = [];
         const codeBlockState = { inCodeBlock: false, delimiter: "" };
         
-        // Track indices for each heading level (for positional selectors)
         const levelIndices: Map<number, number> = new Map();
+        let globalIndex: number = 0; // Global index for all headings
         
         for (let lineNumber = 0; lineNumber < noteLines.length; lineNumber++) {
             const line = noteLines[lineNumber];
@@ -74,9 +74,7 @@ export class HeadingExtractor {
                     continue;
                 }
                 
-                // Get and increment index for this level
-                const currentIndex = levelIndices.get(headingCheck.level) ?? 0;
-                levelIndices.set(headingCheck.level, currentIndex + 1);
+                const currentLevelIndex = levelIndices.get(headingCheck.level) ?? 0;
                 
                 headings.push({
                     level: headingCheck.level,
@@ -84,8 +82,13 @@ export class HeadingExtractor {
                     lineNumber,
                     isQuestion: headingCheck.text.trim().endsWith("?"),
                     context: [], // Will be filled by buildHeadingHierarchy
-                    index: currentIndex,
+                    index: globalIndex, // Assign global index
+                    indexInLevel: currentLevelIndex, // Assign index within its level
                 });
+
+                // Increment counters
+                levelIndices.set(headingCheck.level, currentLevelIndex + 1);
+                globalIndex++; // Increment global index
             }
         }
         

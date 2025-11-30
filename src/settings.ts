@@ -5,13 +5,24 @@ import { algorithms } from "./algorithms/algorithms_switch";
 import { DataLocation } from "./dataStore/dataLocation";
 import { DEFAULT_responseOptionBtnsText } from "./settings/algorithmSetting";
 import { pathMatchesPattern } from "src/utils/fs";
-import { HeaderCardConfig } from "./parser/header-based/types";
+import { HeaderCardConfig, FlashcardTagRule } from "./parser/header-based/types";
 
 export interface SRSettings {
     // flashcards
     responseOptionBtnsText: Record<string, string[]>;
 
-    flashcardTags: string[];
+    /**
+     * Unified flashcard tag rules (v3)
+     * Replaces flashcardTags, headerCardCustomTags
+     */
+    flashcardTagRules: FlashcardTagRule[];
+    
+    /**
+     * @deprecated Use flashcardTagRules instead
+     * Kept for migration purposes
+     */
+    flashcardTags?: string[];
+    
     convertFoldersToDecks: boolean;
     burySiblingCards: boolean;
     burySiblingCardsByNoteReview: boolean;
@@ -33,23 +44,33 @@ export interface SRSettings {
     intervalShowHide: boolean;
     
     // header-based flashcards
-    enableHeaderBasedCards: boolean;
+    /**
+     * @deprecated Use flashcardTagRules instead
+     * Kept for migration purposes
+     */
+    enableHeaderBasedCards?: boolean;
+    
     /** 
      * Base configuration for header-based flashcards.
-     * This replaces headerCardDefaultConfig in v2.
-     * These settings define the default behavior for predefined tags.
+     * Used as default when header config is not specified in rule
+     * @deprecated Will be merged into flashcardTagRules
      */
-    headerCardBaseConfig: {
+    headerCardBaseConfig?: {
         headingLevels: number[];        // [2] by default
         mode: "qa" | "all";             // "qa" by default
         nestingMode: "nested" | "flat"; // "nested" by default
     };
+    
     /**
-     * Custom tags with their configurations.
-     * Supports regex patterns (e.g., "#flashcards/h[123]", "#вопросы/h[2-4]")
+     * @deprecated Use flashcardTagRules instead
+     * Kept for migration purposes
      */
-    headerCardCustomTags: Record<string, HeaderCardConfig>;
-    headerCardShowContext: boolean;
+    headerCardCustomTags?: Record<string, HeaderCardConfig>;
+    
+    /**
+     * @deprecated Use includeParents in flashcardTagRules instead
+     */
+    headerCardShowContext?: boolean;
     
     // notes
     enableNoteReviewPaneOnStartup: boolean;
@@ -122,7 +143,69 @@ export const DEFAULT_SETTINGS: SRSettings = {
     // flashcards
     responseOptionBtnsText: DEFAULT_responseOptionBtnsText,
 
+    // Unified flashcard tag rules (v3)
+    flashcardTagRules: [
+        // Default inline rule
+        {
+            id: "default-inline-flashcards",
+            name: "Inline Flashcards",
+            tagExact: "#flashcards",
+            enabled: true,
+            priority: 0,
+            source: "inline",
+            inlineRules: {
+                separator: "::",
+            },
+        },
+        // Header-based rules with regex (h1-h6)
+        {
+            id: "default-header-levels",
+            name: "Header Levels (h1-h6)",
+            tagPattern: "^#flashcards/h[1-6]$",
+            patternFlags: "",
+            enabled: true,
+            priority: 0,
+            source: "header",
+            headerRules: {
+                headingLevels: [1, 2, 3, 4, 5, 6],
+                nestingMode: "nested",
+                selectors: [],
+                includeParents: 1,
+                cardMode: "qa",
+                qaSeparator: "?",
+            },
+        },
+        // Header-based rules with regex (ranges like h2-h3, h1-h4, etc.)
+        {
+            id: "default-header-ranges",
+            name: "Header Ranges (h1-h3, h2-h4, etc.)",
+            tagPattern: "^#flashcards/h[1-6]-h[1-6]$",
+            patternFlags: "",
+            enabled: true,
+            priority: 0,
+            source: "header",
+            headerRules: {
+                headingLevels: [1, 2, 3, 4, 5, 6],
+                nestingMode: "nested",
+                selectors: [],
+                includeParents: 1,
+                cardMode: "qa",
+                qaSeparator: "?",
+            },
+        },
+    ],
+
+    // Legacy fields (kept for backward compatibility)
     flashcardTags: ["#flashcards"],
+    enableHeaderBasedCards: false,
+    headerCardBaseConfig: {
+        headingLevels: [2],
+        mode: "qa",
+        nestingMode: "nested",
+    },
+    headerCardCustomTags: {},
+    headerCardShowContext: true,
+    
     convertFoldersToDecks: false,
     burySiblingCards: false,
     burySiblingCardsByNoteReview: false,
@@ -143,16 +226,6 @@ export const DEFAULT_SETTINGS: SRSettings = {
     multilineCardEndMarker: "",
     editLaterTag: "#edit-later",
     intervalShowHide: true,
-    
-    // header-based flashcards
-    enableHeaderBasedCards: false,
-    headerCardBaseConfig: {
-        headingLevels: [2],
-        mode: "qa",
-        nestingMode: "nested",
-    },
-    headerCardCustomTags: {},
-    headerCardShowContext: true,
     
     // notes
     enableNoteReviewPaneOnStartup: true,
@@ -221,6 +294,21 @@ export const DEFAULT_SETTINGS: SRSettings = {
 };
 
 export function upgradeSettings(settings: SRSettings) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const settingsAny = settings as any;
+
+    // Legacy migration: v1 → v2 (for users who haven't upgraded yet)
+    // This must run BEFORE flashcardTagRules migration as flashcardTagRules migration might initialize headerCardBaseConfig
+    if (settingsAny.headerCardDefaultConfig != null && settings.headerCardBaseConfig == null) {
+        settings.headerCardBaseConfig = {
+            headingLevels: settingsAny.headerCardDefaultConfig.headingLevels != null ? settingsAny.headerCardDefaultConfig.headingLevels : [2],
+            mode: settingsAny.headerCardDefaultConfig.mode != null ? settingsAny.headerCardDefaultConfig.mode : "qa",
+            nestingMode: settingsAny.headerCardDefaultConfig.nestingMode != null ? settingsAny.headerCardDefaultConfig.nestingMode : "nested",
+        };
+        delete settingsAny.headerCardDefaultConfig;
+        console.log("Migrated headerCardDefaultConfig to headerCardBaseConfig");
+    }
+
     if (
         settings.randomizeCardOrder != null &&
         settings.flashcardCardOrder == null &&
@@ -268,41 +356,219 @@ export function upgradeSettings(settings: SRSettings) {
         settings.sidebarViewMode = SidebarViewMode.Notes;
     }
 
-    // Migrate header-based flashcard settings
-    if (settings.enableHeaderBasedCards == null) {
-        settings.enableHeaderBasedCards = DEFAULT_SETTINGS.enableHeaderBasedCards;
+    // Migrate to unified flashcard tag rules (v3)
+    if (settings.flashcardTagRules == null) {
+        console.log("Migrating to unified flashcard tag rules (v3)");
+        const rules: FlashcardTagRule[] = [];
+        let ruleCounter = 0;
+        
+        // Ensure old fields have defaults for backward compatibility
+        if (settings.flashcardTags == null) {
+            settings.flashcardTags = DEFAULT_SETTINGS.flashcardTags || ["#flashcards"];
+        }
+        if (settings.enableHeaderBasedCards == null) {
+            settings.enableHeaderBasedCards = false;
+        }
+        if (settings.headerCardBaseConfig == null) {
+            settings.headerCardBaseConfig = {
+                headingLevels: [2],
+                mode: "qa",
+                nestingMode: "nested",
+            };
+        }
+        if (settings.headerCardCustomTags == null) {
+            settings.headerCardCustomTags = {};
+        }
+        if (settings.headerCardShowContext == null) {
+            settings.headerCardShowContext = true;
+        }
+        
+        // Migrate old flashcardTags (inline cards)
+        if (settings.flashcardTags && settings.flashcardTags.length > 0) {
+            for (const tag of settings.flashcardTags) {
+                rules.push({
+                    id: `migrated-inline-${ruleCounter++}`,
+                    name: `Inline: ${tag}`,
+                    tagExact: tag,
+                    enabled: true,
+                    priority: 0,
+                    source: "inline",
+                    inlineRules: {
+                        separator: "::",
+                    },
+                });
+            }
+            console.log(`Migrated ${settings.flashcardTags.length} inline flashcard tags`);
+        }
+        
+        // Migrate header-based cards
+        const showContext = settings.headerCardShowContext ?? true;
+        
+        // Migrate custom header tags
+        if (settings.headerCardCustomTags) {
+            for (const [tag, config] of Object.entries(settings.headerCardCustomTags)) {
+                if (config.enabled) {
+                    const cardMode = config.mode === "qa" ? "qa" : "visual";
+                    rules.push({
+                        id: `migrated-header-${ruleCounter++}`,
+                        name: `Header: ${tag}`,
+                        tagExact: tag,
+                        enabled: true,
+                        priority: 0,
+                        source: "header",
+                        headerRules: {
+                            headingLevels: config.headingLevels,
+                            nestingMode: config.nestingMode,
+                            selectors: [], // No positional selectors in old config
+                            includeParents: showContext ? 1 : 0,
+                            cardMode: cardMode as "qa" | "cloze" | "visual",
+                            qaSeparator: "?",
+                        },
+                    });
+                }
+            }
+            console.log(`Migrated ${Object.keys(settings.headerCardCustomTags).length} header-based tags`);
+        }
+        
+        settings.flashcardTagRules = rules.length > 0 ? rules : DEFAULT_SETTINGS.flashcardTagRules;
+        
+        // Keep old properties for backward compatibility with legacy parser
+        // They will be removed in a future version after full migration to new parser
+        // DO NOT delete these fields yet - legacy code still uses them
     }
     
-    // Migrate from v1 (headerCardDefaultConfig) to v2 (headerCardBaseConfig)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const settingsAny = settings as any;
     if (settingsAny.headerCardDefaultConfig != null && settings.headerCardBaseConfig == null) {
-        // Migrate from old format to new format
         settings.headerCardBaseConfig = {
-            headingLevels: settingsAny.headerCardDefaultConfig.headingLevels || [2],
-            mode: settingsAny.headerCardDefaultConfig.mode || "qa",
-            nestingMode: settingsAny.headerCardDefaultConfig.nestingMode || "nested",
+            headingLevels: settingsAny.headerCardDefaultConfig.headingLevels != null ? settingsAny.headerCardDefaultConfig.headingLevels : [2],
+            mode: settingsAny.headerCardDefaultConfig.mode != null ? settingsAny.headerCardDefaultConfig.mode : "qa",
+            nestingMode: settingsAny.headerCardDefaultConfig.nestingMode != null ? settingsAny.headerCardDefaultConfig.nestingMode : "nested",
         };
-        // Remove old property
         delete settingsAny.headerCardDefaultConfig;
         console.log("Migrated headerCardDefaultConfig to headerCardBaseConfig");
-    }
-    
-    if (settings.headerCardBaseConfig == null) {
-        settings.headerCardBaseConfig = DEFAULT_SETTINGS.headerCardBaseConfig;
-    }
-    
-    if (settings.headerCardCustomTags == null) {
-        settings.headerCardCustomTags = DEFAULT_SETTINGS.headerCardCustomTags;
-    }
-    if (settings.headerCardShowContext == null) {
-        settings.headerCardShowContext = DEFAULT_SETTINGS.headerCardShowContext;
     }
 }
 
 export class SettingsUtil {
+    // Cache compiled regex patterns to avoid recompiling
+    private static patternCache = new Map<string, RegExp>();
+
+    /**
+     * Check if a tag matches any enabled flashcard rule (optimized)
+     */
     static isFlashcardTag(settings: SRSettings, tag: string): boolean {
-        return SettingsUtil.isTagInList(settings.flashcardTags, tag);
+        // Fast path: check enabled rules only
+        for (const rule of settings.flashcardTagRules) {
+            if (!rule.enabled) continue;
+
+            if (rule.tagExact) {
+                if (SettingsUtil.tagMatchesRule(tag, rule.tagExact)) {
+                    return true;
+                }
+            } else if (rule.tagPattern) {
+                const pattern = SettingsUtil.getCompiledPattern(
+                    rule.id,
+                    rule.tagPattern,
+                    rule.patternFlags,
+                );
+                if (pattern && pattern.test(tag)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get all flashcard rules that match a given tag
+     */
+    static getMatchingFlashcardRules(settings: SRSettings, tag: string): FlashcardTagRule[] {
+        const matches: FlashcardTagRule[] = [];
+
+        for (const rule of settings.flashcardTagRules) {
+            if (!rule.enabled) continue;
+
+            if (rule.tagExact) {
+                if (SettingsUtil.tagMatchesRule(tag, rule.tagExact)) {
+                    matches.push(rule);
+                }
+            } else if (rule.tagPattern) {
+                const pattern = SettingsUtil.getCompiledPattern(
+                    rule.id,
+                    rule.tagPattern,
+                    rule.patternFlags,
+                );
+                if (pattern && pattern.test(tag)) {
+                    matches.push(rule);
+                }
+            }
+        }
+
+        return matches;
+    }
+
+    /**
+     * Get compiled regex pattern from cache or compile new one
+     */
+    private static getCompiledPattern(
+        ruleId: string,
+        patternSource: string,
+        flags?: string,
+    ): RegExp | null {
+        const cacheKey = `${ruleId}:${patternSource}:${flags || ""}`;
+        
+        let pattern = SettingsUtil.patternCache.get(cacheKey);
+        if (!pattern) {
+            try {
+                pattern = new RegExp(patternSource, flags || "");
+                SettingsUtil.patternCache.set(cacheKey, pattern);
+            } catch (e) {
+                console.error(`Invalid regex pattern in rule ${ruleId}:`, e);
+                return null;
+            }
+        }
+        
+        return pattern;
+    }
+
+    /**
+     * Clear pattern cache (call when rules are updated)
+     */
+    static clearPatternCache(): void {
+        SettingsUtil.patternCache.clear();
+    }
+
+    /**
+     * Get all enabled inline flashcard tags
+     */
+    static getInlineFlashcardTags(settings: SRSettings): string[] {
+        const tags: string[] = [];
+        for (const rule of settings.flashcardTagRules) {
+            if (rule.enabled && rule.source === "inline" && rule.tagExact) {
+                tags.push(rule.tagExact);
+            }
+        }
+        return tags;
+    }
+
+    /**
+     * Get all enabled header-based flashcard tags
+     */
+    static getHeaderFlashcardTags(settings: SRSettings): string[] {
+        const tags: string[] = [];
+        for (const rule of settings.flashcardTagRules) {
+            if (rule.enabled && rule.source === "header" && rule.tagExact) {
+                tags.push(rule.tagExact);
+            }
+        }
+        return tags;
+    }
+
+    /**
+     * Check if tag matches a rule pattern (supports hierarchical tags)
+     */
+    private static tagMatchesRule(tag: string, ruleTag: string): boolean {
+        // Exact match or hierarchical match (e.g., #flashcards/math matches #flashcards)
+        return tag === ruleTag || tag.startsWith(ruleTag + "/");
     }
 
     static isPathInNoteIgnoreFolder(settings: SRSettings, path: string): boolean {
@@ -331,14 +597,5 @@ export class SettingsUtil {
             }
         }
         return result;
-    }
-
-    private static isTagInList(tagList: string[], tag: string): boolean {
-        for (const tagFromList of tagList) {
-            if (tag === tagFromList || tag.startsWith(tagFromList + "/")) {
-                return true;
-            }
-        }
-        return false;
     }
 }
