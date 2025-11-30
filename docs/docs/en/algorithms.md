@@ -5,7 +5,7 @@ A learning algorithm is a formula that determines when a note or flashcard shoul
 | Algorithm                                           | Status      |
 |-----------------------------------------------------|-------------|
 | [SM-2-OSR](#sm-2-osr)                               | Implemented |
-| [FSRS](#fsrs)                                       | Planned     |
+| [FSRS](#fsrs)                                       | Implemented |
 | [User Defined Intervals](#user-specified-intervals) | Planned     |
 
 ## SM-2-OSR
@@ -52,11 +52,103 @@ A learning algorithm is a formula that determines when a note or flashcard shoul
 
 ## FSRS
 
-The algorithm is detailed at:
-[fsrs4anki](https://github.com/open-spaced-repetition/fsrs4anki/wiki)
+The **Free Spaced Repetition Scheduler (FSRS)** algorithm is a modern, more accurate alternative to the SM-2 algorithm. Flow implements FSRS v4, providing superior scheduling predictions based on your actual review history.
 
-Incorporation of the FSRS algorithm into this plugin has not yet occurred. For progress see:
-[ [FEAT] sm-2 is outdated, can you please replace it with the fsrs algorithm? #748 ](https://github.com/st3v3nmw/obsidian-spaced-repetition/issues/748)
+### Overview
+
+FSRS is a sophisticated spaced repetition algorithm that:
+
+- Provides more accurate predictions than SM-2
+- Adapts to your individual learning patterns
+- Uses a memory model based on cognitive science research
+- Supports parameter optimization using your review history
+
+The algorithm is detailed at: [FSRS v4 Documentation](https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm#fsrs-v4)
+
+### Algorithm Selection
+
+To use FSRS in Flow:
+
+1. Open plugin settings
+2. Navigate to the **Scheduling** section
+3. Select **FSRS** from the algorithm dropdown
+4. Configure FSRS parameters (see below)
+
+!!! warning "Algorithm Switching"
+
+    Don't switch algorithms frequently. Choose one algorithm and stick with it for consistent results. Different algorithms use different parameters and switching can disrupt your review schedule.
+
+### FSRS Parameters
+
+FSRS uses several parameters that control how the algorithm schedules reviews. The default parameters work well for most users, but you can optimize them for your specific learning patterns.
+
+**Default Parameters:**
+
+The plugin includes default FSRS parameters based on research. These parameters are documented in the [FSRS v4 specification](https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm#fsrs-v4).
+
+**Parameter Configuration:**
+
+You can manually adjust FSRS parameters in the plugin settings under the **Scheduling** section. However, for best results, use the FSRS optimizer (see below) to calculate optimal parameters based on your actual review history.
+
+### Review Log Export
+
+Flow can export your review history for use with the FSRS optimizer. This allows you to calculate optimal parameters tailored to your learning patterns.
+
+**To export your review log:**
+
+1. Use the command palette (Ctrl/Cmd + P)
+2. Search for and run: **"Spaced Repetition: Export review log"**
+3. Select the tag(s) you want to export
+4. The plugin will generate an `ob_revlog.csv` file
+
+**File Location:**
+
+The `ob_revlog.csv` file is saved in your vault's root directory (or the configured data location).
+
+### FSRS Optimizer
+
+The [FSRS Optimizer](https://github.com/open-spaced-repetition/fsrs-optimizer) analyzes your review history and calculates optimal parameters for your learning patterns.
+
+**Using the Optimizer:**
+
+1. Export your review log using the command above (generates `ob_revlog.csv`)
+2. Visit the [FSRS Optimizer](https://github.com/open-spaced-repetition/fsrs-optimizer)
+3. Follow the optimizer's instructions to upload your `ob_revlog.csv` file
+4. The optimizer will calculate optimal parameters for you
+5. Copy the optimized parameters back into Flow's settings
+
+**Benefits of Optimization:**
+
+- More accurate scheduling predictions
+- Better retention rates
+- Reduced review workload
+- Personalized to your learning patterns
+
+!!! tip "When to Optimize"
+
+    Optimize your parameters after you have at least 1000 reviews in your history. The more review data you have, the more accurate the optimization will be.
+
+### Comparison with SM-2-OSR
+
+| Feature                    | SM-2-OSR                          | FSRS                                    |
+|----------------------------|-----------------------------------|-----------------------------------------|
+| **Accuracy**               | Good for general use              | Superior, research-backed predictions   |
+| **Personalization**        | Limited (ease factor adjustments) | High (optimizable parameters)           |
+| **Review Outcomes**        | 3 options (Hard, Good, Easy)      | 4 options (Again, Hard, Good, Easy)     |
+| **Memory Model**           | Simple ease-based                 | Sophisticated cognitive model           |
+| **Parameter Optimization** | Not available                     | Available via FSRS optimizer            |
+| **Learning Curve**         | Simple, easy to understand        | More complex, but better results        |
+
+### Algorithm Details
+
+FSRS uses a memory model that tracks two key variables:
+
+- **Stability (S)**: How long you can remember something
+- **Difficulty (D)**: How hard the material is for you to learn
+
+The algorithm updates these variables after each review based on your response (Again, Hard, Good, Easy) and calculates the optimal next review interval.
+
+For detailed mathematical formulas and implementation details, see the [FSRS v4 Algorithm Documentation](https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm#fsrs-v4).
 
 ---
 

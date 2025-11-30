@@ -6,7 +6,7 @@ A markdown file containing flashcards must identify the [deck](decks.md) (or dec
 placed.
 However, the file does not need to be tagged as a [note](../notes.md) for it to have flashcards defined.
 
-Two types of flashcards are supported:
+Three types of flashcards are supported:
 
 <div class="grid" markdown>
 
@@ -24,6 +24,13 @@ Two types of flashcards are supported:
     The hidden text is known as a `cloze deletion`.
     <hr class="thin">
     ![flashcard-cloze-example](https://github.com/user-attachments/assets/9fb12f2e-9b81-45d9-9097-7f1e3d97ae5a)
+
+!!! note "Header-Based"
+
+    [Header-Based](header-based-cards.md) flashcards use Markdown headings as questions and the content below as answers. <br/>
+    This provides a natural, structured way to organize study materials.
+    <hr class="thin">
+    Example: `## What is React?` followed by answer content
 
 </div>
 
@@ -50,6 +57,7 @@ cards are defined.
 | [Multi-line Basic](qanda-cards.md#multi-line-basic)                   | flashcard defines the front and back of a single card.                                        |
 | [Multi-line Bidirectional](qanda-cards.md#multi-line-bidirectional)   | flashcard defines two cards.                                                                  |
 | [Cloze](basic-cloze-cards.md)                                         | flashcard defines multiple cards, the number of cards based on the number of cloze deletions. |
+| [Header-Based](header-based-cards.md)                                 | each heading matching the configuration defines a single card.                                |
 
 ### Sibling Cards
 

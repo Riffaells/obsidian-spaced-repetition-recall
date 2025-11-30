@@ -50,6 +50,51 @@ The note will then be scheduled appropriately by the [learning algorithm](algori
 
 ![note-frontmatter](https://github.com/user-attachments/assets/b9744f50-c897-46ad-ab34-1bbc55796b57)
 
+### Float Bar for Note Review
+
+Flow provides a floating review bar during note review, similar to the card review interface. This makes reviewing notes more convenient and efficient.
+
+#### Desktop Usage
+
+When reviewing a note, the float bar appears at the bottom of the screen with review options.
+
+**Keyboard Shortcuts:**
+
+When the note is in reading/preview mode (not edit mode), you can use number keys to quickly select your review response:
+
+- `0` - Reset/Again (restart the learning process)
+- `1` - Hard (difficult to recall)
+- `2` - Good (recalled with some effort)
+- `3` - Easy (recalled easily)
+
+**Float Bar Controls:**
+
+- **Right-click** on the float bar to close it
+- **Set visibility** for time intervals in the float bar settings
+
+#### Mobile Usage
+
+The float bar is also available on mobile devices with touch-optimized controls:
+
+- **Swipe up** from the float bar to show/hide the menu
+- **Long-press** on the float bar to access settings and configure time interval visibility
+
+#### Visibility Settings
+
+You can configure whether the float bar displays the next review interval times. The recommended settings depend on your use case:
+
+- **Hide intervals during review** - When doing traditional spaced repetition review, hiding the intervals helps you focus on recall without being influenced by the scheduling information
+- **Show intervals during progressive summarization** - When using notes for progressive summarization or incremental writing, showing the intervals helps you make informed decisions about when to revisit the material
+
+These visibility settings can be adjusted in the plugin settings under the note review section.
+
+!!! tip "Use Cases for Float Bar"
+    The float bar is particularly useful for:
+    
+    - **Spaced Repetition Review** - Quick review responses without leaving the note
+    - **Progressive Summarization** - Scheduling when to revisit and refine notes
+    - **Incremental Writing** - Managing attention and review timing for works in progress
+
 ### Keyboard Shortcuts
 
 The `Easy`, `Good`, and `Hard` review result can also be selected from the plugin's [command list](plugin-commands.md).

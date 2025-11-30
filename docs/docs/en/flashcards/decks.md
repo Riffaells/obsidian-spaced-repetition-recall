@@ -75,4 +75,4 @@ The plugin will automatically search for folders that contain flashcards & use t
 
 e.g. `Folder/sub-folder/sub-sub-folder` ⇔ `Deck/sub-deck/sub-sub-deck`.
 
-This is an alternative to the tagging option and can be enabled in [settings](../user-options.md#tags--folders).
+This is an alternative to the tagging option and can be enabled in [settings](../user-options.md#tags-folders).

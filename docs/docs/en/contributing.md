@@ -4,10 +4,9 @@ First off, thanks for wanting to contribute to the Spaced Repetition plugin!
 
 ## Bug Reports & Feature Requests
 
-- Check the [roadmap](https://github.com/st3v3nmw/obsidian-spaced-repetition/projects/2/) for upcoming features & fixes.
-- Raise an issue [here](https://github.com/st3v3nmw/obsidian-spaced-repetition/issues/) if you have a feature request or
+- Raise an issue [here](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/issues/) if you have a feature request or
   a bug report.
-- Visit the [discussions](https://github.com/st3v3nmw/obsidian-spaced-repetition/discussions/) section for Q&A help,
+- Visit the [discussions](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/discussions/) section for Q&A help,
   feedback, and general discussion.
 
 ## Translating
@@ -31,7 +30,7 @@ The plugin has been translated into the following languages by the Obsidian comm
 
 To help translate the plugin to your language:
 
-1. Fork the [repository](https://github.com/st3v3nmw/obsidian-spaced-repetition).
+1. Fork the [repository](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall).
 2. Copy the entries from `src/lang/locale/en.ts` to the proper file in `src/lang/locale/` (i.e. `fr.ts` for French, or
    `sw.ts` for Swahili). The locale codes are [IETF language tags](https://en.wikipedia.org/wiki/IETF_language_tag).
 3. Translate,
@@ -125,8 +124,8 @@ These files reside in `docs/` in the respective language's folder. For instance,
 The docs are served
 on [https://www.stephenmwangi.com/obsidian-spaced-repetition/](https://www.stephenmwangi.com/obsidian-spaced-repetition/).
 
-For small changes, you can simply open an pull request for merging (against the `master` branch).
-The changes will be live once a new [release](https://github.com/st3v3nmw/obsidian-spaced-repetition/releases) is made.
+For small changes, you can simply open an pull request for merging (against the `dev-master` branch).
+The changes will be live once a new [release](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/releases) is made.
 
 For larger diffs, it's important that you check how your docs look like as explained below.
 
@@ -183,5 +182,5 @@ Example using `v1.9.2`:
 6. Locally, switch back to `master` and pull the changes: `git switch master && git pull`
 7. Create a git tag with the version: `git tag 1.9.2`
 8. Push the tag: `git push --tags`. <br> You're all
-   set! [This GitHub action](https://github.com/st3v3nmw/obsidian-spaced-repetition/blob/master/.github/workflows/release.yml)
+   set! [This GitHub action](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/blob/dev-master/.github/workflows/release.yml)
    should pick it up, create a release, publish it, and update the live documentation.
