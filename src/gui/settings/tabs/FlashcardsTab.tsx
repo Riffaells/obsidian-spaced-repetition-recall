@@ -53,8 +53,21 @@ export class FlashcardsTab {
         this.addCardOrderSettings(containerEl, plugin, settingsTab);
         addIntervalShowHideSetting(containerEl, plugin);
 
-        containerEl.createEl("h3", { text: t("GROUP_FLASHCARD_SEPARATORS") });
-        this.addSeparatorSettings(containerEl, plugin, settingsTab);
+        containerEl.createEl("h3", { text: "Cloze Settings" });
+        this.addClozeSettings(containerEl, plugin, settingsTab);
+
+        const separatorsDetails = containerEl.createEl("details");
+        separatorsDetails.createEl("summary", { text: "Default Card Separators (Advanced)" });
+        this.addCardSeparators(separatorsDetails, plugin, settingsTab);
+    }
+
+    private static addClozeSettings(
+        containerEl: HTMLElement,
+        plugin: SRPlugin,
+        settingsTab: any,
+    ): void {
+        this.addClozePatternToggles(containerEl, plugin, settingsTab);
+        this.addClozePatternsTextArea(containerEl, plugin);
     }
 
     private static addCardOrderSettings(
@@ -115,15 +128,7 @@ export class FlashcardsTab {
         );
     }
 
-    private static addSeparatorSettings(
-        containerEl: HTMLElement,
-        plugin: SRPlugin,
-        settingsTab: any,
-    ): void {
-        this.addClozePatternToggles(containerEl, plugin, settingsTab);
-        this.addClozePatternsTextArea(containerEl, plugin);
-        this.addCardSeparators(containerEl, plugin, settingsTab);
-    }
+    // Removed addSeparatorSettings as it is split now
 
     private static addClozePatternToggles(
         containerEl: HTMLElement,

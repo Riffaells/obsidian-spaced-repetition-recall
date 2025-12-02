@@ -9,7 +9,7 @@ import {
 } from "obsidian";
 import * as graph from "pagerank.js";
 
-import { DEFAULT_SETTINGS, SettingsUtil, SRSettings, upgradeSettings } from "src/settings";
+import { DEFAULT_SETTINGS, SettingsUtil, SRSettings } from "src/settings";
 import { FlashcardModal } from "./gui/modals/FlashcardModal";
 import { StatsModal } from "./gui/modals/StatsModal";
 import { REVIEW_QUEUE_VIEW_TYPE, ReviewQueueListView } from "src/gui/sidebar/Sidebar";
@@ -1033,7 +1033,6 @@ export default class SRPlugin extends Plugin {
 
     async loadPluginData(): Promise<void> {
         const loadedData: PluginData = await this.loadData();
-        if (loadedData?.settings) upgradeSettings(loadedData.settings);
         this.data = Object.assign({}, DEFAULT_DATA, loadedData);
         this.data.settings = Object.assign({}, DEFAULT_SETTINGS, this.data.settings);
         this.store = new DataStore(this.data.settings, this.manifest.dir);

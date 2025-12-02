@@ -5,7 +5,7 @@ import { algorithms } from "./algorithms/algorithms_switch";
 import { DataLocation } from "./dataStore/dataLocation";
 import { DEFAULT_responseOptionBtnsText } from "./settings/algorithmSetting";
 import { pathMatchesPattern } from "src/utils/fs";
-import { HeaderCardConfig, FlashcardTagRule } from "./parser/header-based/types";
+import { FlashcardTagRule } from "./parser/header-based/types";
 
 export interface SRSettings {
     // flashcards
@@ -267,138 +267,7 @@ export const DEFAULT_SETTINGS: SRSettings = {
     previousRelease: "0.0.0",
 };
 
-export function upgradeSettings(settings: SRSettings) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const settingsAny = settings as any;
-
-    // Legacy migration: v1 → v2 (for users who haven't upgraded yet)
-    // This must run BEFORE flashcardTagRules migration as flashcardTagRules migration might initialize headerCardBaseConfig
-    if (settingsAny.headerCardDefaultConfig != null && settingsAny.headerCardBaseConfig == null) {
-        settingsAny.headerCardBaseConfig = {
-            headingLevels: settingsAny.headerCardDefaultConfig.headingLevels != null ? settingsAny.headerCardDefaultConfig.headingLevels : [2],
-            mode: settingsAny.headerCardDefaultConfig.mode != null ? settingsAny.headerCardDefaultConfig.mode : "qa",
-            nestingMode: settingsAny.headerCardDefaultConfig.nestingMode != null ? settingsAny.headerCardDefaultConfig.nestingMode : "nested",
-        };
-        delete settingsAny.headerCardDefaultConfig;
-        console.log("Migrated headerCardDefaultConfig to headerCardBaseConfig");
-    }
-
-    if (
-        settings.randomizeCardOrder != null &&
-        settings.flashcardCardOrder == null &&
-        settings.flashcardDeckOrder == null
-    ) {
-        console.log(`loadPluginData: Upgrading settings: ${settings.randomizeCardOrder}`);
-        settings.flashcardCardOrder = settings.randomizeCardOrder
-            ? "DueFirstRandom"
-            : "DueFirstSequential";
-        settings.flashcardDeckOrder = "PrevDeckComplete_Sequential";
-
-        // After the upgrade, we don't need the old attribute any more
-        settings.randomizeCardOrder = null;
-    }
-
-    if (settings.clozePatterns == null) {
-        settings.clozePatterns = [];
-
-        if (settings.convertHighlightsToClozes)
-            settings.clozePatterns.push("==[123;;]answer[;;hint]==");
-
-        if (settings.convertBoldTextToClozes)
-            settings.clozePatterns.push("**[123;;]answer[;;hint]**");
-
-        if (settings.convertCurlyBracketsToClozes)
-            settings.clozePatterns.push("{{[123;;]answer[;;hint]}}");
-    }
-
-    if (settings.sidebarSortOrder == null) {
-        settings.sidebarSortOrder = SortType.DATE_ASC;
-    }
-    if (settings.sidebarNoteSortOrder == null) {
-        settings.sidebarNoteSortOrder = NoteSortType.DEFAULT;
-    }
-    if (settings.sidebarViewMode == null) {
-        settings.sidebarViewMode = SidebarViewMode.Notes;
-    }
-
-    // Validate sidebarViewMode - default to Notes if invalid
-    if (
-        settings.sidebarViewMode !== SidebarViewMode.Notes &&
-        settings.sidebarViewMode !== SidebarViewMode.FlashCards
-    ) {
-        console.log(`Invalid sidebarViewMode: ${settings.sidebarViewMode}, defaulting to Notes`);
-        settings.sidebarViewMode = SidebarViewMode.Notes;
-    }
-
-    // Migrate to unified flashcard tag rules (v3)
-    if (settings.flashcardTagRules == null) {
-        console.log("Migrating to unified flashcard tag rules (v3)");
-        const rules: FlashcardTagRule[] = [];
-        let ruleCounter = 0;
-        
-        // Migrate old flashcardTags (inline cards)
-        if (settingsAny.flashcardTags && settingsAny.flashcardTags.length > 0) {
-            for (const tag of settingsAny.flashcardTags) {
-                rules.push({
-                    id: `migrated-inline-${ruleCounter++}`,
-                    name: `Inline: ${tag}`,
-                    tagExact: tag,
-                    enabled: true,
-                    priority: 0,
-                    source: "inline",
-                    inlineRules: {
-                        separator: "::",
-                    },
-                });
-            }
-            console.log(`Migrated ${settingsAny.flashcardTags.length} inline flashcard tags`);
-        }
-        
-        // Migrate header-based cards
-        const showContext = settingsAny.headerCardShowContext ?? true;
-        
-        // Migrate custom header tags
-        if (settingsAny.headerCardCustomTags) {
-            for (const [tag, config] of Object.entries(settingsAny.headerCardCustomTags as Record<string, HeaderCardConfig>)) {
-                if (config.enabled) {
-                    const cardMode = config.mode === "qa" ? "qa" : "visual";
-                    rules.push({
-                        id: `migrated-header-${ruleCounter++}`,
-                        name: `Header: ${tag}`,
-                        tagExact: tag,
-                        enabled: true,
-                        priority: 0,
-                        source: "header",
-                        headerRules: {
-                            headingLevels: config.headingLevels,
-                            nestingMode: config.nestingMode,
-                            selectors: [], // No positional selectors in old config
-                            includeParents: showContext ? 1 : 0,
-                            cardMode: cardMode as "qa" | "cloze" | "visual",
-                            qaSeparator: "?",
-                        },
-                    });
-                }
-            }
-            console.log(`Migrated ${Object.keys(settingsAny.headerCardCustomTags).length} header-based tags`);
-        }
-        
-        settings.flashcardTagRules = rules.length > 0 ? rules : DEFAULT_SETTINGS.flashcardTagRules;
-        
-        // Remove legacy fields from data
-        delete settingsAny.flashcardTags;
-        delete settingsAny.enableHeaderBasedCards;
-        delete settingsAny.headerCardBaseConfig;
-        delete settingsAny.headerCardCustomTags;
-        delete settingsAny.headerCardShowContext;
-    }
-    
-    if (settingsAny.headerCardDefaultConfig != null) {
-        // This was an even older legacy field, just delete it now as we don't have headerCardBaseConfig anymore
-        delete settingsAny.headerCardDefaultConfig;
-        console.log("Removed legacy headerCardDefaultConfig");
-    }
-}
+// Migration code removed - no longer needed for beta version
 
 export class SettingsUtil {
     // Cache compiled regex patterns to avoid recompiling

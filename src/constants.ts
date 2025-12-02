@@ -7,7 +7,6 @@ export const YAML_TAGS_REGEX = /^---\n((?:.*\n)*?)tags?:(.*?(?:\n\s+- .*)*)\n((?
 export const NON_LETTER_SYMBOLS_REGEX = /[!-/:-@[-`{-~}\s]/g;
 
 export const MULTI_SCHEDULING_EXTRACTOR = /!([\d-]+),(\d+),(\d+)/gm;
-export const LEGACY_SCHEDULING_EXTRACTOR = /<!--SR:([\d-]+),(\d+),(\d+)-->/gm;
 export const OBSIDIAN_TAG_AT_STARTOFLINE_REGEX = /^#[^\s#]+/gi;
 
 // https://help.obsidian.md/Linking+notes+and+files/Internal+links#Link+to+a+block+in+a+note

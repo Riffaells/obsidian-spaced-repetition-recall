@@ -8,6 +8,7 @@ import type SRPlugin from "src/main";
 import { FlashcardTagRule } from "src/parser/header-based/types";
 import { createInlineRule, createHeaderRule } from "src/settings/flashcardTagRules";
 import { FlashcardRuleModal } from "src/gui/modals/FlashcardRuleModal";
+import { AddFlashcardRuleModal } from "src/gui/modals/AddFlashcardRuleModal";
 import { createInfoSection } from "./InfoSection";
 import { createRuleItem } from "./RuleItem";
 
@@ -49,18 +50,19 @@ export function createFlashcardRulesManager(
     // Add rule buttons
     const buttonsRow = controlsContainer.createDiv({ cls: "flashcard-rules-buttons" });
 
-    const addInlineBtn = buttonsRow.createEl("button", { cls: "mod-cta" });
-    addInlineBtn.textContent = "+ Inline Rule";
-    addInlineBtn.addEventListener("click", () => {
-        const newRule = createInlineRule("#flashcards", "New Inline Rule");
-        openRuleModal(plugin, newRule, false, rulesListEl);
-    });
-
-    const addHeaderBtn = buttonsRow.createEl("button");
-    addHeaderBtn.textContent = "+ Header Rule";
-    addHeaderBtn.addEventListener("click", () => {
-        const newRule = createHeaderRule("#flashcards/h2", [2], "New Header Rule");
-        openRuleModal(plugin, newRule, false, rulesListEl);
+    const addRuleBtn = buttonsRow.createEl("button", { cls: "mod-cta" });
+    addRuleBtn.textContent = "+ Add Rule";
+    addRuleBtn.addEventListener("click", () => {
+        new AddFlashcardRuleModal(
+            plugin.app,
+            async (newRule) => {
+                plugin.data.settings.flashcardTagRules.push(newRule);
+                await plugin.savePluginData();
+                renderRulesList(rulesListEl, plugin);
+                new Notice(`Rule "${newRule.name}" created`);
+            },
+            () => {},
+        ).open();
     });
 
     // Rules list

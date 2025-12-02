@@ -2,7 +2,6 @@ import { CachedMetadata, FrontMatterCache, Notice, TFile } from "obsidian";
 import { TopicPath } from "src/TopicPath";
 import {
     DEFAULT_DECKNAME,
-    LEGACY_SCHEDULING_EXTRACTOR,
     MULTI_SCHEDULING_EXTRACTOR,
     SCHEDULING_INFO_REGEX,
     SR_HTML_COMMENT_BEGIN,
@@ -188,12 +187,8 @@ export class LocationSwitch {
                     console.warn("fileText null");
                     throw new Error(fileText);
                 }
-                if (
-                    MULTI_SCHEDULING_EXTRACTOR.test(fileText) ||
-                    LEGACY_SCHEDULING_EXTRACTOR.test(fileText)
-                ) {
+                if (MULTI_SCHEDULING_EXTRACTOR.test(fileText)) {
                     console.error("still have cardsched in fileText:\n", noteFile.path, fileText);
-                    // throw new Error("_convertCardsSched failed: \n" + fileText);
                 }
                 fileChanged = true;
             }
@@ -237,8 +232,6 @@ export class LocationSwitch {
                 let scheduling: RegExpMatchArray[] = [
                     ...cardText.matchAll(MULTI_SCHEDULING_EXTRACTOR),
                 ];
-                if (scheduling.length === 0)
-                    scheduling = [...cardText.matchAll(LEGACY_SCHEDULING_EXTRACTOR)];
                 if (scheduling.length > 0) {
                     store.updateCardItems(trackedFile, cardinfo, scheduling.length, deckName);
                     const schedInfoList = NoteCardScheduleParser.createInfoList_algo(scheduling);

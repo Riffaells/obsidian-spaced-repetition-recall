@@ -1,6 +1,5 @@
 import { Moment } from "moment";
 import {
-    LEGACY_SCHEDULING_EXTRACTOR,
     MULTI_SCHEDULING_EXTRACTOR,
     TICKS_PER_DAY,
 } from "./constants";
@@ -157,10 +156,7 @@ export class CardScheduleCalculator {
 
 export class NoteCardScheduleParser {
     static createCardScheduleInfoList(questionText: string): CardScheduleInfo[] {
-        let scheduling: RegExpMatchArray[] = [...questionText.matchAll(MULTI_SCHEDULING_EXTRACTOR)];
-        if (scheduling.length === 0)
-            scheduling = [...questionText.matchAll(LEGACY_SCHEDULING_EXTRACTOR)];
-
+        const scheduling: RegExpMatchArray[] = [...questionText.matchAll(MULTI_SCHEDULING_EXTRACTOR)];
         return this.createInfoList(scheduling);
     }
 
