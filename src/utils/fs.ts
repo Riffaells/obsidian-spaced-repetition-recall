@@ -1,7 +1,8 @@
 import { minimatch } from "minimatch";
 
 export function isSupportedFileType(path: string): boolean {
-    return path.split(".").pop().toLowerCase() === "md";
+    const ext = path.split(".").pop();
+    return ext?.toLowerCase() === "md";
 }
 
 // This checks if the given path matches the given pattern

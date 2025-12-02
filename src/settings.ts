@@ -17,12 +17,6 @@ export interface SRSettings {
      */
     flashcardTagRules: FlashcardTagRule[];
     
-    /**
-     * @deprecated Use flashcardTagRules instead
-     * Kept for migration purposes
-     */
-    flashcardTags?: string[];
-    
     convertFoldersToDecks: boolean;
     burySiblingCards: boolean;
     burySiblingCardsByNoteReview: boolean;
@@ -43,35 +37,6 @@ export interface SRSettings {
     editLaterTag: string;
     intervalShowHide: boolean;
     
-    // header-based flashcards
-    /**
-     * @deprecated Use flashcardTagRules instead
-     * Kept for migration purposes
-     */
-    enableHeaderBasedCards?: boolean;
-    
-    /** 
-     * Base configuration for header-based flashcards.
-     * Used as default when header config is not specified in rule
-     * @deprecated Will be merged into flashcardTagRules
-     */
-    headerCardBaseConfig?: {
-        headingLevels: number[];        // [2] by default
-        mode: "qa" | "all";             // "qa" by default
-        nestingMode: "nested" | "flat"; // "nested" by default
-    };
-    
-    /**
-     * @deprecated Use flashcardTagRules instead
-     * Kept for migration purposes
-     */
-    headerCardCustomTags?: Record<string, HeaderCardConfig>;
-    
-    /**
-     * @deprecated Use includeParents in flashcardTagRules instead
-     */
-    headerCardShowContext?: boolean;
-    
     // notes
     enableNoteReviewPaneOnStartup: boolean;
     tagsToReview: string[];
@@ -79,6 +44,16 @@ export interface SRSettings {
     tagsToIgnore: string[];
     openRandomNote: boolean;
     autoNextNote: boolean;
+    showCompactReviewButtons: boolean;
+    compactReviewButtonsCollapsed?: boolean;
+    compactReviewButtonsPosition: "top-right" | "top-left" | "bottom-right" | "bottom-left";
+    compactReviewButtonsAutoHide: boolean;
+    compactReviewButtonsAutoHideDelay: number; // seconds
+    compactReviewButtonIcons: {
+        hard: string;
+        good: string;
+        easy: string;
+    };
     mixDue: number;
     mixNew: number;
     mixCardNote: boolean;
@@ -195,17 +170,6 @@ export const DEFAULT_SETTINGS: SRSettings = {
         },
     ],
 
-    // Legacy fields (kept for backward compatibility)
-    flashcardTags: ["#flashcards"],
-    enableHeaderBasedCards: false,
-    headerCardBaseConfig: {
-        headingLevels: [2],
-        mode: "qa",
-        nestingMode: "nested",
-    },
-    headerCardCustomTags: {},
-    headerCardShowContext: true,
-    
     convertFoldersToDecks: false,
     burySiblingCards: false,
     burySiblingCardsByNoteReview: false,
@@ -234,6 +198,16 @@ export const DEFAULT_SETTINGS: SRSettings = {
     tagsToIgnore: [],
     openRandomNote: false,
     autoNextNote: false,
+    showCompactReviewButtons: true,
+    compactReviewButtonsCollapsed: false,
+    compactReviewButtonsPosition: "top-right",
+    compactReviewButtonsAutoHide: false,
+    compactReviewButtonsAutoHideDelay: 5,
+    compactReviewButtonIcons: {
+        hard: "x",
+        good: "minus",
+        easy: "check",
+    },
     mixDue: 3,
     mixNew: 2,
     mixCardNote: false,
@@ -299,8 +273,8 @@ export function upgradeSettings(settings: SRSettings) {
 
     // Legacy migration: v1 → v2 (for users who haven't upgraded yet)
     // This must run BEFORE flashcardTagRules migration as flashcardTagRules migration might initialize headerCardBaseConfig
-    if (settingsAny.headerCardDefaultConfig != null && settings.headerCardBaseConfig == null) {
-        settings.headerCardBaseConfig = {
+    if (settingsAny.headerCardDefaultConfig != null && settingsAny.headerCardBaseConfig == null) {
+        settingsAny.headerCardBaseConfig = {
             headingLevels: settingsAny.headerCardDefaultConfig.headingLevels != null ? settingsAny.headerCardDefaultConfig.headingLevels : [2],
             mode: settingsAny.headerCardDefaultConfig.mode != null ? settingsAny.headerCardDefaultConfig.mode : "qa",
             nestingMode: settingsAny.headerCardDefaultConfig.nestingMode != null ? settingsAny.headerCardDefaultConfig.nestingMode : "nested",
@@ -362,30 +336,9 @@ export function upgradeSettings(settings: SRSettings) {
         const rules: FlashcardTagRule[] = [];
         let ruleCounter = 0;
         
-        // Ensure old fields have defaults for backward compatibility
-        if (settings.flashcardTags == null) {
-            settings.flashcardTags = DEFAULT_SETTINGS.flashcardTags || ["#flashcards"];
-        }
-        if (settings.enableHeaderBasedCards == null) {
-            settings.enableHeaderBasedCards = false;
-        }
-        if (settings.headerCardBaseConfig == null) {
-            settings.headerCardBaseConfig = {
-                headingLevels: [2],
-                mode: "qa",
-                nestingMode: "nested",
-            };
-        }
-        if (settings.headerCardCustomTags == null) {
-            settings.headerCardCustomTags = {};
-        }
-        if (settings.headerCardShowContext == null) {
-            settings.headerCardShowContext = true;
-        }
-        
         // Migrate old flashcardTags (inline cards)
-        if (settings.flashcardTags && settings.flashcardTags.length > 0) {
-            for (const tag of settings.flashcardTags) {
+        if (settingsAny.flashcardTags && settingsAny.flashcardTags.length > 0) {
+            for (const tag of settingsAny.flashcardTags) {
                 rules.push({
                     id: `migrated-inline-${ruleCounter++}`,
                     name: `Inline: ${tag}`,
@@ -398,15 +351,15 @@ export function upgradeSettings(settings: SRSettings) {
                     },
                 });
             }
-            console.log(`Migrated ${settings.flashcardTags.length} inline flashcard tags`);
+            console.log(`Migrated ${settingsAny.flashcardTags.length} inline flashcard tags`);
         }
         
         // Migrate header-based cards
-        const showContext = settings.headerCardShowContext ?? true;
+        const showContext = settingsAny.headerCardShowContext ?? true;
         
         // Migrate custom header tags
-        if (settings.headerCardCustomTags) {
-            for (const [tag, config] of Object.entries(settings.headerCardCustomTags)) {
+        if (settingsAny.headerCardCustomTags) {
+            for (const [tag, config] of Object.entries(settingsAny.headerCardCustomTags as Record<string, HeaderCardConfig>)) {
                 if (config.enabled) {
                     const cardMode = config.mode === "qa" ? "qa" : "visual";
                     rules.push({
@@ -427,30 +380,32 @@ export function upgradeSettings(settings: SRSettings) {
                     });
                 }
             }
-            console.log(`Migrated ${Object.keys(settings.headerCardCustomTags).length} header-based tags`);
+            console.log(`Migrated ${Object.keys(settingsAny.headerCardCustomTags).length} header-based tags`);
         }
         
         settings.flashcardTagRules = rules.length > 0 ? rules : DEFAULT_SETTINGS.flashcardTagRules;
         
-        // Keep old properties for backward compatibility with legacy parser
-        // They will be removed in a future version after full migration to new parser
-        // DO NOT delete these fields yet - legacy code still uses them
+        // Remove legacy fields from data
+        delete settingsAny.flashcardTags;
+        delete settingsAny.enableHeaderBasedCards;
+        delete settingsAny.headerCardBaseConfig;
+        delete settingsAny.headerCardCustomTags;
+        delete settingsAny.headerCardShowContext;
     }
     
-    if (settingsAny.headerCardDefaultConfig != null && settings.headerCardBaseConfig == null) {
-        settings.headerCardBaseConfig = {
-            headingLevels: settingsAny.headerCardDefaultConfig.headingLevels != null ? settingsAny.headerCardDefaultConfig.headingLevels : [2],
-            mode: settingsAny.headerCardDefaultConfig.mode != null ? settingsAny.headerCardDefaultConfig.mode : "qa",
-            nestingMode: settingsAny.headerCardDefaultConfig.nestingMode != null ? settingsAny.headerCardDefaultConfig.nestingMode : "nested",
-        };
+    if (settingsAny.headerCardDefaultConfig != null) {
+        // This was an even older legacy field, just delete it now as we don't have headerCardBaseConfig anymore
         delete settingsAny.headerCardDefaultConfig;
-        console.log("Migrated headerCardDefaultConfig to headerCardBaseConfig");
+        console.log("Removed legacy headerCardDefaultConfig");
     }
 }
 
 export class SettingsUtil {
     // Cache compiled regex patterns to avoid recompiling
     private static patternCache = new Map<string, RegExp>();
+
+    // Cache of valid flashcard tags found in the vault
+    private static validTagCache: Set<string> | null = null;
 
     /**
      * Check if a tag matches any enabled flashcard rule (optimized)
@@ -535,6 +490,38 @@ export class SettingsUtil {
      */
     static clearPatternCache(): void {
         SettingsUtil.patternCache.clear();
+        SettingsUtil.validTagCache = null;
+    }
+
+    /**
+     * Build the cache of valid flashcard tags from the vault
+     * This optimizes scanning by pre-calculating which tags match our rules
+     */
+    static buildTagCache(app: any, settings: SRSettings): void {
+        const cache = new Set<string>();
+        // Get all unique tags from the metadata cache
+        // @ts-ignore
+        const allTags = app.metadataCache.getTags();
+        
+        for (const tag of Object.keys(allTags)) {
+            if (SettingsUtil.isFlashcardTag(settings, tag)) {
+                cache.add(tag);
+            }
+        }
+        
+        SettingsUtil.validTagCache = cache;
+        console.log(`SR: Built tag cache with ${cache.size} valid tags`);
+    }
+
+    /**
+     * Check if a tag matches any enabled flashcard rule using the cache
+     * Falls back to normal check if cache is not built
+     */
+    static isFlashcardTagCached(settings: SRSettings, tag: string): boolean {
+        if (SettingsUtil.validTagCache) {
+            return SettingsUtil.validTagCache.has(tag);
+        }
+        return SettingsUtil.isFlashcardTag(settings, tag);
     }
 
     /**

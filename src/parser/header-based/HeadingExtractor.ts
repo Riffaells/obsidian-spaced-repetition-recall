@@ -80,7 +80,7 @@ export class HeadingExtractor {
                     level: headingCheck.level,
                     text: headingCheck.text,
                     lineNumber,
-                    isQuestion: headingCheck.text.trim().endsWith("?"),
+                    isQuestion: false, // Heading itself is not a question, content below is the answer
                     context: [], // Will be filled by buildHeadingHierarchy
                     index: globalIndex, // Assign global index
                     indexInLevel: currentLevelIndex, // Assign index within its level
@@ -204,7 +204,17 @@ export class HeadingExtractor {
      */
     isInQuote(line: string): boolean {
         // Check if line starts with > (possibly with leading whitespace)
-        return /^\s*>/.test(line);
+        // BUT: Ignore callout blocks like > [!info], > [!note], etc.
+        // These are Obsidian callouts, not regular quotes
+        const trimmed = line.trim();
+        if (trimmed.startsWith('>')) {
+            // Check if it's a callout (> [!type])
+            if (/^>\s*\[!/.test(trimmed)) {
+                return false; // It's a callout, not a quote
+            }
+            return true; // It's a regular quote
+        }
+        return false;
     }
 
     /**

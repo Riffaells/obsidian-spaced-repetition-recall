@@ -195,6 +195,28 @@ export class Deck {
         cardList.push(cardObj);
     }
 
+    /**
+     * Sorts cards in this deck and all subdecks by their line number in the source file.
+     * This ensures cards appear in the same order as they do in the note.
+     */
+    sortCardsByLineNumber(): void {
+        // Sort function that compares cards by their question's line number
+        const sortByLineNumber = (a: Card, b: Card): number => {
+            const aLine = a.question?.lineNo ?? 0;
+            const bLine = b.question?.lineNo ?? 0;
+            return aLine - bLine;
+        };
+
+        // Sort cards in this deck
+        this.newFlashcards.sort(sortByLineNumber);
+        this.dueFlashcards.sort(sortByLineNumber);
+
+        // Recursively sort all subdecks
+        for (const subdeck of this.subdecks) {
+            subdeck.sortCardsByLineNumber();
+        }
+    }
+
     //
     // The question lists all the topics in which this card is included.
     // The topics are relative to the base deck, and this method must be called on that deck
@@ -258,6 +280,31 @@ export class Deck {
 
         for (const deck of this.subdecks) {
             deck.sortSubdecksList();
+        }
+    }
+
+    /**
+     * Sort flashcards by their position in the source file (line number).
+     * This ensures cards appear in the same order as questions in the note.
+     */
+    sortFlashcardsByLineNumber(): void {
+        // Sort new flashcards by line number
+        this.newFlashcards.sort((a, b) => {
+            const aLineNo = a.question?.lineNo ?? 0;
+            const bLineNo = b.question?.lineNo ?? 0;
+            return aLineNo - bLineNo;
+        });
+
+        // Sort due flashcards by line number
+        this.dueFlashcards.sort((a, b) => {
+            const aLineNo = a.question?.lineNo ?? 0;
+            const bLineNo = b.question?.lineNo ?? 0;
+            return aLineNo - bLineNo;
+        });
+
+        // Sort subdecks recursively
+        for (const deck of this.subdecks) {
+            deck.sortFlashcardsByLineNumber();
         }
     }
 

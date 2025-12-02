@@ -54,7 +54,7 @@ export interface FlashcardTagRule {
         includeParents: number;        // 0 = нет, 1 = родитель, -1 = все родители
         
         // Режим генерации
-        cardMode: "qa" | "cloze" | "visual";
+        cardMode: "qa" | "all" | "cloze" | "visual";
         qaSeparator?: string;          // Разделитель вопроса/ответа
     };
 
@@ -71,7 +71,7 @@ export interface FlashcardTagRule {
 export interface ResolvedHeaderConfig {
     ruleIds: RuleId[];               // Какие правила применились (для отладки)
     nestingMode: "nested" | "flat";
-    cardMode: "qa" | "cloze" | "visual";
+    cardMode: "qa" | "all" | "cloze" | "visual";
     includeParents: number;
     qaSeparator: string;
     // headingLevels и selectors здесь уже не нужны, так как мы уже нашли заголовок
@@ -94,7 +94,7 @@ export interface HeadingInfo {
     /** Line number in the note (0-based) */
     lineNumber: number;
     
-    /** Whether the heading ends with "?" */
+    /** Whether the heading ends with "?" (legacy field, not used for matching) */
     isQuestion: boolean;
     
     /** Path of parent headings for context */
@@ -157,7 +157,7 @@ export interface HeaderCardConfig {
     /** How to handle nested content under headings */
     nestingMode: "nested" | "flat";
     
-    /** Which headings to convert to cards */
+    /** Card creation mode (legacy field, both modes now work the same - all headings become cards) */
     mode: "qa" | "all";
     
     /** Whether this configuration is enabled */
@@ -190,7 +190,7 @@ export interface ResolvedTagConfig {
     /** Combined heading levels from all matching tags (union) */
     headingLevels: number[];
     
-    /** Recognition mode: "qa" for headings with "?", "all" for all headings */
+    /** Recognition mode (legacy field, both modes now work the same - all headings become cards) */
     mode: "qa" | "all";
     
     /** Nesting mode: "nested" includes subheadings, "flat" stops at first subheading */

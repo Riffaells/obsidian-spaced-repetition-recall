@@ -33,16 +33,8 @@ export class HeadingMatcher {
             return false;
         }
 
-        // Check mode-specific criteria
-        if (config.mode === "qa") {
-            // In 'qa' mode, only headings ending with "?" are matched
-            return heading.isQuestion;
-        } else if (config.mode === "all") {
-            // In 'all' mode, all headings of the specified levels are matched
-            return true;
-        }
-
-        // Unknown mode - default to false
-        return false;
+        // Both 'qa' and 'all' modes now match all headings of the specified levels
+        // The heading text becomes the question, content below becomes the answer
+        return true;
     }
 }

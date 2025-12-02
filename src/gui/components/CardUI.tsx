@@ -113,7 +113,7 @@ export class CardUI {
 
         this._createCardControls();
 
-        if (this.settings.showContextInCards || this.settings.headerCardShowContext) {
+        if (this.settings.showContextInCards) {
             this.context = this.view.createDiv();
             this.context.addClass("sr-context");
         }
@@ -246,30 +246,6 @@ export class CardUI {
                     break;
                 }
                 this._showAnswer();
-                consumeKeyEvent();
-                break;
-            case "Numpad1":
-            case "Digit1":
-                if (this.mode !== FlashcardMode.Back) {
-                    break;
-                }
-                this._processReview(ReviewResponse.Hard);
-                consumeKeyEvent();
-                break;
-            case "Numpad2":
-            case "Digit2":
-                if (this.mode !== FlashcardMode.Back) {
-                    break;
-                }
-                this._processReview(ReviewResponse.Good);
-                consumeKeyEvent();
-                break;
-            case "Numpad3":
-            case "Digit3":
-                if (this.mode !== FlashcardMode.Back) {
-                    break;
-                }
-                this._processReview(ReviewResponse.Easy);
                 consumeKeyEvent();
                 break;
             case "Numpad0":
@@ -431,7 +407,7 @@ export class CardUI {
         const question = this._currentQuestion;
         
         // For header-based flashcards, show heading context if enabled
-        if (question.isHeaderBased && this.settings.headerCardShowContext) {
+        if (question.isHeaderBased && this.settings.showContextInCards) {
             const headingContext = question.getDisplayContext();
             if (headingContext) {
                 return this._currentNote.file.basename + " > " + headingContext;

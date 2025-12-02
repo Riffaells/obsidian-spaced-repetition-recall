@@ -68,6 +68,85 @@ export class NotesTab {
         );
 
         new Setting(containerEl)
+            .setName("Show Compact Review Buttons")
+            .setDesc("Show compact fruit-themed review buttons (🍎 Hard, 🍌 Good, 🍒 Easy) in notes that are due for review")
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(plugin.data.settings.showCompactReviewButtons)
+                    .onChange(async (value) => {
+                        plugin.data.settings.showCompactReviewButtons = value;
+                        await plugin.savePluginData();
+                        
+                        // Refresh buttons immediately
+                        if (value) {
+                            await plugin.noteReviewManager.refreshAllButtons();
+                        } else {
+                            plugin.noteReviewManager.destroy();
+                        }
+                    }),
+            );
+
+        if (plugin.data.settings.showCompactReviewButtons) {
+            new Setting(containerEl)
+                .setName("Collapse Buttons by Default")
+                .setDesc("Start with review buttons collapsed (can be expanded with chevron)")
+                .addToggle((toggle) =>
+                    toggle
+                        .setValue(plugin.data.settings.compactReviewButtonsCollapsed ?? false)
+                        .onChange(async (value) => {
+                            plugin.data.settings.compactReviewButtonsCollapsed = value;
+                            await plugin.savePluginData();
+                        }),
+                );
+
+            new Setting(containerEl)
+                .setName("Button Position")
+                .setDesc("Where to show the review buttons")
+                .addDropdown((dropdown) =>
+                    dropdown
+                        .addOption("top-right", "Top Right")
+                        .addOption("top-left", "Top Left")
+                        .addOption("bottom-right", "Bottom Right")
+                        .addOption("bottom-left", "Bottom Left")
+                        .setValue(plugin.data.settings.compactReviewButtonsPosition || "top-right")
+                        .onChange(async (value) => {
+                            plugin.data.settings.compactReviewButtonsPosition = value as any;
+                            await plugin.savePluginData();
+                            await plugin.noteReviewManager.refreshAllButtons();
+                        }),
+                );
+
+            new Setting(containerEl)
+                .setName("Auto-hide Buttons")
+                .setDesc("Automatically fade buttons after inactivity")
+                .addToggle((toggle) =>
+                    toggle
+                        .setValue(plugin.data.settings.compactReviewButtonsAutoHide ?? false)
+                        .onChange(async (value) => {
+                            plugin.data.settings.compactReviewButtonsAutoHide = value;
+                            await plugin.savePluginData();
+                            settingsTab.redisplay();
+                        }),
+                );
+
+            if (plugin.data.settings.compactReviewButtonsAutoHide) {
+                new Setting(containerEl)
+                    .setName("Auto-hide Delay (seconds)")
+                    .setDesc("Time before buttons fade out")
+                    .addSlider((slider) =>
+                        slider
+                            .setLimits(2, 30, 1)
+                            .setValue(plugin.data.settings.compactReviewButtonsAutoHideDelay || 5)
+                            .setDynamicTooltip()
+                            .onChange(async (value) => {
+                                plugin.data.settings.compactReviewButtonsAutoHideDelay = value;
+                                await plugin.savePluginData();
+                            }),
+                    );
+            }
+        }
+
+        new Setting(containerEl)
             .setName(t("MAX_N_DAYS_REVIEW_QUEUE"))
             .addText((text) =>
                 text

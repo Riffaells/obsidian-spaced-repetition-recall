@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf } from "obsidian";
+import { ItemView, TFile, WorkspaceLeaf } from "obsidian";
 
 import { SR_TAB_VIEW } from "src/constants";
 import { Deck } from "src/Deck";
@@ -10,49 +10,32 @@ import { SRSettings } from "src/settings";
 import { FlashcardEditModal } from "../modals/EditModal";
 import { FlashcardReviewMode, IFlashcardReviewSequencer } from "src/FlashcardReviewSequencer";
 
+interface TabViewState {
+    reviewMode?: FlashcardReviewMode;
+    singleNotePath?: string;
+}
+
 /**
  * Represents a tab view for spaced repetition plugin.
  *
  * This class extends the ItemView and is used to display the deck and flashcard uis.
- *
- * @property {SRPlugin} plugin - The main plugin instance.
- * @property {SRPlugin} leaf - The leaf instance for the view.
- * @property {() => Promise<{reviewSequencer: IFlashcardReviewSequencer;mode: FlashcardReviewMode;}>} loadReviewSequencerData - Callback for loading the reviewSequencer an the selected review mode.
- *
- * @method getViewType - Returns the view type identifier.
- * @method getIcon - Returns the icon identifier for the view.
- * @method getDisplayText - Returns the display text for the view.
- * @method onOpen - Initializes the view and loads necessary data when opened.
- * @method onClose - Cleans up resources when the view is closed.
  */
 export class TabView extends ItemView {
-    loadReviewSequencerData: () => Promise<{
-        reviewSequencer: IFlashcardReviewSequencer;
-        mode: FlashcardReviewMode;
-    }>;
-
     private plugin: SRPlugin;
     private reviewMode: FlashcardReviewMode;
+    private singleNotePath?: string;
     private viewContainerEl: HTMLElement;
     private viewContentEl: HTMLElement;
     private reviewSequencer: IFlashcardReviewSequencer;
     private settings: SRSettings;
     private deckView: DeckUI;
     private flashcardView: CardUI;
-    private openErrorCount: number = 0; // Counter for catching the first inevitable error but the letting the other through
+    private isInitialized: boolean = false;
 
-    constructor(
-        leaf: WorkspaceLeaf,
-        plugin: SRPlugin,
-        loadReviewSequencerData: () => Promise<{
-            reviewSequencer: IFlashcardReviewSequencer;
-            mode: FlashcardReviewMode;
-        }>,
-    ) {
+    constructor(leaf: WorkspaceLeaf, plugin: SRPlugin) {
         super(leaf);
         this.plugin = plugin;
         this.settings = plugin.data.settings;
-        this.loadReviewSequencerData = loadReviewSequencerData;
 
         const viewContent = this.containerEl.getElementsByClassName("view-content");
         if (viewContent.length > 0) {
@@ -97,19 +80,38 @@ export class TabView extends ItemView {
         return "Spaced Repetition";
     }
 
+    async setState(state: any, result: any): Promise<void> {
+        // Extract our custom state if it exists
+        if (state && typeof state === 'object') {
+            this.reviewMode = state.reviewMode ?? FlashcardReviewMode.Review;
+            this.singleNotePath = state.singleNotePath;
+        }
+        // Don't call super.setState as it expects different parameters
+    }
+
+    getState(): any {
+        return {
+            type: this.getViewType(),
+            reviewMode: this.reviewMode,
+            singleNotePath: this.singleNotePath,
+        };
+    }
+
     /**
      * Initializes the SRTabView when opened by loading the review sequencer data
      * and setting up the deck and flashcard views if they are not already initialized.
-     * Catches and logs errors that occur during the initial loading process.
      */
     async onOpen() {
         try {
-            const loadedData = await this.loadReviewSequencerData();
+            // Check if plugin is fully loaded
+            if (!this.plugin.deckTree) {
+                console.log("SR: Plugin not fully initialized yet, deferring view initialization");
+                return;
+            }
 
-            this.reviewSequencer = loadedData.reviewSequencer;
-            this.reviewMode = loadedData.mode;
+            await this.loadReviewData();
 
-            if (this.deckView === undefined) {
+            if (!this.isInitialized) {
                 // Init static elements in views
                 this.deckView = new DeckUI(
                     this.plugin,
@@ -118,9 +120,7 @@ export class TabView extends ItemView {
                     this.viewContentEl,
                     this._startReviewOfDeck.bind(this),
                 );
-            }
 
-            if (this.flashcardView === undefined) {
                 this.flashcardView = new CardUI(
                     this.app,
                     this.plugin,
@@ -132,22 +132,49 @@ export class TabView extends ItemView {
                     this._showDecksList.bind(this),
                     this._doEditQuestionText.bind(this),
                 );
+
+                this.isInitialized = true;
             }
 
             this._showDecksList();
         } catch (e) {
-            /*
-             * There will be an error, when opening obsidian, because if a tab is still open from the last session,
-             * then it will be loaded before any plugin was loaded, so there is no possibility of cleaning it up fast enough.
-             * This will cause an error, where the sr data structure wasn't initialized just yet.
-             * Sadly there is no way to load the data before the plugin is loaded or close the tab on closing the window.
-             * So we have to live with this error and just catch it the first time around.
-             * Lets any other errors through that might occur.
-             */
-            if (this.openErrorCount > 0) {
-                console.error(e);
+            console.error("SR: Error initializing tab view:", e);
+        }
+    }
+
+    private async loadReviewData(): Promise<void> {
+        if (this.singleNotePath) {
+            const abstractFile = this.app.vault.getAbstractFileByPath(this.singleNotePath);
+            if (abstractFile instanceof TFile) {
+                const singleNoteDeckData = await this.plugin.getPreparedDecksForSingleNoteReview(
+                    abstractFile,
+                    this.reviewMode,
+                );
+
+                const result = this.plugin.getPreparedReviewSequencer(
+                    singleNoteDeckData.deckTree,
+                    singleNoteDeckData.remainingDeckTree,
+                    singleNoteDeckData.mode,
+                );
+
+                this.reviewSequencer = result.reviewSequencer;
+                this.reviewMode = result.mode;
             }
-            this.openErrorCount++;
+        } else {
+            const fullDeckTree: Deck = this.plugin.deckTree;
+            const remainingDeckTree: Deck =
+                this.reviewMode === FlashcardReviewMode.Cram
+                    ? this.plugin.deckTree
+                    : this.plugin.remainingDeckTree;
+
+            const result = this.plugin.getPreparedReviewSequencer(
+                fullDeckTree,
+                remainingDeckTree,
+                this.reviewMode,
+            );
+
+            this.reviewSequencer = result.reviewSequencer;
+            this.reviewMode = result.mode;
         }
     }
 

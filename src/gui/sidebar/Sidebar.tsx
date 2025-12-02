@@ -71,6 +71,10 @@ export class ReviewQueueListView extends ItemView {
 
         this.registerEvent(this.app.workspace.on("file-open", () => this.debouncedRedraw()));
         this.registerEvent(this.app.vault.on("rename", () => this.debouncedRedraw()));
+        
+        // Listen for note review events (from compact buttons)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.registerEvent(this.app.workspace.on("sr:note-reviewed" as any, () => this.debouncedRedraw()));
     }
 
     public getViewType(): string {

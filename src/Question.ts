@@ -313,18 +313,29 @@ export class Question {
                 settings,
             );
         } else {
-            console.error(
-                `updateQuestionText: Text not found: ${originalText.substring(
-                    0,
-                    100,
-                )} in note: ${noteText.substring(0, 100)}`,
-            );
+            // For header-based cards, this is expected when using external storage
+            // because the original text is the heading itself, which may have changed
+            if (!this.isHeaderBased) {
+                console.error(
+                    `updateQuestionText: Text not found: ${originalText.substring(
+                        0,
+                        100,
+                    )} in note: ${noteText.substring(0, 100)}`,
+                );
+            }
             newText = noteText;
         }
         return newText;
     }
 
     async writeQuestion(settings: SRSettings): Promise<void> {
+        // Header-based flashcards don't store scheduling info in the note text
+        // when using external data storage, so skip the update
+        if (this.isHeaderBased && settings.dataLocation !== DataLocation.SaveOnNoteFile) {
+            this.hasChanged = false;
+            return;
+        }
+
         const fileText: string = await this.note.file.read();
 
         const newText: string = this.updateQuestionText(fileText, settings);

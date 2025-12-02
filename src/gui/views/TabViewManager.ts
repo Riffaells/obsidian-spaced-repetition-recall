@@ -21,73 +21,34 @@ export type TabViewType = { type: string; viewCreator: ViewCreator };
  */
 export default class TabViewManager {
     private plugin: SRPlugin;
-    private shouldOpenSingeNoteTabView: boolean;
-    private chosenReviewModeForTabbedView: FlashcardReviewMode;
-    private chosenSingleNoteForTabbedView: TFile;
+    private isRegistered: boolean = false;
 
     // Add any new other tab view types to this, then they'll be automatically registered
     private tabViewTypes: TabViewType[] = [
         {
             type: SR_TAB_VIEW,
-            viewCreator: (leaf) =>
-                new TabView(leaf, this.plugin, async () => {
-                    // Tabbed views cant get params on open call, so we have to do it here
-                    // This allows us to load the data from inside the view when the open function is called
-                    if (this.shouldOpenSingeNoteTabView) {
-                        const singleNoteDeckData =
-                            await this.plugin.getPreparedDecksForSingleNoteReview(
-                                this.chosenSingleNoteForTabbedView,
-                                this.chosenReviewModeForTabbedView,
-                            );
-
-                        return this.plugin.getPreparedReviewSequencer(
-                            singleNoteDeckData.deckTree,
-                            singleNoteDeckData.remainingDeckTree,
-                            singleNoteDeckData.mode,
-                        );
-                    }
-
-                    const fullDeckTree: Deck = this.plugin.deckTree;
-                    const remainingDeckTree: Deck =
-                        this.chosenReviewModeForTabbedView === FlashcardReviewMode.Cram
-                            ? this.plugin.deckTree
-                            : this.plugin.remainingDeckTree;
-
-                    return this.plugin.getPreparedReviewSequencer(
-                        fullDeckTree,
-                        remainingDeckTree,
-                        this.chosenReviewModeForTabbedView,
-                    );
-                }),
+            viewCreator: (leaf) => new TabView(leaf, this.plugin),
         },
     ];
 
-    // Add any needed resourced
     constructor(plugin: SRPlugin) {
         this.plugin = plugin;
-        this.shouldOpenSingeNoteTabView = false;
-
-        this.registerAllTabViews();
     }
 
     /**
      * Opens the Spaced Repetition tab view in the application.
      *
-     * This method sets up the necessary state for the tab view and invokes the
-     * internal method to open the tab view with the specified parameters.
-     *
      * @param reviewMode - The mode of flashcard review.
      * @param singleNote - Optional parameter specifying a single note to review.
-     *                     If provided, the tab view will focus on this note.
      *
      * @returns {Promise<void>} - A promise that resolves when the tab view is opened.
      */
     public async openSRTabView(reviewMode: FlashcardReviewMode, singleNote?: TFile): Promise<void> {
-        this.chosenReviewModeForTabbedView = reviewMode;
-        this.shouldOpenSingeNoteTabView = singleNote !== undefined;
-        if (singleNote) this.chosenSingleNoteForTabbedView = singleNote;
-
-        await this.openTabView(SR_TAB_VIEW, true);
+        const state = {
+            reviewMode,
+            singleNotePath: singleNote?.path,
+        };
+        await this.openTabView(SR_TAB_VIEW, true, state);
     }
 
     /**
@@ -107,12 +68,37 @@ export default class TabViewManager {
     }
 
     public registerAllTabViews() {
-        this.forEachTabViewType((viewType) =>
-            this.plugin.registerView(viewType.type, viewType.viewCreator),
-        );
+        if (this.isRegistered) {
+            console.log("SR: Tab views already registered, skipping");
+            return;
+        }
+
+        this.forEachTabViewType((viewType) => {
+            try {
+                this.plugin.registerView(viewType.type, viewType.viewCreator);
+            } catch (error) {
+                // View already registered - this happens during hot reload, ignore it
+                console.log(`SR: View type ${viewType.type} registration skipped (already exists)`);
+            }
+        });
+        this.isRegistered = true;
     }
 
-    public async openTabView(type: string, newLeaf?: PaneType | boolean) {
+    public unregisterAllTabViews() {
+        if (!this.isRegistered) {
+            return;
+        }
+
+        // Simply detach all leaves of our view types
+        // This is the safe, public API way to clean up views
+        this.forEachTabViewType((viewType) => {
+            this.plugin.app.workspace.detachLeavesOfType(viewType.type);
+        });
+        
+        this.isRegistered = false;
+    }
+
+    public async openTabView(type: string, newLeaf?: PaneType | boolean, state?: any) {
         const { workspace } = this.plugin.app;
 
         let leaf: WorkspaceLeaf | null = null;
@@ -121,11 +107,15 @@ export default class TabViewManager {
         if (leaves.length > 0) {
             // A leaf with our view already exists, use that
             leaf = leaves[0];
+            // Update the view state with new parameters
+            if (leaf !== null && state) {
+                await leaf.setViewState({ type: type, active: true, state });
+            }
         } else {
             // Our view could not be found in the workspace, create a new leaf as a tab
             leaf = workspace.getLeaf(newLeaf);
             if (leaf !== null) {
-                await leaf.setViewState({ type: type, active: true });
+                await leaf.setViewState({ type: type, active: true, state });
             }
         }
 

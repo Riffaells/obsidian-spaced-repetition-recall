@@ -70,6 +70,7 @@ import { Iadapter } from "./dataStore/adapter";
 import TabViewManager from "./gui/views/TabViewManager";
 import { TabView } from "./gui/views/TabView";
 import { SRSettingTab } from "src/gui/settings/SettingsTab";
+import { NoteReviewButtonsManager } from "src/gui/components/NoteReviewButtons";
 
 interface PluginData {
     settings: SRSettings;
@@ -128,6 +129,7 @@ export default class SRPlugin extends Plugin {
     public algorithm: SrsAlgorithm;
     public reviewFloatBar: reviewResponseModal;
     public settingTab: SRSettingTab;
+    public noteReviewManager: NoteReviewButtonsManager;
 
     public clock_start: number;
     private static _instance: SRPlugin;
@@ -136,11 +138,14 @@ export default class SRPlugin extends Plugin {
     }
 
     async onload(): Promise<void> {
-        // Closes all still open tab views when the plugin is loaded, because it causes bugs / empty windows otherwise
+        // Initialize tab view manager
         this.tabViewManager = new TabViewManager(this);
-        this.app.workspace.onLayoutReady(async () => {
-            this.tabViewManager.closeAllTabViews();
-        });
+        
+        // Clean up any existing views first (in case of hot reload)
+        this.tabViewManager.closeAllTabViews();
+        
+        // Register views
+        this.tabViewManager.registerAllTabViews();
 
         SRPlugin._instance = this;
         Iadapter.create(this.app);
@@ -207,6 +212,9 @@ export default class SRPlugin extends Plugin {
         };
 
         registerTrackFileEvents(this);
+
+        // Initialize compact review buttons manager
+        this.noteReviewManager = new NoteReviewButtonsManager(this);
 
         if (this.data.settings.dataLocation !== DataLocation.SaveOnNoteFile) {
             this.registerInterval(
@@ -412,8 +420,20 @@ export default class SRPlugin extends Plugin {
     onunload(): void {
         console.log("Unloading Obsidian spaced repetition Recall. ...");
         this.app.workspace.getLeavesOfType(REVIEW_QUEUE_VIEW_TYPE).forEach((leaf) => leaf.detach());
-        this.tabViewManager.closeAllTabViews();
-        this.reviewFloatBar.close();
+
+        if (this.tabViewManager) {
+            this.tabViewManager.closeAllTabViews();
+            this.tabViewManager.unregisterAllTabViews();
+        }
+
+        if (this.reviewFloatBar) {
+            this.reviewFloatBar.close();
+        }
+        
+        // Clean up note review buttons
+        if (this.noteReviewManager) {
+            this.noteReviewManager.destroy();
+        }
     }
 
     private async openFlashcardModalForSingleNote(
@@ -501,6 +521,9 @@ export default class SRPlugin extends Plugin {
             await this.savePluginData();
         }
 
+        // Build tag cache for optimization
+        SettingsUtil.buildTagCache(this.app, this.data.settings);
+
         let notes: TFile[] = this.app.vault.getMarkdownFiles();
         notes = notes.filter((noteFile) => {
             const fileCachedData = this.app.metadataCache.getFileCache(noteFile) || {};
@@ -537,6 +560,8 @@ export default class SRPlugin extends Plugin {
 
         // sort the deck names
         this.deckTree.sortSubdecksList();
+        // sort flashcards by line number to maintain question order
+        this.deckTree.sortFlashcardsByLineNumber();
         this.remainingDeckTree = DeckTreeFilter.filterForRemainingCards(
             this.questionPostponementList,
             this.deckTree,

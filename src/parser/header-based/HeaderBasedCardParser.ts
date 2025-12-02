@@ -7,7 +7,7 @@ import { QAFormatParser } from "./QAFormatParser";
 import { PositionalSelectorUtil } from "./PositionalSelector";
 import { TagResolver, generatePredefinedTags } from "./TagResolver";
 import { 
-    HeaderCardConfig, 
+    HeaderCardConfig,
     HeadingInfo, 
     ContentBoundary, 
     ResolvedTagConfig,
@@ -201,20 +201,6 @@ export class HeaderBasedCardParser {
             noteLines,
             config.nestingMode
         );
-        
-        // Try to parse as QA format first (if heading doesn't end with "?")
-        // QA format: heading followed by question text ending with "?" and then answer
-        if (!heading.isQuestion) {
-            const qaContent = this.qaFormatParser.parseQAContent(
-                heading.lineNumber,
-                boundary,
-                noteLines
-            );
-            
-            if (qaContent) {
-                return this.createQAFormatCard(heading, qaContent, noteLines);
-            }
-        }
         
         // Standard format: heading is the question, content below is the answer
         return this.createStandardCard(heading, boundary, noteLines);
