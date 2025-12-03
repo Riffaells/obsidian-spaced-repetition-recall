@@ -3,7 +3,7 @@
  * Manages both inline and header-based flashcard rules in a single interface
  */
 
-import { Notice } from "obsidian";
+import { Notice, ButtonComponent } from "obsidian";
 import type SRPlugin from "src/main";
 import { FlashcardTagRule } from "src/parser/header-based/types";
 import { createInlineRule, createHeaderRule } from "src/settings/flashcardTagRules";
@@ -50,20 +50,21 @@ export function createFlashcardRulesManager(
     // Add rule buttons
     const buttonsRow = controlsContainer.createDiv({ cls: "flashcard-rules-buttons" });
 
-    const addRuleBtn = buttonsRow.createEl("button", { cls: "mod-cta" });
-    addRuleBtn.textContent = "+ Add Rule";
-    addRuleBtn.addEventListener("click", () => {
-        new AddFlashcardRuleModal(
-            plugin.app,
-            async (newRule) => {
-                plugin.data.settings.flashcardTagRules.push(newRule);
-                await plugin.savePluginData();
-                renderRulesList(rulesListEl, plugin);
-                new Notice(`Rule "${newRule.name}" created`);
-            },
-            () => {},
-        ).open();
-    });
+    new ButtonComponent(buttonsRow)
+        .setButtonText("+ Add Rule")
+        .setCta()
+        .onClick(() => {
+            new AddFlashcardRuleModal(
+                plugin.app,
+                async (newRule) => {
+                    plugin.data.settings.flashcardTagRules.push(newRule);
+                    await plugin.savePluginData();
+                    renderRulesList(rulesListEl, plugin);
+                    new Notice(`Rule "${newRule.name}" created`);
+                },
+                () => {},
+            ).open();
+        });
 
     // Rules list
     const rulesListEl = controlsContainer.createDiv("flashcard-rules-list");
@@ -89,10 +90,20 @@ function renderRulesList(containerEl: HTMLElement, plugin: SRPlugin): void {
         inline: [],
         header: [],
         multiline: [],
+        cloze: [],
     };
 
     for (const rule of rules) {
-        rulesBySource[rule.source].push(rule);
+        if (rule.headerRules) {
+            rulesBySource.header.push(rule);
+        } else if (rule.multilineRules) {
+            rulesBySource.multiline.push(rule);
+        } else if (rule.clozeRules) {
+            rulesBySource.cloze.push(rule);
+        } else {
+            // Default to inline if no specific rules or if inlineRules are present
+            rulesBySource.inline.push(rule);
+        }
     }
 
     // Render sections
@@ -100,6 +111,7 @@ function renderRulesList(containerEl: HTMLElement, plugin: SRPlugin): void {
         { title: "Inline Rules", rules: rulesBySource.inline },
         { title: "Header-Based Rules", rules: rulesBySource.header },
         { title: "Multiline Rules", rules: rulesBySource.multiline },
+        { title: "Cloze Rules", rules: rulesBySource.cloze },
     ];
 
     for (const section of sections) {

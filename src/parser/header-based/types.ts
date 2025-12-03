@@ -39,9 +39,6 @@ export interface FlashcardTagRule {
     tagPattern?: string;        // Напр: "^#flashcards/.*" (храним как строку!)
     patternFlags?: string;      // Напр: "i"
 
-    // --- Content Extraction Rules ---
-    source: "header" | "inline" | "multiline";
-
     // Настройки для header-based карточек
     headerRules?: {
         headingLevels: number[];       // [1, 2]
@@ -61,6 +58,19 @@ export interface FlashcardTagRule {
     // Настройки для inline (опционально, на будущее)
     inlineRules?: {
         separator: string; // "::"
+        reversedSeparator: string; // ":::"
+    };
+
+    // Настройки для multiline карточек
+    multilineRules?: {
+        separator: string;
+        reversedSeparator: string;
+        endMarker?: string;
+    };
+
+    // Настройки для cloze карточек
+    clozeRules?: {
+        patterns: string[]; // e.g. ["**", "==", "{{"]
     };
 }
 
@@ -75,6 +85,21 @@ export interface ResolvedHeaderConfig {
     includeParents: number;
     qaSeparator: string;
     // headingLevels и selectors здесь уже не нужны, так как мы уже нашли заголовок
+}
+
+// ============================================================================
+// Configuration Types
+// ============================================================================
+
+export interface HeaderCardConfig {
+    headingLevels: number[];
+    nestingMode: "nested" | "flat";
+    mode: "qa" | "all" | "cloze" | "visual";
+    enabled: boolean;
+}
+
+export interface ResolvedTagConfig extends HeaderCardConfig {
+    positionalSelectors: PositionalSelector[];
 }
 
 // ============================================================================

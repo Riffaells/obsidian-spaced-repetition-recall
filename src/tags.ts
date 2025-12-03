@@ -1,11 +1,11 @@
 import { getAllTags, TFile } from "obsidian";
 import { SRSettings } from "./settings";
-import { DEFAULT_DECKNAME } from "./constants";
+import { DEFAULT_DECK_NAME } from "./constants";
 import { Iadapter } from "./dataStore/adapter";
 
 export class Tags {
     static isDefaultDackName(tag: string) {
-        return tag === DEFAULT_DECKNAME;
+        return tag === DEFAULT_DECK_NAME;
     }
 
     static getFileTags(note: TFile) {

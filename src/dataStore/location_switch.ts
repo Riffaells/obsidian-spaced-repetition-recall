@@ -1,7 +1,7 @@
 import { CachedMetadata, FrontMatterCache, Notice, TFile } from "obsidian";
 import { TopicPath } from "src/TopicPath";
 import {
-    DEFAULT_DECKNAME,
+    DEFAULT_DECK_NAME,
     MULTI_SCHEDULING_EXTRACTOR,
     SCHEDULING_INFO_REGEX,
     SR_HTML_COMMENT_BEGIN,
@@ -97,7 +97,7 @@ export class LocationSwitch {
 
     converteTag(tag?: string): string {
         if (tag == undefined) {
-            tag = DEFAULT_DECKNAME;
+            tag = DEFAULT_DECK_NAME;
         }
         return [this.settings.tagsToReview[0], tag].join("/").substring(1);
     }
@@ -157,7 +157,7 @@ export class LocationSwitch {
                 (topicPath.hasPath && topicPath.formatAsTag().includes(this.revTag)) ||
                 srfile.getAllTagsFromCache().includes("#" + this.revTag)
             ) {
-                deckname = DEFAULT_DECKNAME;
+                deckname = DEFAULT_DECK_NAME;
                 topicPath = new TopicPath([deckname]);
                 fileText = delDefaultTag(fileText, this.revTag);
                 fileChanged = true;

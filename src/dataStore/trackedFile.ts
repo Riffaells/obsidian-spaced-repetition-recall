@@ -1,8 +1,8 @@
 import { SRSettings } from "src/settings";
 import { BlockUtils } from "src/util/utils_recall";
-import { parse, ParsedQuestionInfo } from "src/parser";
+import { RuleBasedCardParser, ParsedQuestionInfo } from "src/parser";
 import { RPITEMTYPE } from "./repetitionItem";
-import { DEFAULT_DECKNAME } from "src/constants";
+import { DEFAULT_DECK_NAME } from "src/constants";
 import { Tags } from "src/tags";
 
 /**
@@ -181,16 +181,7 @@ export class TrackedFile implements ITrackedFile {
         const lines: number[] = [];
         const cardHashList: Record<number, string> = {};
 
-        const parserOptions = {
-            singleLineCardSeparator: settings.singleLineCardSeparator,
-            singleLineReversedCardSeparator: settings.singleLineReversedCardSeparator,
-            multilineCardSeparator: settings.multilineCardSeparator,
-            multilineReversedCardSeparator: settings.multilineReversedCardSeparator,
-            multilineCardEndMarker: settings.multilineCardEndMarker,
-            clozePatterns: settings.clozePatterns,
-        };
-
-        const parsedCards: ParsedQuestionInfo[] = parse(fileText, parserOptions);
+        const parsedCards: ParsedQuestionInfo[] = new RuleBasedCardParser(settings.flashcardTagRules).parse(fileText);
         if (!this.hasCards && parsedCards.length === 0) {
             return false;
         }
@@ -345,7 +336,7 @@ export class TrackedFile implements ITrackedFile {
         if (dname !== undefined) {
             this.tags.push(dname);
         } else if (type === RPITEMTYPE.NOTE) {
-            this.tags.push(DEFAULT_DECKNAME);
+            this.tags.push(DEFAULT_DECK_NAME);
         }
         // if (this._isTracked === false) {
         //     this._isTracked = true;

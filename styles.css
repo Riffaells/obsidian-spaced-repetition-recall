@@ -1053,6 +1053,182 @@ button.sr-tab-header-button:hover {
     color: var(--text-normal);
 }
 
-.rule-actions button:active {
-    transform: scale(0.95);
+/* === Compact Review Buttons (Neon Style) === */
+.sr-compact-review-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Toggle button - always visible */
+.sr-compact-review-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.sr-compact-review-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sr-compact-toggle-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+}
+
+/* When buttons are visible - normal opacity */
+.sr-compact-review-toggle {
+    opacity: 0.8;
+}
+
+/* Collapsed state - semi-transparent arrow, centered */
+.sr-compact-review-container:has(.sr-collapsed) {
+    justify-content: center;
+}
+
+.sr-compact-review-container:has(.sr-collapsed) .sr-compact-review-toggle {
+    opacity: 0.4;
+}
+
+.sr-compact-review-container:has(.sr-collapsed) .sr-compact-review-toggle:hover {
+    opacity: 0.8;
+}
+
+/* Buttons row */
+.sr-compact-review-buttons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.sr-compact-review-buttons.sr-collapsed {
+    display: none;
+}
+
+/* Button base */
+.sr-compact-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border: 2px solid;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+}
+
+.sr-compact-btn-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.sr-compact-btn-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Hard - Neon Red */
+.sr-compact-btn-hard {
+    border-color: rgba(192, 34, 74, 0.8);
+    box-shadow: 0 0 8px rgba(192, 34, 74, 0.4);
+}
+.sr-compact-btn-hard .sr-compact-btn-icon svg {
+    color: #ff5078;
+    filter: drop-shadow(0 0 4px #ff3264);
+}
+.sr-compact-btn-hard:hover {
+    background: rgba(255, 50, 100, 0.5);
+    box-shadow: 0 0 15px rgba(255, 50, 100, 0.6);
+}
+
+/* Good - Neon Yellow */
+.sr-compact-btn-good {
+    border-color: rgba(255, 200, 0, 0.8);
+    box-shadow: 0 0 8px rgba(255, 200, 0, 0.4);
+}
+.sr-compact-btn-good .sr-compact-btn-icon svg {
+    color: #ffd232;
+    filter: drop-shadow(0 0 4px #ffc800);
+}
+.sr-compact-btn-good:hover {
+    background: rgba(255, 200, 0, 0.5);
+    box-shadow: 0 0 15px rgba(255, 200, 0, 0.6);
+}
+
+/* Easy - Neon Green */
+.sr-compact-btn-easy {
+    border-color: rgba(0, 255, 150, 0.6);
+    box-shadow: 0 0 8px rgba(0, 255, 150, 0.4);
+}
+.sr-compact-btn-easy .sr-compact-btn-icon svg {
+    color: #32ffaa;
+    filter: drop-shadow(0 0 4px #00ff96);
+}
+.sr-compact-btn-easy:hover {
+    background: rgba(0, 255, 150, 0.5);
+    box-shadow: 0 0 15px rgba(0, 255, 150, 0.6);
+}
+
+
+/* === Note Review Banner === */
+.sr-note-review-banner {
+    position: absolute;
+    z-index: 100;
+    padding: 2px;
+    border-radius: 12px;
+    animation: sr-fade-in 0.2s ease-out;
+    transition: opacity 0.3s ease;
+    border: 2px solid var(--background-modifier-border);
+    background: rgba(var(--background-secondary-alt), 0.8);
+    pointer-events: auto;
+}
+
+/* Position variants - relative to the note container */
+.sr-note-review-banner.sr-position-top-right {
+    top: 10px;
+    right: 10px;
+}
+
+.sr-note-review-banner.sr-position-top-left {
+    top: 10px;
+    left: 10px;
+}
+
+.sr-note-review-banner.sr-position-bottom-right {
+    bottom: 10px;
+    right: 10px;
+}
+
+.sr-note-review-banner.sr-position-bottom-left {
+    bottom: 10px;
+    left: 10px;
+}
+
+/* Auto-hide state */
+.sr-note-review-banner.sr-auto-hidden {
+    opacity: 0.2;
+}
+
+.sr-note-review-banner.sr-auto-hidden:hover {
+    opacity: 1;
+}
+
+/* Remaining counter */
+.sr-remaining-counter {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    min-width: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 20px;
+    text-align: center;
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
 }

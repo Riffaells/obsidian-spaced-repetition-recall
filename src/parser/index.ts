@@ -13,13 +13,11 @@ export { ParsedQuestionInfo, ParserOptions } from "./types";
 // Re-export utilities
 export { debugParser, setDebugParser, markerInsideCodeBlock, hasInlineMarker } from "./utils";
 
-// Re-export main parse function
-export { parse } from "./parse";
-
-// Re-export individual parsers for direct use
-export { InlineCardParser } from "./inline/InlineCardParser";
-export { MultilineCardParser } from "./multiline/MultilineCardParser";
-export { ClozeCardParser } from "./cloze/ClozeCardParser";
+// Re-export rule-based parsers
+export { RuleBasedCardParser } from "./RuleBasedCardParser";
+export { RuleBasedInlineParser } from "./inline/RuleBasedInlineParser";
+export { RuleBasedMultilineParser } from "./multiline/RuleBasedMultilineParser";
+export { RuleBasedClozeParser } from "./cloze/RuleBasedClozeParser";
 
 // Re-export header-based parser
 export { HeaderBasedCardParser, HeaderBasedCardParserOptions } from "./header-based/HeaderBasedCardParser";

@@ -127,9 +127,9 @@ export const DEFAULT_SETTINGS: SRSettings = {
             tagExact: "#flashcards",
             enabled: true,
             priority: 0,
-            source: "inline",
             inlineRules: {
                 separator: "::",
+                reversedSeparator: ":::",
             },
         },
         // Header-based rules with regex (h1-h6)
@@ -140,7 +140,6 @@ export const DEFAULT_SETTINGS: SRSettings = {
             patternFlags: "",
             enabled: true,
             priority: 0,
-            source: "header",
             headerRules: {
                 headingLevels: [1, 2, 3, 4, 5, 6],
                 nestingMode: "nested",
@@ -158,7 +157,6 @@ export const DEFAULT_SETTINGS: SRSettings = {
             patternFlags: "",
             enabled: true,
             priority: 0,
-            source: "header",
             headerRules: {
                 headingLevels: [1, 2, 3, 4, 5, 6],
                 nestingMode: "nested",
@@ -166,6 +164,30 @@ export const DEFAULT_SETTINGS: SRSettings = {
                 includeParents: 1,
                 cardMode: "qa",
                 qaSeparator: "?",
+            },
+        },
+        // Default multiline rule
+        {
+            id: "default-multiline-flashcards",
+            name: "Multiline Flashcards",
+            tagExact: "#flashcards",
+            enabled: true,
+            priority: 0,
+            multilineRules: {
+                separator: "?",
+                reversedSeparator: "??",
+                endMarker: "",
+            },
+        },
+        // Default cloze rule
+        {
+            id: "default-cloze-flashcards",
+            name: "Cloze Flashcards",
+            tagExact: "#flashcards",
+            enabled: true,
+            priority: 0,
+            clozeRules: {
+                patterns: ["==[123;;]answer[;;hint]=="],
             },
         },
     ],
@@ -399,7 +421,7 @@ export class SettingsUtil {
     static getInlineFlashcardTags(settings: SRSettings): string[] {
         const tags: string[] = [];
         for (const rule of settings.flashcardTagRules) {
-            if (rule.enabled && rule.source === "inline" && rule.tagExact) {
+            if (rule.enabled && rule.inlineRules && rule.tagExact) {
                 tags.push(rule.tagExact);
             }
         }
@@ -412,7 +434,7 @@ export class SettingsUtil {
     static getHeaderFlashcardTags(settings: SRSettings): string[] {
         const tags: string[] = [];
         for (const rule of settings.flashcardTagRules) {
-            if (rule.enabled && rule.source === "header" && rule.tagExact) {
+            if (rule.enabled && rule.headerRules && rule.tagExact) {
                 tags.push(rule.tagExact);
             }
         }

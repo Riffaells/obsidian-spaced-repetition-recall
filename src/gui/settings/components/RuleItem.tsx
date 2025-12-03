@@ -45,8 +45,13 @@ export function createRuleItem(containerEl: HTMLElement, props: RuleItemProps): 
     const detailsEl = infoEl.createDiv({ cls: "rule-details" });
 
     // Source badge
-    const sourceBadge = detailsEl.createSpan({ cls: `rule-badge rule-badge-${rule.source}` });
-    sourceBadge.textContent = rule.source.toUpperCase();
+    let sourceType = "inline";
+    if (rule.headerRules) sourceType = "header";
+    else if (rule.multilineRules) sourceType = "multiline";
+    else if (rule.clozeRules) sourceType = "cloze";
+
+    const sourceBadge = detailsEl.createSpan({ cls: `rule-badge rule-badge-${sourceType}` });
+    sourceBadge.textContent = sourceType.toUpperCase();
 
     // Priority badge (if > 0)
     if (rule.priority > 0) {
@@ -87,7 +92,7 @@ export function createRuleItem(containerEl: HTMLElement, props: RuleItemProps): 
 function getConfigurationText(rule: FlashcardTagRule): string {
     const details: string[] = [];
 
-    if (rule.source === "header" && rule.headerRules) {
+    if (rule.headerRules) {
         const hr = rule.headerRules;
         details.push(`Levels: ${hr.headingLevels.map((l) => `h${l}`).join(", ")}`);
         details.push(`Mode: ${hr.cardMode}`);
@@ -98,8 +103,15 @@ function getConfigurationText(rule: FlashcardTagRule): string {
         if (hr.includeParents > 0) {
             details.push(`Context: ${hr.includeParents} parent(s)`);
         }
-    } else if (rule.source === "inline" && rule.inlineRules) {
+    } else if (rule.inlineRules) {
         details.push(`Separator: "${rule.inlineRules.separator}"`);
+    } else if (rule.multilineRules) {
+        details.push(`Separator: "${rule.multilineRules.separator}"`);
+        if (rule.multilineRules.endMarker) {
+            details.push(`End: "${rule.multilineRules.endMarker}"`);
+        }
+    } else if (rule.clozeRules) {
+        details.push(`Patterns: ${rule.clozeRules.patterns.length}`);
     }
 
     return details.join(" • ");

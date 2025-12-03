@@ -276,38 +276,7 @@ export class NoteReviewButtonsManager {
         if (!instance) return;
 
         try {
-            const store = DataStore.getInstance();
-            const noteItem = store.getNoteItem(file.path);
-            
-            // Get ease from algorithm data, with proper type checking
-            let currentEase = this.plugin.data.settings.baseEase;
-            if (noteItem?.data && typeof noteItem.data === 'object') {
-                const data = noteItem.data as Record<string, unknown>;
-                if ('ease' in data && typeof data.ease === 'number') {
-                    currentEase = data.ease;
-                }
-            }
-
-            // Set undo state on the instance
-            if (instance.timers.undo) clearTimeout(instance.timers.undo);
-            instance.undoState = { file, response, timestamp: Date.now() };
-            const undoTimeout = 5000; // TODO: Make this a setting
-            instance.timers.undo = setTimeout(() => {
-                instance.undoState = undefined;
-            }, undoTimeout);
-
-            // Process review
-            const reviewNote = IReviewNote.getInstance();
-            await reviewNote.responseProcess(file, response, currentEase);
-
-            const responseText = ReviewResponse[response];
-            new Notice(`Note reviewed: ${responseText}`);
-
-            // Force sync to update deck data
-            await this.plugin.sync();
-            
-            // Trigger event for sidebar update
-            this.plugin.app.workspace.trigger("sr:note-reviewed", file);
+            await this.plugin.saveReviewResponse(file, response);
         } catch (error) {
             console.error("Error reviewing note:", error);
             new Notice("Error reviewing note");

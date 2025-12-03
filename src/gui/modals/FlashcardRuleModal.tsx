@@ -3,7 +3,7 @@
  */
 
 import { App, Modal, Notice, Setting } from "obsidian";
-import { FlashcardTagRule, PositionalSelector } from "src/parser/header-based/types";
+import { FlashcardTagRule } from "src/parser/header-based/types";
 import { validateRule } from "src/parser/header-based/ruleResolver";
 
 export class FlashcardRuleModal extends Modal {
@@ -30,6 +30,15 @@ export class FlashcardRuleModal extends Modal {
 
     // Inline-specific
     private inlineSeparatorInput: HTMLInputElement;
+    private inlineReversedSeparatorInput: HTMLInputElement;
+
+    // Multiline-specific
+    private multilineSeparatorInput: HTMLInputElement;
+    private multilineReversedSeparatorInput: HTMLInputElement;
+    private multilineEndMarkerInput: HTMLInputElement;
+
+    // Cloze-specific
+    private clozePatternsInput: HTMLTextAreaElement;
 
     constructor(
         app: App,
@@ -84,8 +93,8 @@ export class FlashcardRuleModal extends Modal {
             .addText((text) => {
                 this.priorityInput = text.inputEl;
                 text.setValue(String(this.rule.priority))
-                    .setPlaceholder("0")
-                    .inputEl.setAttribute("type", "number");
+                    .setPlaceholder("0");
+                text.inputEl.setAttribute("type", "number");
                 text.inputEl.setAttribute("min", "0");
                 text.inputEl.setAttribute("max", "100");
             });
@@ -123,6 +132,13 @@ export class FlashcardRuleModal extends Modal {
             });
     }
 
+    private determineInitialSource(): string {
+        if (this.rule.headerRules) return "header";
+        if (this.rule.multilineRules) return "multiline";
+        if (this.rule.clozeRules) return "cloze";
+        return "inline"; // Default
+    }
+
     private renderSourceSettings(containerEl: HTMLElement): void {
         const section = containerEl.createDiv("rule-modal-section");
         section.createEl("h3", { text: "Card Source" });
@@ -137,7 +153,8 @@ export class FlashcardRuleModal extends Modal {
                     .addOption("inline", "Inline (::)")
                     .addOption("header", "Header-Based")
                     .addOption("multiline", "Multiline (?)")
-                    .setValue(this.rule.source)
+                    .addOption("cloze", "Cloze")
+                    .setValue(this.determineInitialSource())
                     .onChange(() => this.updateVisibility());
             });
 
@@ -146,6 +163,12 @@ export class FlashcardRuleModal extends Modal {
 
         // Inline-specific settings
         this.renderInlineSettings(section);
+
+        // Multiline-specific settings
+        this.renderMultilineSettings(section);
+
+        // Cloze-specific settings
+        this.renderClozeSettings(section);
     }
 
     private renderHeaderSettings(containerEl: HTMLElement): void {
@@ -236,6 +259,60 @@ export class FlashcardRuleModal extends Modal {
                 this.inlineSeparatorInput = text.inputEl;
                 text.setValue(this.rule.inlineRules?.separator || "::").setPlaceholder("::");
             });
+
+        // Reversed Separator
+        new Setting(inlineSection)
+            .setName("Reversed Separator")
+            .setDesc("Separator for reversed cards")
+            .addText((text) => {
+                this.inlineReversedSeparatorInput = text.inputEl;
+                text.setValue(this.rule.inlineRules?.reversedSeparator || ":::").setPlaceholder(":::");
+            });
+    }
+
+    private renderMultilineSettings(containerEl: HTMLElement): void {
+        const section = containerEl.createDiv("multiline-settings");
+        section.setAttribute("data-source", "multiline");
+
+        new Setting(section)
+            .setName("Separator")
+            .setDesc("Separator for multiline cards")
+            .addText((text) => {
+                this.multilineSeparatorInput = text.inputEl;
+                text.setValue(this.rule.multilineRules?.separator || "?").setPlaceholder("?");
+            });
+
+        new Setting(section)
+            .setName("Reversed Separator")
+            .setDesc("Separator for reversed multiline cards")
+            .addText((text) => {
+                this.multilineReversedSeparatorInput = text.inputEl;
+                text.setValue(this.rule.multilineRules?.reversedSeparator || "??").setPlaceholder("??");
+            });
+
+        new Setting(section)
+            .setName("End Marker")
+            .setDesc("Optional marker to end the card")
+            .addText((text) => {
+                this.multilineEndMarkerInput = text.inputEl;
+                text.setValue(this.rule.multilineRules?.endMarker || "").setPlaceholder("(empty)");
+            });
+    }
+
+    private renderClozeSettings(containerEl: HTMLElement): void {
+        const section = containerEl.createDiv("cloze-settings");
+        section.setAttribute("data-source", "cloze");
+
+        new Setting(section)
+            .setName("Patterns")
+            .setDesc("One pattern per line. Use {{...}} or similar syntax.")
+            .addTextArea((text) => {
+                this.clozePatternsInput = text.inputEl;
+                const patterns = this.rule.clozeRules?.patterns || ["==[123;;]answer[;;hint]=="];
+                text.setValue(patterns.join("\n"));
+                text.inputEl.rows = 5;
+                text.inputEl.style.width = "100%";
+            });
     }
 
     private renderButtons(containerEl: HTMLElement): void {
@@ -259,23 +336,15 @@ export class FlashcardRuleModal extends Modal {
     }
 
     private updateVisibility(): void {
-        const source = this.sourceSelect.value as "header" | "inline" | "multiline";
+        const source = this.sourceSelect.value as "header" | "inline" | "multiline" | "cloze";
 
-        // Show/hide header settings
-        const headerSettings = this.contentEl.querySelector(
-            '[data-source="header"]',
-        ) as HTMLElement;
-        if (headerSettings) {
-            headerSettings.style.display = source === "header" ? "block" : "none";
-        }
-
-        // Show/hide inline settings
-        const inlineSettings = this.contentEl.querySelector(
-            '[data-source="inline"]',
-        ) as HTMLElement;
-        if (inlineSettings) {
-            inlineSettings.style.display = source === "inline" ? "block" : "none";
-        }
+        const sections = ["header", "inline", "multiline", "cloze"];
+        sections.forEach(s => {
+            const el = this.contentEl.querySelector(`[data-source="${s}"]`) as HTMLElement;
+            if (el) {
+                el.style.display = source === s ? "block" : "none";
+            }
+        });
     }
 
     private handleSave(): void {
@@ -288,7 +357,6 @@ export class FlashcardRuleModal extends Modal {
             tagExact: this.tagExactInput.value.trim() || undefined,
             tagPattern: this.tagPatternInput.value.trim() || undefined,
             patternFlags: this.patternFlagsInput.value.trim() || undefined,
-            source: this.sourceSelect.value as "header" | "inline" | "multiline",
         };
 
         // Validate basic fields
@@ -308,7 +376,15 @@ export class FlashcardRuleModal extends Modal {
         }
 
         // Collect source-specific settings
-        if (updatedRule.source === "header") {
+        const source = this.sourceSelect.value;
+        
+        // Clear other rules to ensure only one type is active per rule (optional, but cleaner)
+        delete updatedRule.headerRules;
+        delete updatedRule.inlineRules;
+        delete updatedRule.multilineRules;
+        delete updatedRule.clozeRules;
+
+        if (source === "header") {
             const selectedLevels = this.headingLevelsCheckboxes
                 .filter((cb) => cb.checked)
                 .map((cb) => parseInt(cb.getAttribute("data-level")!));
@@ -321,14 +397,30 @@ export class FlashcardRuleModal extends Modal {
             updatedRule.headerRules = {
                 headingLevels: selectedLevels.sort((a, b) => a - b),
                 nestingMode: this.nestingModeSelect.value as "nested" | "flat",
-                selectors: [], // TODO: Add UI for selectors
+                selectors: [],
                 includeParents: parseInt(this.includeParentsInput.value) || 0,
                 cardMode: this.cardModeSelect.value as "qa" | "cloze" | "visual",
                 qaSeparator: this.qaSeparatorInput.value || "?",
             };
-        } else if (updatedRule.source === "inline") {
+        } else if (source === "inline") {
             updatedRule.inlineRules = {
                 separator: this.inlineSeparatorInput.value || "::",
+                reversedSeparator: this.inlineReversedSeparatorInput.value || ":::",
+            };
+        } else if (source === "multiline") {
+            updatedRule.multilineRules = {
+                separator: this.multilineSeparatorInput.value || "?",
+                reversedSeparator: this.multilineReversedSeparatorInput.value || "??",
+                endMarker: this.multilineEndMarkerInput.value || "",
+            };
+        } else if (source === "cloze") {
+            const patterns = this.clozePatternsInput.value
+                .split("\n")
+                .map(p => p.trim())
+                .filter(p => p.length > 0);
+            
+            updatedRule.clozeRules = {
+                patterns: patterns
             };
         }
 

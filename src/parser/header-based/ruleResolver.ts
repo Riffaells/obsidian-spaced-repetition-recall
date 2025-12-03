@@ -17,6 +17,25 @@ interface CompiledPattern {
 /**
  * Rule resolver - manages tag matching and config merging
  */
+/**
+ * Rule resolution and merging logic
+ * Implements the merge algorithm for combining multiple FlashcardTagRule configurations
+ */
+
+import { FlashcardTagRule, RuleId, ResolvedHeaderConfig, PositionalSelector } from "./types";
+
+/**
+ * Compiled regex pattern for tag matching
+ */
+interface CompiledPattern {
+    ruleId: RuleId;
+    pattern: RegExp;
+    rule: FlashcardTagRule;
+}
+
+/**
+ * Rule resolver - manages tag matching and config merging
+ */
 export class RuleResolver {
     private exactMatches: Map<string, FlashcardTagRule[]> = new Map();
     private patterns: CompiledPattern[] = [];
@@ -65,17 +84,13 @@ export class RuleResolver {
             matches.push(...exactRules);
         }
 
-        // Check hierarchical matches (e.g., #flashcards matches #flashcards/math)
-        // Only check tags that could be parents
-        const slashIndex = tag.indexOf("/");
-        if (slashIndex > 0) {
-            let currentTag = tag;
-            while (currentTag.length > 0) {
-                const lastSlash = currentTag.lastIndexOf("/");
-                if (lastSlash === -1) break;
-                
-                currentTag = currentTag.substring(0, lastSlash);
-                const parentRules = this.exactMatches.get(currentTag);
+        // Check hierarchical matches (e.g., #flashcards/math also matches rules for #flashcards)
+        if (tag.includes("/")) {
+            const parts = tag.split("/");
+            // Iterate through parent tags, e.g., for #a/b/c, check #a/b, then #a
+            for (let i = parts.length - 1; i > 0; i--) {
+                const parentTag = parts.slice(0, i).join("/");
+                const parentRules = this.exactMatches.get(parentTag);
                 if (parentRules) {
                     matches.push(...parentRules);
                 }
@@ -103,7 +118,7 @@ export class RuleResolver {
             const matches = this.findMatchingRules(tag);
             for (const rule of matches) {
                 // Deduplicate and filter header rules
-                if (!seen.has(rule.id) && rule.source === "header" && rule.headerRules) {
+                if (!seen.has(rule.id) && rule.headerRules) {
                     seen.add(rule.id);
                     headerRules.push(rule);
                 }
@@ -151,7 +166,8 @@ export class RuleResolver {
             nestingMode: highestPriority.nestingMode,
             cardMode: highestPriority.cardMode,
             includeParents,
-            qaSeparator: highestPriority.qaSeparator || "?",
+            // Use nullish coalescing to allow empty string as a valid separator
+            qaSeparator: highestPriority.qaSeparator ?? "?",
         };
     }
 
@@ -241,57 +257,63 @@ export function validateRule(rule: FlashcardTagRule): string[] {
     }
 
     // Validate header rules
-    if (rule.source === "header") {
-        if (!rule.headerRules) {
-            errors.push("headerRules is required for header source");
+    if (rule.headerRules) {
+        const { headingLevels, selectors, includeParents } = rule.headerRules;
+
+        // Validate heading levels
+        if (!headingLevels || headingLevels.length === 0) {
+            errors.push("At least one heading level is required");
         } else {
-            const { headingLevels, selectors, includeParents } = rule.headerRules;
+            for (const level of headingLevels) {
+                if (level < 1 || level > 6) {
+                    errors.push(`Invalid heading level: ${level} (must be 1-6)`);
+                }
+            }
+        }
 
-            // Validate heading levels
-            if (!headingLevels || headingLevels.length === 0) {
-                errors.push("At least one heading level is required");
-            } else {
-                for (const level of headingLevels) {
-                    if (level < 1 || level > 6) {
-                        errors.push(`Invalid heading level: ${level} (must be 1-6)`);
+        // Validate selectors
+        if (selectors) {
+            for (const selector of selectors) {
+                if (selector.type === "first" || selector.type === "last") {
+                    if (selector.count < 1) {
+                        errors.push(`${selector.type} count must be >= 1`);
+                    }
+                } else if (selector.type === "nth") {
+                    if (selector.index < 1) {
+                        errors.push("nth index must be >= 1 (1-based)");
+                    }
+                } else if (selector.type === "nthFromEnd") {
+                    if (selector.offset < 0) {
+                        errors.push("nthFromEnd offset must be >= 0");
                     }
                 }
             }
+        }
 
-            // Validate selectors
-            if (selectors) {
-                for (const selector of selectors) {
-                    if (selector.type === "first" || selector.type === "last") {
-                        if (selector.count < 1) {
-                            errors.push(`${selector.type} count must be >= 1`);
-                        }
-                    } else if (selector.type === "nth") {
-                        if (selector.index < 1) {
-                            errors.push("nth index must be >= 1 (1-based)");
-                        }
-                    } else if (selector.type === "nthFromEnd") {
-                        if (selector.offset < 0) {
-                            errors.push("nthFromEnd offset must be >= 0");
-                        }
-                    }
-                }
-            }
-
-            // Validate includeParents
-            if (includeParents < -1) {
-                errors.push("includeParents must be >= -1");
-            }
+        // Validate includeParents
+        if (includeParents < -1) {
+            errors.push("includeParents must be >= -1");
         }
     }
 
     // Validate inline rules
-    if (rule.source === "inline") {
-        if (!rule.inlineRules) {
-            errors.push("inlineRules is required for inline source");
-        } else {
-            if (!rule.inlineRules.separator) {
-                errors.push("inline separator is required");
-            }
+    if (rule.inlineRules) {
+        if (!rule.inlineRules.separator) {
+            errors.push("inline separator is required");
+        }
+    }
+
+    // Validate multiline rules
+    if (rule.multilineRules) {
+        if (!rule.multilineRules.separator) {
+            errors.push("multiline separator is required");
+        }
+    }
+
+    // Validate cloze rules
+    if (rule.clozeRules) {
+        if (!rule.clozeRules.patterns || rule.clozeRules.patterns.length === 0) {
+            errors.push("At least one cloze pattern is required");
         }
     }
 

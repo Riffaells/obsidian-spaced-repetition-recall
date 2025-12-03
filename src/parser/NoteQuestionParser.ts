@@ -11,6 +11,7 @@ import { TextDirection } from "../util/TextDirection";
 import { extractFrontmatter, splitTextIntoLineArray } from "../util/utils";
 import { HeaderBasedCardParser, HeaderBasedCardParserOptions } from "./header-based/HeaderBasedCardParser";
 import { FlashcardTagRule, HeaderCardConfig } from "./header-based/types";
+import { RuleBasedCardParser } from "./RuleBasedCardParser";
 
 /**
  * Converts FlashcardTagRules to customTags Map for HeaderBasedCardParser
@@ -20,7 +21,7 @@ function convertRulesToCustomTags(rules: FlashcardTagRule[]): Map<string, Header
     const customTags = new Map<string, HeaderCardConfig>();
     
     for (const rule of rules) {
-        if (!rule.enabled || rule.source !== "header" || !rule.headerRules) {
+        if (!rule.enabled || !rule.headerRules) {
             continue;
         }
         
@@ -203,18 +204,12 @@ export class NoteQuestionParser {
             this.noteLines
         );
         
-        // Parse traditional cards (inline and multiline)
-        const parserOptions: ParserOptions = {
-            singleLineCardSeparator: settings.singleLineCardSeparator,
-            singleLineReversedCardSeparator: settings.singleLineReversedCardSeparator,
-            multilineCardSeparator: settings.multilineCardSeparator,
-            multilineReversedCardSeparator: settings.multilineReversedCardSeparator,
-            multilineCardEndMarker: settings.multilineCardEndMarker,
-            clozePatterns: settings.clozePatterns,
-        };
-
-        // We pass contentText which has the frontmatter blanked out; see extractFrontmatter for reasoning
-        const traditionalCards = parse(this.contentText, parserOptions);
+        // Parse traditional cards using RuleBasedCardParser
+        // We use the same rules as configured in settings
+        const ruleBasedParser = new RuleBasedCardParser(settings.flashcardTagRules);
+        
+        // We pass contentText which has the frontmatter blanked out
+        const traditionalCards = ruleBasedParser.parse(this.contentText);
         
         // Merge results: header-based cards first, then traditional cards
         return [...headerBasedCards, ...traditionalCards];
