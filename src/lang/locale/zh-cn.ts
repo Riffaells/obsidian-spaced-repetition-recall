@@ -25,6 +25,9 @@ export default {
     CURRENT_INTERVAL_HELP_TEXT: "目前间隔：",
     CARD_GENERATED_FROM: "生成自：${notePath}",
     OPEN_NOTE: "打开笔记",
+    FAILED_TO_EDIT_QUESTION_TEXT: "Failed to edit question text:", // New entry
+
+   
     // main.ts
     OPEN_NOTE_FOR_REVIEW: "打开一个笔记开始复习",
     REVIEW_CARDS: "复习卡片",
@@ -431,4 +434,14 @@ export default {
     ALGORITHM_SWITCH_FAILED: "conversion failed, old algorithm and data restored, please issue it.",
     ALGORITHM_SWITCH_SUCCESS:
         "conversion completed, due to different algorithm parameters, subsequent review intervals will be adjusted",
+    FLASHCARD_RULES_MANAGER_TITLE: "Flashcard Tag Rules",
+    FLASHCARD_RULES_MANAGER_DESC: "<strong>Rules determine how tags create cards.</strong> You can set up different card types for different tags.",
+    FLASHCARD_RULES_MANAGER_ITEM_1: "<strong>Inline cards</strong> — use separators (::) within a line",
+    FLASHCARD_RULES_MANAGER_ITEM_2: "<strong>Header-based cards</strong> — are created from markdown headings",
+    FLASHCARD_RULES_MANAGER_ITEM_3: "<strong>Multiline cards</strong> — use a multi-line format with (?)",
+    FLASHCARD_RULES_MANAGER_TIP: "Start with the default rules, then add your own for specific needs.",
+    MANAGE_RULES_TITLE: "Manage Rules",
+    MANAGE_RULES_DESC: "Create, edit, and manage rules for flashcards. Each rule can have its own priority and settings.",
+    ADD_RULE_BUTTON: "+ Add Rule",
+    RULE_CREATED_NOTICE: "Rule \"${ruleName}\" created",
 };
