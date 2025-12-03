@@ -1,4 +1,4 @@
-import { NoteQuestionParser } from "src/NoteQuestionParser";
+import { NoteQuestionParser } from "src/parser/NoteQuestionParser";
 import { DEFAULT_SETTINGS, SRSettings } from "src/settings";
 import { TopicPath } from "src/TopicPath";
 import { TextDirection } from "src/util/TextDirection";
@@ -278,8 +278,8 @@ Inline question::Inline answer
 
             expect(questionList.length).toBe(2);
             
-            const headerCard = questionList.find((q) => q.isHeaderBased);
-            const inlineCard = questionList.find((q) => !q.isHeaderBased && q.questionType === CardType.SingleLineBasic);
+            const headerCard = questionList.find((q: Question) => q.isHeaderBased);
+            const inlineCard = questionList.find((q: Question) => !q.isHeaderBased && q.questionType === CardType.SingleLineBasic);
             
             expect(headerCard).toBeDefined();
             expect(inlineCard).toBeDefined();
@@ -307,8 +307,8 @@ JavaScript is a programming language.
 
             expect(questionList.length).toBe(2);
             
-            const headerCard = questionList.find((q) => q.isHeaderBased);
-            const multilineCard = questionList.find((q) => !q.isHeaderBased && q.questionType === CardType.MultiLineBasic);
+            const headerCard = questionList.find((q: Question) => q.isHeaderBased);
+            const multilineCard = questionList.find((q: Question) => !q.isHeaderBased && q.questionType === CardType.MultiLineBasic);
             
             expect(headerCard).toBeDefined();
             expect(multilineCard).toBeDefined();
@@ -332,8 +332,8 @@ JavaScript was created by ==Brendan Eich==.
 
             expect(questionList.length).toBe(2);
             
-            const headerCard = questionList.find((q) => q.isHeaderBased);
-            const clozeCard = questionList.find((q) => !q.isHeaderBased && q.questionType === CardType.Cloze);
+            const headerCard = questionList.find((q: Question) => q.isHeaderBased);
+            const clozeCard = questionList.find((q: Question) => !q.isHeaderBased && q.questionType === CardType.Cloze);
             
             expect(headerCard).toBeDefined();
             expect(clozeCard).toBeDefined();
@@ -372,12 +372,12 @@ Cloze with {{curly}}.
             // 1 header-based + 2 inline + 2 multiline + 3 cloze = 8 cards
             expect(questionList.length).toBe(8);
             
-            const headerCards = questionList.filter((q) => q.isHeaderBased);
-            const inlineBasic = questionList.filter((q) => q.questionType === CardType.SingleLineBasic);
-            const inlineReversed = questionList.filter((q) => q.questionType === CardType.SingleLineReversed);
-            const multilineBasic = questionList.filter((q) => q.questionType === CardType.MultiLineBasic);
-            const multilineReversed = questionList.filter((q) => q.questionType === CardType.MultiLineReversed);
-            const cloze = questionList.filter((q) => q.questionType === CardType.Cloze);
+            const headerCards = questionList.filter((q: Question) => q.isHeaderBased);
+            const inlineBasic = questionList.filter((q: Question) => q.questionType === CardType.SingleLineBasic);
+            const inlineReversed = questionList.filter((q: Question) => q.questionType === CardType.SingleLineReversed);
+            const multilineBasic = questionList.filter((q: Question) => q.questionType === CardType.MultiLineBasic);
+            const multilineReversed = questionList.filter((q: Question) => q.questionType === CardType.MultiLineReversed);
+            const cloze = questionList.filter((q: Question) => q.questionType === CardType.Cloze);
             
             expect(headerCards.length).toBe(1);
             expect(inlineBasic.length).toBe(1);
@@ -405,8 +405,8 @@ Nested inline::Nested answer
 
             // Both cards should be created independently
             expect(questionList.length).toBe(2);
-            expect(questionList.filter((q) => q.isHeaderBased).length).toBe(1);
-            expect(questionList.filter((q) => q.questionType === CardType.SingleLineBasic).length).toBe(1);
+            expect(questionList.filter((q: Question) => q.isHeaderBased).length).toBe(1);
+            expect(questionList.filter((q: Question) => q.questionType === CardType.SingleLineBasic).length).toBe(1);
         });
 
         test("Cloze card inside header-based answer", async () => {
@@ -425,8 +425,8 @@ JavaScript was created by ==Brendan Eich== in 1995.
 
             // Both cards should be created
             expect(questionList.length).toBe(2);
-            expect(questionList.filter((q) => q.isHeaderBased).length).toBe(1);
-            expect(questionList.filter((q) => q.questionType === CardType.Cloze).length).toBe(1);
+            expect(questionList.filter((q: Question) => q.isHeaderBased).length).toBe(1);
+            expect(questionList.filter((q: Question) => q.questionType === CardType.Cloze).length).toBe(1);
         });
     });
 

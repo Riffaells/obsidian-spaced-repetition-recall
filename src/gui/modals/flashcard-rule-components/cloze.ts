@@ -2,6 +2,7 @@ import { Setting } from "obsidian";
 import { FlashcardTagRule } from "src/parser/header-based/types";
 import { renderCommonSettings } from "./common";
 import { renderButtons } from "./buttons";
+import { t } from "src/lang/helpers";
 
 export function renderClozeTab(
     containerEl: HTMLElement,
@@ -18,11 +19,11 @@ export function renderClozeTab(
     renderCommonSettings(containerEl, rule);
 
     const section = containerEl.createDiv("rule-modal-section");
-    section.createEl("h3", { text: "Cloze Settings" });
+    section.createEl("h3", { text: t("SETTINGS_MODAL_SECTION_CLOZE") });
 
     new Setting(section)
-        .setName("Patterns")
-        .setDesc("One pattern per line. Use {{...}} or similar syntax.")
+        .setName(t("PATTERNS"))
+        .setDesc(t("PATTERNS_DESC"))
         .addTextArea((text) => {
             text.setValue(rule.clozeRules.patterns.join("\n"));
             text.inputEl.rows = 5;

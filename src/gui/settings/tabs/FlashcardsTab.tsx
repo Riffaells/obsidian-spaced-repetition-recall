@@ -53,11 +53,11 @@ export class FlashcardsTab {
         this.addCardOrderSettings(containerEl, plugin, settingsTab);
         addIntervalShowHideSetting(containerEl, plugin);
 
-        containerEl.createEl("h3", { text: "Cloze Settings" });
+        containerEl.createEl("h3", { text: t("CLOZE_SETTINGS_TITLE") });
         this.addClozeSettings(containerEl, plugin, settingsTab);
 
         const separatorsDetails = containerEl.createEl("details");
-        separatorsDetails.createEl("summary", { text: "Default Card Separators (Advanced)" });
+        separatorsDetails.createEl("summary", { text: t("DEFAULT_CARD_SEPARATORS_ADVANCED_TITLE") });
         this.addCardSeparators(separatorsDetails, plugin, settingsTab);
     }
 
@@ -194,9 +194,7 @@ export class FlashcardsTab {
         );
         clozePatternsEl.addTextArea((text) =>
             text
-                .setPlaceholder(
-                    "Example:\n==[123;;]answer[;;hint]==\n**[123;;]answer[;;hint]**\n{{[123;;]answer[;;hint]}}",
-                )
+                .setPlaceholder(t("CLOZE_PATTERNS_PLACEHOLDER"))
                 .setValue(plugin.data.settings.clozePatterns.join("\n"))
                 .onChange((value) => {
                     applySettingsUpdate(async () => {

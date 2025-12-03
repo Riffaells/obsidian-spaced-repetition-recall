@@ -1,43 +1,51 @@
-/**
- * Modal for creating/editing flashcard tag rules
- */
-
 import { App, Modal, Notice, Setting } from "obsidian";
 import { FlashcardTagRule } from "src/parser/header-based/types";
+import { createTabs, TabStructure } from "../components/tabs";
 import { validateRule } from "src/parser/header-based/ruleResolver";
+import {
+    HeaderRules,
+    InlineRules,
+    MultilineRules,
+    ClozeRules,
+} from "src/parser/header-based/types";
+import { t } from "src/lang/helpers";
+
+type ActiveTab = "inline" | "header" | "multiline" | "cloze";
 
 export class FlashcardRuleModal extends Modal {
-    private rule: FlashcardTagRule;
     private onSave: (rule: FlashcardTagRule) => void;
     private onCancel: () => void;
     private isEditMode: boolean;
 
-    // Form state
+    // State
+    private rule: Partial<FlashcardTagRule>;
+    private tabStructure: TabStructure;
+    private activeTab: ActiveTab = "inline";
+    private tagInputType: "exact" | "pattern" = "exact";
+
+    // Form inputs
     private nameInput: HTMLInputElement;
-    private tagExactInput: HTMLInputElement;
-    private tagPatternInput: HTMLInputElement;
-    private patternFlagsInput: HTMLInputElement;
+    private tagInput: HTMLInputElement;
     private priorityInput: HTMLInputElement;
-    private sourceSelect: HTMLSelectElement;
     private enabledCheckbox: HTMLInputElement;
 
-    // Header-specific
+    // Header specific
     private headingLevelsCheckboxes: HTMLInputElement[] = [];
     private nestingModeSelect: HTMLSelectElement;
     private cardModeSelect: HTMLSelectElement;
-    private includeParentsInput: HTMLInputElement;
     private qaSeparatorInput: HTMLInputElement;
+    private includeParentsInput: HTMLInputElement;
 
-    // Inline-specific
+    // Inline specific
     private inlineSeparatorInput: HTMLInputElement;
     private inlineReversedSeparatorInput: HTMLInputElement;
 
-    // Multiline-specific
+    // Multiline specific
     private multilineSeparatorInput: HTMLInputElement;
     private multilineReversedSeparatorInput: HTMLInputElement;
     private multilineEndMarkerInput: HTMLInputElement;
 
-    // Cloze-specific
+    // Cloze specific
     private clozePatternsInput: HTMLTextAreaElement;
 
     constructor(
@@ -45,148 +53,189 @@ export class FlashcardRuleModal extends Modal {
         rule: FlashcardTagRule,
         onSave: (rule: FlashcardTagRule) => void,
         onCancel: () => void,
-        isEditMode: boolean = false,
+        isEditMode: boolean = true,
     ) {
         super(app);
-        this.rule = { ...rule };
         this.onSave = onSave;
         this.onCancel = onCancel;
         this.isEditMode = isEditMode;
+
+        // Clone rule to avoid mutating original before save
+        this.rule = JSON.parse(JSON.stringify(rule));
+
+        // Determine initial state
+        if (this.rule.headerRules) this.activeTab = "header";
+        else if (this.rule.multilineRules) this.activeTab = "multiline";
+        else if (this.rule.clozeRules) this.activeTab = "cloze";
+        else this.activeTab = "inline";
+
+        if (this.rule.tagPattern) {
+            this.tagInputType = "pattern";
+        } else {
+            this.tagInputType = "exact";
+        }
     }
 
     onOpen(): void {
         const { contentEl } = this;
         contentEl.empty();
+        contentEl.addClass("sr-modal");
 
-        contentEl.createEl("h2", {
-            text: this.isEditMode ? "Edit Flashcard Rule" : "Create Flashcard Rule",
-        });
+        contentEl.createEl("h2", { text: this.isEditMode ? t("EDIT_FLASHCARD_RULE") : t("CREATE_FLASHCARD_RULE") });
 
-        this.renderBasicSettings(contentEl);
-        this.renderMatchingSettings(contentEl);
-        this.renderSourceSettings(contentEl);
-        this.renderButtons(contentEl);
+        const tabsContainer = contentEl.createDiv("sr-modal-tabs");
 
-        // Initial visibility update
-        this.updateVisibility();
+        this.tabStructure = createTabs(
+            tabsContainer,
+            {
+                inline: {
+                    title: t("SETTINGS_MODAL_SECTION_INLINE"),
+                    icon: "type",
+                    contentGenerator: async (el) => this.renderInlineTab(el),
+                },
+                header: {
+                    title: t("SETTINGS_MODAL_SECTION_HEADER"),
+                    icon: "heading",
+                    contentGenerator: async (el) => this.renderHeaderTab(el),
+                },
+                multiline: {
+                    title: t("SETTINGS_MODAL_SECTION_MULTILINE"),
+                    icon: "list",
+                    contentGenerator: async (el) => this.renderMultilineTab(el),
+                },
+                cloze: {
+                    title: t("SETTINGS_MODAL_SECTION_CLOZE"),
+                    icon: "scissors",
+                    contentGenerator: async (el) => this.renderClozeTab(el),
+                },
+            },
+            this.activeTab,
+        );
+
+        // Handle tab switching
+        for (const tabId in this.tabStructure.buttons) {
+            this.tabStructure.buttons[tabId].addEventListener("click", () => {
+                this.activeTab = tabId as ActiveTab;
+            });
+        }
     }
 
-    private renderBasicSettings(containerEl: HTMLElement): void {
+    private renderCommonSettings(containerEl: HTMLElement): void {
         const section = containerEl.createDiv("rule-modal-section");
 
         // Name
-        new Setting(section).setName("Rule Name").addText((text) => {
+        new Setting(section).setName(t("RULE_NAME")).addText((text) => {
             this.nameInput = text.inputEl;
-            text.setValue(this.rule.name).setPlaceholder("e.g., Exam Questions");
+            text.setValue(this.rule.name || "").setPlaceholder(t("RULE_NAME_PLACEHOLDER"));
+            text.onChange((v) => (this.rule.name = v));
         });
 
-        // Enabled
-        new Setting(section).setName("Enabled").addToggle((toggle) => {
-            this.enabledCheckbox = toggle.toggleEl;
-            toggle.setValue(this.rule.enabled);
+        // Tag Matching
+        const tagSetting = new Setting(section)
+            .setName(t("TAG_MATCHER"))
+            .setDesc(t("TAG_MATCHER_DESC"));
+
+        tagSetting.addDropdown((dropdown) => {
+            dropdown
+                .addOption("exact", t("EXACT_TAG"))
+                .addOption("pattern", t("REGEX_PATTERN"))
+                .setValue(this.tagInputType)
+                .onChange((value: "exact" | "pattern") => {
+                    this.tagInputType = value;
+                    // Update placeholder and clear old values
+                    if (value === "exact") {
+                        this.tagInput.placeholder = t("TAG_PLACEHOLDER");
+                        this.rule.tagPattern = undefined;
+                    } else {
+                        this.tagInput.placeholder = t("REGEX_PLACEHOLDER");
+                        this.rule.tagExact = undefined;
+                    }
+                    this.tagInput.value = "";
+                });
         });
 
-        // Priority
-        new Setting(section)
-            .setName("Priority")
-            .setDesc("Higher priority rules override lower priority ones (0-100)")
+        tagSetting.addText((text) => {
+            this.tagInput = text.inputEl;
+            this.tagInput.style.marginLeft = "8px";
+            if (this.tagInputType === 'exact') {
+                text.setValue(this.rule.tagExact || "").setPlaceholder(t("TAG_PLACEHOLDER"));
+            } else {
+                text.setValue(this.rule.tagPattern || "").setPlaceholder(t("REGEX_PLACEHOLDER"));
+            }
+            text.onChange((v) => {
+                if (this.tagInputType === 'exact') {
+                    this.rule.tagExact = v;
+                } else {
+                    this.rule.tagPattern = v;
+                }
+            });
+        });
+
+        // Priority & Enabled
+        const metaDiv = section.createDiv("sr-flex-row");
+        metaDiv.style.display = "flex";
+        metaDiv.style.gap = "20px";
+        metaDiv.style.alignItems = "center";
+
+        new Setting(metaDiv)
+            .setName(t("PRIORITY"))
+            .setDesc(t("PRIORITY_HINT"))
             .addText((text) => {
                 this.priorityInput = text.inputEl;
-                text.setValue(String(this.rule.priority))
-                    .setPlaceholder("0");
-                text.inputEl.setAttribute("type", "number");
-                text.inputEl.setAttribute("min", "0");
-                text.inputEl.setAttribute("max", "100");
+                text.inputEl.type = "number";
+                text.setValue(String(this.rule.priority || 0));
+                text.onChange((v) => (this.rule.priority = parseInt(v) || 0));
             });
+
+        new Setting(metaDiv).setName(t("ENABLED")).addToggle((toggle) => {
+            this.enabledCheckbox = toggle.toggleEl;
+            toggle.setValue(this.rule.enabled !== false); // Default to true if undefined
+            toggle.onChange((v) => (this.rule.enabled = v));
+        });
     }
 
-    private renderMatchingSettings(containerEl: HTMLElement): void {
+    private async renderInlineTab(containerEl: HTMLElement): Promise<void> {
+        this.renderCommonSettings(containerEl);
+
         const section = containerEl.createDiv("rule-modal-section");
-        section.createEl("h3", { text: "Tag Matching" });
+        section.createEl("h3", { text: t("SETTINGS_MODAL_SECTION_INLINE") });
 
-        // Tag exact
         new Setting(section)
-            .setName("Exact Tag")
-            .setDesc("Match this exact tag (e.g., #flashcards/exam)")
+            .setName(t("SEPARATOR"))
+            .setDesc(t("SEPARATOR_DESC_INLINE"))
             .addText((text) => {
-                this.tagExactInput = text.inputEl;
-                text.setValue(this.rule.tagExact || "").setPlaceholder("#flashcards");
+                this.inlineSeparatorInput = text.inputEl;
+                text.setValue(this.rule.inlineRules?.separator || "::");
             });
 
-        // Tag pattern
         new Setting(section)
-            .setName("Regex Pattern")
-            .setDesc("Or match tags using regex (advanced)")
+            .setName(t("REVERSED_SEPARATOR"))
+            .setDesc(t("REVERSED_SEPARATOR_DESC_INLINE"))
             .addText((text) => {
-                this.tagPatternInput = text.inputEl;
-                text.setValue(this.rule.tagPattern || "").setPlaceholder("^#exam(/.*)?$");
+                this.inlineReversedSeparatorInput = text.inputEl;
+                text.setValue(this.rule.inlineRules?.reversedSeparator || ":::");
             });
 
-        // Pattern flags
-        new Setting(section)
-            .setName("Regex Flags")
-            .setDesc("Flags for regex pattern (e.g., 'i' for case-insensitive)")
-            .addText((text) => {
-                this.patternFlagsInput = text.inputEl;
-                text.setValue(this.rule.patternFlags || "").setPlaceholder("i");
-            });
+        this.renderButtons(containerEl);
     }
 
-    private determineInitialSource(): string {
-        if (this.rule.headerRules) return "header";
-        if (this.rule.multilineRules) return "multiline";
-        if (this.rule.clozeRules) return "cloze";
-        return "inline"; // Default
-    }
+    private async renderHeaderTab(containerEl: HTMLElement): Promise<void> {
+        this.renderCommonSettings(containerEl);
 
-    private renderSourceSettings(containerEl: HTMLElement): void {
         const section = containerEl.createDiv("rule-modal-section");
-        section.createEl("h3", { text: "Card Source" });
+        section.createEl("h3", { text: t("SETTINGS_MODAL_SECTION_HEADER") });
 
-        // Source type
-        new Setting(section)
-            .setName("Source Type")
-            .setDesc("Where to extract flashcards from")
-            .addDropdown((dropdown) => {
-                this.sourceSelect = dropdown.selectEl;
-                dropdown
-                    .addOption("inline", "Inline (::)")
-                    .addOption("header", "Header-Based")
-                    .addOption("multiline", "Multiline (?)")
-                    .addOption("cloze", "Cloze")
-                    .setValue(this.determineInitialSource())
-                    .onChange(() => this.updateVisibility());
-            });
-
-        // Header-specific settings
-        this.renderHeaderSettings(section);
-
-        // Inline-specific settings
-        this.renderInlineSettings(section);
-
-        // Multiline-specific settings
-        this.renderMultilineSettings(section);
-
-        // Cloze-specific settings
-        this.renderClozeSettings(section);
-    }
-
-    private renderHeaderSettings(containerEl: HTMLElement): void {
-        const headerSection = containerEl.createDiv("header-settings");
-        headerSection.setAttribute("data-source", "header");
-
-        // Heading levels
-        const levelsSetting = new Setting(headerSection)
-            .setName("Heading Levels")
-            .setDesc("Which heading levels to process");
+        // Heading Levels
+        const levelsSetting = new Setting(section)
+            .setName(t("HEADING_LEVELS"))
+            .setDesc(t("HEADING_LEVELS_DESC"));
 
         const levelsContainer = levelsSetting.controlEl.createDiv();
         levelsContainer.style.display = "flex";
         levelsContainer.style.gap = "8px";
-        levelsContainer.style.flexWrap = "wrap";
 
         const currentLevels = this.rule.headerRules?.headingLevels || [2];
-
+        this.headingLevelsCheckboxes = [];
         for (let level = 1; level <= 6; level++) {
             const label = levelsContainer.createEl("label");
             label.style.display = "flex";
@@ -201,111 +250,89 @@ export class FlashcardRuleModal extends Modal {
             label.createSpan({ text: `H${level}` });
         }
 
-        // Nesting mode
-        new Setting(headerSection)
-            .setName("Nesting Mode")
-            .setDesc("How to handle subheadings")
-            .addDropdown((dropdown) => {
-                this.nestingModeSelect = dropdown.selectEl;
-                dropdown
-                    .addOption("nested", "Nested (include subheadings)")
-                    .addOption("flat", "Flat (stop at subheadings)")
-                    .setValue(this.rule.headerRules?.nestingMode || "nested");
-            });
+        // Nesting Mode
+        new Setting(section).setName(t("NESTING_MODE")).addDropdown((dropdown) => {
+            this.nestingModeSelect = dropdown.selectEl;
+            dropdown
+                .addOption("nested", t("NESTING_MODE_NESTED"))
+                .addOption("flat", t("NESTING_MODE_FLAT"))
+                .setValue(this.rule.headerRules?.nestingMode || "nested");
+        });
 
-        // Card mode
-        new Setting(headerSection)
-            .setName("Card Mode")
-            .setDesc("How to generate cards")
-            .addDropdown((dropdown) => {
-                this.cardModeSelect = dropdown.selectEl;
-                dropdown
-                    .addOption("qa", "QA (headings with ?)")
-                    .addOption("visual", "Visual (all headings)")
-                    .addOption("cloze", "Cloze")
-                    .setValue(this.rule.headerRules?.cardMode || "qa");
-            });
+        // Card Mode
+        new Setting(section).setName(t("CARD_MODE")).addDropdown((dropdown) => {
+            this.cardModeSelect = dropdown.selectEl;
+            dropdown
+                .addOption("qa", t("CARD_MODE_QA"))
+                .addOption("visual", t("CARD_MODE_VISUAL"))
+                .addOption("cloze", t("CARD_MODE_CLOZE"))
+                .addOption("all", t("CARD_MODE_ALL"))
+                .setValue(this.rule.headerRules?.cardMode || "qa");
+        });
 
-        // Include parents
-        new Setting(headerSection)
-            .setName("Include Parents")
-            .setDesc("Number of parent headings to show as context (0 = none, -1 = all)")
+        // QA Separator
+        new Setting(section).setName(t("QA_SEPARATOR")).addText((text) => {
+            this.qaSeparatorInput = text.inputEl;
+            text.setValue(this.rule.headerRules?.qaSeparator || "?");
+        });
+
+        // Include Parents
+        new Setting(section)
+            .setName(t("INCLUDE_PARENTS"))
+            .setDesc(t("INCLUDE_PARENTS_DESC"))
             .addText((text) => {
                 this.includeParentsInput = text.inputEl;
-                text.setValue(String(this.rule.headerRules?.includeParents || 1))
-                    .inputEl.setAttribute("type", "number");
-                text.inputEl.setAttribute("min", "-1");
+                text.setValue(String(this.rule.headerRules?.includeParents ?? 1));
+                text.inputEl.type = "number";
+                text.inputEl.min = "-1";
             });
 
-        // QA separator
-        new Setting(headerSection)
-            .setName("QA Separator")
-            .setDesc("Separator for question/answer (regex)")
-            .addText((text) => {
-                this.qaSeparatorInput = text.inputEl;
-                text.setValue(this.rule.headerRules?.qaSeparator || "?").setPlaceholder("?");
-            });
+        this.renderButtons(containerEl);
     }
 
-    private renderInlineSettings(containerEl: HTMLElement): void {
-        const inlineSection = containerEl.createDiv("inline-settings");
-        inlineSection.setAttribute("data-source", "inline");
+    private async renderMultilineTab(containerEl: HTMLElement): Promise<void> {
+        this.renderCommonSettings(containerEl);
 
-        // Separator
-        new Setting(inlineSection)
-            .setName("Separator")
-            .setDesc("Separator between question and answer")
-            .addText((text) => {
-                this.inlineSeparatorInput = text.inputEl;
-                text.setValue(this.rule.inlineRules?.separator || "::").setPlaceholder("::");
-            });
-
-        // Reversed Separator
-        new Setting(inlineSection)
-            .setName("Reversed Separator")
-            .setDesc("Separator for reversed cards")
-            .addText((text) => {
-                this.inlineReversedSeparatorInput = text.inputEl;
-                text.setValue(this.rule.inlineRules?.reversedSeparator || ":::").setPlaceholder(":::");
-            });
-    }
-
-    private renderMultilineSettings(containerEl: HTMLElement): void {
-        const section = containerEl.createDiv("multiline-settings");
-        section.setAttribute("data-source", "multiline");
+        const section = containerEl.createDiv("rule-modal-section");
+        section.createEl("h3", { text: t("SETTINGS_MODAL_SECTION_MULTILINE") });
 
         new Setting(section)
-            .setName("Separator")
-            .setDesc("Separator for multiline cards")
+            .setName(t("SEPARATOR"))
+            .setDesc(t("SEPARATOR_DESC_MULTILINE"))
             .addText((text) => {
                 this.multilineSeparatorInput = text.inputEl;
-                text.setValue(this.rule.multilineRules?.separator || "?").setPlaceholder("?");
+                text.setValue(this.rule.multilineRules?.separator || "?");
             });
 
         new Setting(section)
-            .setName("Reversed Separator")
-            .setDesc("Separator for reversed multiline cards")
+            .setName(t("REVERSED_SEPARATOR"))
+            .setDesc(t("REVERSED_SEPARATOR_DESC_MULTILINE"))
             .addText((text) => {
                 this.multilineReversedSeparatorInput = text.inputEl;
-                text.setValue(this.rule.multilineRules?.reversedSeparator || "??").setPlaceholder("??");
+                text.setValue(this.rule.multilineRules?.reversedSeparator || "??");
             });
 
         new Setting(section)
-            .setName("End Marker")
-            .setDesc("Optional marker to end the card")
+            .setName(t("END_MARKER"))
+            .setDesc(t("END_MARKER_DESC"))
             .addText((text) => {
                 this.multilineEndMarkerInput = text.inputEl;
-                text.setValue(this.rule.multilineRules?.endMarker || "").setPlaceholder("(empty)");
+                text.setValue(this.rule.multilineRules?.endMarker || "");
+                text.setPlaceholder(t("END_MARKER_PLACEHOLDER"));
             });
+
+        this.renderButtons(containerEl);
     }
 
-    private renderClozeSettings(containerEl: HTMLElement): void {
-        const section = containerEl.createDiv("cloze-settings");
-        section.setAttribute("data-source", "cloze");
+    private async renderClozeTab(containerEl: HTMLElement): Promise<void> {
+        this.renderCommonSettings(containerEl);
+
+        const section = containerEl.createDiv("rule-modal-section");
+        section.createEl("h3", { text: t("SETTINGS_MODAL_SECTION_CLOZE") });
 
         new Setting(section)
-            .setName("Patterns")
-            .setDesc("One pattern per line. Use {{...}} or similar syntax.")
+            .setName(t("PATTERNS"))
+            .setDesc(t("PATTERNS_DESC"))
             .addTextArea((text) => {
                 this.clozePatternsInput = text.inputEl;
                 const patterns = this.rule.clozeRules?.patterns || ["==[123;;]answer[;;hint]=="];
@@ -313,6 +340,8 @@ export class FlashcardRuleModal extends Modal {
                 text.inputEl.rows = 5;
                 text.inputEl.style.width = "100%";
             });
+
+        this.renderButtons(containerEl);
     }
 
     private renderButtons(containerEl: HTMLElement): void {
@@ -323,121 +352,73 @@ export class FlashcardRuleModal extends Modal {
         buttonsDiv.style.marginTop = "20px";
 
         const cancelBtn = buttonsDiv.createEl("button");
-        cancelBtn.textContent = "Cancel";
+        cancelBtn.textContent = t("CANCEL");
         cancelBtn.addEventListener("click", () => {
             this.onCancel();
             this.close();
         });
 
         const saveBtn = buttonsDiv.createEl("button");
-        saveBtn.textContent = this.isEditMode ? "Save" : "Create";
+        saveBtn.textContent = this.isEditMode ? t("SAVE") : t("CREATE");
         saveBtn.addClass("mod-cta");
         saveBtn.addEventListener("click", () => this.handleSave());
     }
 
-    private updateVisibility(): void {
-        const source = this.sourceSelect.value as "header" | "inline" | "multiline" | "cloze";
-
-        const sections = ["header", "inline", "multiline", "cloze"];
-        sections.forEach(s => {
-            const el = this.contentEl.querySelector(`[data-source="${s}"]`) as HTMLElement;
-            if (el) {
-                el.style.display = source === s ? "block" : "none";
-            }
-        });
-    }
-
     private handleSave(): void {
-        // Collect form data
-        const updatedRule: FlashcardTagRule = {
-            ...this.rule,
-            name: this.nameInput.value.trim(),
-            enabled: this.enabledCheckbox.checked,
-            priority: parseInt(this.priorityInput.value) || 0,
-            tagExact: this.tagExactInput.value.trim() || undefined,
-            tagPattern: this.tagPatternInput.value.trim() || undefined,
-            patternFlags: this.patternFlagsInput.value.trim() || undefined,
-        };
+        // Clear rule-specific properties before rebuilding
+        this.rule.headerRules = undefined;
+        this.rule.inlineRules = undefined;
+        this.rule.multilineRules = undefined;
+        this.rule.clozeRules = undefined;
 
-        // Validate basic fields
-        if (!updatedRule.name) {
-            new Notice("Rule name is required");
-            return;
-        }
-
-        if (!updatedRule.tagExact && !updatedRule.tagPattern) {
-            new Notice("Either exact tag or regex pattern is required");
-            return;
-        }
-
-        if (updatedRule.tagExact && updatedRule.tagPattern) {
-            new Notice("Cannot specify both exact tag and regex pattern");
-            return;
-        }
-
-        // Collect source-specific settings
-        const source = this.sourceSelect.value;
-        
-        // Clear other rules to ensure only one type is active per rule (optional, but cleaner)
-        delete updatedRule.headerRules;
-        delete updatedRule.inlineRules;
-        delete updatedRule.multilineRules;
-        delete updatedRule.clozeRules;
-
-        if (source === "header") {
-            const selectedLevels = this.headingLevelsCheckboxes
+        // Construct specific rules based on active tab
+        if (this.activeTab === "header") {
+            const levels = this.headingLevelsCheckboxes
                 .filter((cb) => cb.checked)
                 .map((cb) => parseInt(cb.getAttribute("data-level")!));
 
-            if (selectedLevels.length === 0) {
-                new Notice("At least one heading level must be selected");
-                return;
-            }
-
-            updatedRule.headerRules = {
-                headingLevels: selectedLevels.sort((a, b) => a - b),
-                nestingMode: this.nestingModeSelect.value as "nested" | "flat",
+            this.rule.headerRules = {
+                headingLevels: levels,
+                nestingMode: this.nestingModeSelect.value as HeaderRules["nestingMode"],
                 selectors: [],
                 includeParents: parseInt(this.includeParentsInput.value) || 0,
-                cardMode: this.cardModeSelect.value as "qa" | "cloze" | "visual",
-                qaSeparator: this.qaSeparatorInput.value || "?",
+                cardMode: this.cardModeSelect.value as HeaderRules["cardMode"],
+                qaSeparator: this.qaSeparatorInput.value,
             };
-        } else if (source === "inline") {
-            updatedRule.inlineRules = {
-                separator: this.inlineSeparatorInput.value || "::",
-                reversedSeparator: this.inlineReversedSeparatorInput.value || ":::",
+        } else if (this.activeTab === "inline") {
+            this.rule.inlineRules = {
+                separator: this.inlineSeparatorInput.value,
+                reversedSeparator: this.inlineReversedSeparatorInput.value,
             };
-        } else if (source === "multiline") {
-            updatedRule.multilineRules = {
-                separator: this.multilineSeparatorInput.value || "?",
-                reversedSeparator: this.multilineReversedSeparatorInput.value || "??",
-                endMarker: this.multilineEndMarkerInput.value || "",
+        } else if (this.activeTab === "multiline") {
+            this.rule.multilineRules = {
+                separator: this.multilineSeparatorInput.value,
+                reversedSeparator: this.multilineReversedSeparatorInput.value,
+                endMarker: this.multilineEndMarkerInput.value,
             };
-        } else if (source === "cloze") {
+        } else if (this.activeTab === "cloze") {
             const patterns = this.clozePatternsInput.value
                 .split("\n")
-                .map(p => p.trim())
-                .filter(p => p.length > 0);
-            
-            updatedRule.clozeRules = {
-                patterns: patterns
+                .map((p) => p.trim())
+                .filter((p) => p.length > 0);
+
+            this.rule.clozeRules = {
+                patterns: patterns,
             };
         }
 
-        // Validate rule
-        const errors = validateRule(updatedRule);
+        // Final validation
+        const errors = validateRule(this.rule as FlashcardTagRule);
         if (errors.length > 0) {
-            new Notice(`Validation errors:\n${errors.join("\n")}`);
+            new Notice(t("FLASHCARD_RULE_ERRORS", { errors: errors.join("\n") }));
             return;
         }
 
-        // Save
-        this.onSave(updatedRule);
+        this.onSave(this.rule as FlashcardTagRule);
         this.close();
     }
 
     onClose(): void {
-        const { contentEl } = this;
-        contentEl.empty();
+        this.contentEl.empty();
     }
 }

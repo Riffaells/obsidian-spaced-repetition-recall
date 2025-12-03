@@ -1,23 +1,23 @@
 import { App, DataAdapter, MetadataCache, Vault } from "obsidian";
 
-export abstract class Iadapter {
+export abstract class IAdapter {
     metadataCache: MetadataCache;
     adapter: DataAdapter;
     vault: Vault;
     app: App;
 
-    private static _instance: Iadapter;
+    private static _instance: IAdapter;
 
-    constructor(app: App) {
+    protected constructor(app: App) {
         this.app = app;
-        Iadapter._instance = this;
+        IAdapter._instance = this;
     }
 
     static get instance() {
-        if (Iadapter._instance) {
-            return Iadapter._instance;
+        if (IAdapter._instance) {
+            return IAdapter._instance;
         } else {
-            throw Error("there is not Iadapter instance.");
+            throw Error("there is not IAdapter instance.");
         }
     }
 
@@ -26,7 +26,7 @@ export abstract class Iadapter {
     }
 }
 
-class ObAdapter extends Iadapter {
+class ObAdapter extends IAdapter {
     constructor(app: App) {
         super(app);
         this.metadataCache = app.metadataCache;

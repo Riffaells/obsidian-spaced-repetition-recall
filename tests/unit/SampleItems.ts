@@ -1,7 +1,7 @@
 import { Deck } from "src/Deck";
 import { Note } from "src/Note";
-import { NoteParser } from "src/NoteParser";
-import { NoteQuestionParser } from "src/NoteQuestionParser";
+import { NoteParser } from "src/parser/NoteParser";
+import { NoteQuestionParser } from "src/parser/NoteQuestionParser";
 import { DEFAULT_SETTINGS, SRSettings } from "src/settings";
 import { TopicPath } from "src/TopicPath";
 import { TextDirection } from "src/util/TextDirection";

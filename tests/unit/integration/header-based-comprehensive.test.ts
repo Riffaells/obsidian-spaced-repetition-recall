@@ -1,9 +1,9 @@
-import { NoteQuestionParser } from "src/NoteQuestionParser";
+import { NoteQuestionParser } from "src/parser/NoteQuestionParser";
 import { DEFAULT_SETTINGS, SRSettings } from "src/settings";
 import { TopicPath } from "src/TopicPath";
 import { TextDirection } from "src/util/TextDirection";
 import { UnitTestSRFile } from "../helpers/UnitTestSRFile";
-import { CardType } from "src/Question";
+import { CardType, Question } from "src/Question";
 
 /**
  * Comprehensive integration tests for header-based flashcards feature.
@@ -16,14 +16,7 @@ describe("Header-Based Flashcards - Comprehensive Integration Tests", () => {
     beforeEach(() => {
         settings = {
             ...DEFAULT_SETTINGS,
-            enableHeaderBasedCards: true,
-            headerCardBaseConfig: {
-                headingLevels: [2],
-                nestingMode: "nested",
-                mode: "qa",
-            },
-            headerCardCustomTags: {},
-            headerCardShowContext: true,
+            flashcardTagRules: [], // Initialize with an empty array
         };
         parser = new NoteQuestionParser(settings);
     });
@@ -145,9 +138,8 @@ Multiline answer here.
                 true,
             );
 
-            expect(questionList.length).toBe(3);
-            const headerCards = questionList.filter(q => q.isHeaderBased);
-            const traditionalCards = questionList.filter(q => !q.isHeaderBased);
+            const headerCards = questionList.filter((q: Question) => q.isHeaderBased);
+            const traditionalCards = questionList.filter((q: Question) => !q.isHeaderBased);
             expect(headerCards.length).toBe(1);
             expect(traditionalCards.length).toBe(2);
         });

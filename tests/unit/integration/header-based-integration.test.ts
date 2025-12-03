@@ -1,9 +1,9 @@
-import { NoteQuestionParser } from "src/NoteQuestionParser";
+import { NoteQuestionParser } from "src/parser/NoteQuestionParser";
 import { DEFAULT_SETTINGS, SRSettings } from "src/settings";
 import { TopicPath } from "src/TopicPath";
 import { TextDirection } from "src/util/TextDirection";
 import { UnitTestSRFile } from "../helpers/UnitTestSRFile";
-import { CardType } from "src/Question";
+import { CardType, Question } from "src/Question";
 
 describe("Header-Based Flashcards Integration", () => {
     let settings: SRSettings;
@@ -47,13 +47,13 @@ React makes it easy to create interactive UIs.
         expect(questionList.length).toBe(3);
 
         // Check header-based cards
-        const headerCards = questionList.filter((q) => q.isHeaderBased);
+        const headerCards = questionList.filter((q: Question) => q.isHeaderBased);
         expect(headerCards.length).toBe(2);
         expect(headerCards[0].cards[0].front).toContain("What is React?");
         expect(headerCards[1].cards[0].front).toContain("Why use React?");
 
         // Check traditional card
-        const traditionalCards = questionList.filter((q) => !q.isHeaderBased);
+        const traditionalCards = questionList.filter((q: Question) => !q.isHeaderBased);
         expect(traditionalCards.length).toBe(1);
         expect(traditionalCards[0].questionType).toBe(CardType.SingleLineBasic);
     });
@@ -77,10 +77,10 @@ JavaScript is a programming language.
         );
 
         expect(questionList.length).toBe(2);
-        expect(questionList.filter((q) => q.isHeaderBased).length).toBe(1);
-        expect(questionList.filter((q) => !q.isHeaderBased).length).toBe(1);
+        expect(questionList.filter((q: Question) => q.isHeaderBased).length).toBe(1);
+        expect(questionList.filter((q: Question) => !q.isHeaderBased).length).toBe(1);
         // Both are MultiLineBasic type, but one is header-based
-        expect(questionList.filter((q) => q.questionType === CardType.MultiLineBasic).length).toBe(
+        expect(questionList.filter((q: Question) => q.questionType === CardType.MultiLineBasic).length).toBe(
             2,
         );
     });
@@ -135,15 +135,25 @@ React is a library.
     });
 
     test("Custom tags work correctly", async () => {
-        settings.flashcardTags = ["#flashcards", "#flashcard/h3"]; // Add custom tag to flashcard tags
-        settings.headerCardCustomTags = {
-            "#flashcard/h3": {
-                headingLevels: [3],
-                nestingMode: "nested",
-                mode: "qa",
+        settings.flashcardTagRules.push(
+            {
+                id: "custom-tag-rule",
+                name: "Custom Tag Rule for #flashcard/h3",
+                tagPattern: "^#flashcard/h3$",
+                patternFlags: "",
                 enabled: true,
-            },
-        };
+                priority: 0,
+                source: "header",
+                headerRules: {
+                    headingLevels: [3],
+                    nestingMode: "nested",
+                    selectors: [],
+                    includeParents: 1,
+                    cardMode: "qa",
+                    qaSeparator: "?",
+                },
+            }
+        );
         parser = new NoteQuestionParser(settings);
 
         const noteText = `#flashcard/h3

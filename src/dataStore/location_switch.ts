@@ -23,7 +23,7 @@ import deepcopy from "deepcopy";
 import { NoteCardScheduleParser } from "src/CardSchedule";
 import { DataLocation, getStorePath } from "./dataLocation";
 import { globalDateProvider } from "src/util/DateProvider";
-import { Iadapter } from "./adapter";
+import { IAdapter } from "./adapter";
 
 export class LocationSwitch {
     public plugin: SRPlugin;
@@ -55,7 +55,7 @@ export class LocationSwitch {
      * @returns {boolean}
      */
     async moveStoreLocation(): Promise<boolean> {
-        const adapter = Iadapter.instance.adapter;
+        const adapter = IAdapter.instance.adapter;
         const store = DataStore.getInstance();
 
         const newPath = this.getStorePath();
@@ -124,7 +124,7 @@ export class LocationSwitch {
 
         // await plugin.sync_Algo();
 
-        let notes: TFile[] = Iadapter.instance.vault.getMarkdownFiles();
+        let notes: TFile[] = IAdapter.instance.vault.getMarkdownFiles();
         notes = notes.filter(
             (noteFile) =>
                 !SettingsUtil.isPathInNoteIgnoreFolder(settings, noteFile.path) &&
@@ -164,7 +164,7 @@ export class LocationSwitch {
             }
 
             if (deckname !== null) {
-                const fileCachedData = Iadapter.instance.metadataCache.getFileCache(noteFile) || {};
+                const fileCachedData = IAdapter.instance.metadataCache.getFileCache(noteFile) || {};
                 fileText = await _convertFrontMatter(noteFile, fileCachedData, deckname, fileText);
                 if (fileText == null) {
                     console.warn("_convertFrontMatter: fileText null: ");
@@ -309,7 +309,7 @@ export class LocationSwitch {
                 )
                 .map(async (tkfile) => {
                     const item = store.getItembyID(tkfile.noteID);
-                    const note = Iadapter.instance.vault.getAbstractFileByPath(
+                    const note = IAdapter.instance.vault.getAbstractFileByPath(
                         tkfile.path,
                     ) as TFile;
                     if (!(note instanceof TFile)) {

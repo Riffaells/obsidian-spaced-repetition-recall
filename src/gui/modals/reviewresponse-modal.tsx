@@ -8,7 +8,7 @@ import { SrsAlgorithm } from "src/algorithms/algorithms";
 import { RepetitionItem } from "src/dataStore/repetitionItem";
 // import { debug } from "src/util/utils_recall";
 import { TouchOnMobile } from "src/Events/touchEvent";
-import { Iadapter } from "src/dataStore/adapter";
+import { IAdapter } from "src/dataStore/adapter";
 import SRPlugin from "src/main";
 import { MixQueSet } from "src/dataStore/mixQueSet";
 import { FlashcardReviewMode } from "src/FlashcardReviewSequencer";
@@ -396,7 +396,7 @@ export class reviewResponseModal {
             bar &&
             bar.checkVisibility() &&
             this.isDisplay() &&
-            Iadapter.instance.app.workspace.getActiveViewOfType(MarkdownView).getMode() ===
+            IAdapter.instance.app.workspace.getActiveViewOfType(MarkdownView).getMode() ===
                 "preview" &&
             this.answerBtn.hasClass("sr-is-hidden")
         ) {
@@ -525,7 +525,7 @@ export class reviewResponseModal {
         const tout = Platform.isMobile ? 5000 : 10000;
         const timmer = setInterval(() => {
             const rrBar = this.vwcontainerEl.querySelector("#" + this.barId);
-            const Markdown = Iadapter.instance.app.workspace.getActiveViewOfType(MarkdownView);
+            const Markdown = IAdapter.instance.app.workspace.getActiveViewOfType(MarkdownView);
 
             if (rrBar) {
                 if (!Markdown) {

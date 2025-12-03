@@ -2,7 +2,7 @@ import { MetadataCache, TFile } from "obsidian";
 import { NoteEaseList } from "src/NoteEaseList";
 import * as graph from "pagerank.js";
 import { SRSettings } from "src/settings";
-import { Iadapter } from "src/dataStore/adapter";
+import { IAdapter } from "src/dataStore/adapter";
 
 export interface LinkStat {
     sourcePath: string;
@@ -104,7 +104,7 @@ export class LinkRank {
             this.incomingLinks[noteFile.path] = [];
         }
 
-        const links = Iadapter.instance.metadataCache.resolvedLinks[noteFile.path] || {};
+        const links = IAdapter.instance.metadataCache.resolvedLinks[noteFile.path] || {};
         for (const targetPath in links) {
             if (this.incomingLinks[targetPath] === undefined) this.incomingLinks[targetPath] = [];
 

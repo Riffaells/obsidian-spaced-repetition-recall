@@ -23,10 +23,36 @@ export type PositionalSelector =
     | { type: "nth"; index: number }            // Конкретный по порядку (1-based)
     | { type: "nthFromEnd"; offset: number };   // Конкретный с конца (0 = последний)
 
-/**
- * Основное правило конфигурации (то, что храним в data.json).
- * Полностью сериализуемо (никаких RegExp объектов).
- */
+export interface HeaderRules {
+    headingLevels: number[];       // [1, 2]
+    nestingMode: "nested" | "flat";
+    
+    // Селекторы: какие именно заголовки брать
+    selectors: PositionalSelector[];
+    
+    // Контекст
+    includeParents: number;        // 0 = нет, 1 = родитель, -1 = все родители
+    
+    // Режим генерации
+    cardMode: "qa" | "all" | "cloze" | "visual";
+    qaSeparator?: string;          // Разделитель вопроса/ответа
+}
+
+export interface InlineRules {
+    separator: string; // "::"
+    reversedSeparator: string; // ":::"
+}
+
+export interface MultilineRules {
+    separator: string;
+    reversedSeparator: string;
+    endMarker?: string;
+}
+
+export interface ClozeRules {
+    patterns: string[]; // e.g. ["**", "==", "{{"]
+}
+
 export interface FlashcardTagRule {
     id: RuleId;
     name: string;               // Для отображения в UI (напр. "Exam Mode")
@@ -40,38 +66,16 @@ export interface FlashcardTagRule {
     patternFlags?: string;      // Напр: "i"
 
     // Настройки для header-based карточек
-    headerRules?: {
-        headingLevels: number[];       // [1, 2]
-        nestingMode: "nested" | "flat";
-        
-        // Селекторы: какие именно заголовки брать
-        selectors: PositionalSelector[];
-        
-        // Контекст
-        includeParents: number;        // 0 = нет, 1 = родитель, -1 = все родители
-        
-        // Режим генерации
-        cardMode: "qa" | "all" | "cloze" | "visual";
-        qaSeparator?: string;          // Разделитель вопроса/ответа
-    };
+    headerRules?: HeaderRules;
 
     // Настройки для inline (опционально, на будущее)
-    inlineRules?: {
-        separator: string; // "::"
-        reversedSeparator: string; // ":::"
-    };
+    inlineRules?: InlineRules;
 
     // Настройки для multiline карточек
-    multilineRules?: {
-        separator: string;
-        reversedSeparator: string;
-        endMarker?: string;
-    };
+    multilineRules?: MultilineRules;
 
     // Настройки для cloze карточек
-    clozeRules?: {
-        patterns: string[]; // e.g. ["**", "==", "{{"]
-    };
+    clozeRules?: ClozeRules;
 }
 
 /**

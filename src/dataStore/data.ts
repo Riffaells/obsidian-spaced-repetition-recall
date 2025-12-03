@@ -12,7 +12,7 @@ import { algorithmNames, SrsAlgorithm } from "src/algorithms/algorithms";
 import { CardInfo, TrackedFile } from "./trackedFile";
 import { RepetitionItem, ReviewResult, RPITEMTYPE } from "./repetitionItem";
 import { DEFAULT_QUEUE_DATA, Queue } from "./queue";
-import { Iadapter } from "./adapter";
+import { IAdapter } from "./adapter";
 import { t } from "src/lang/helpers";
 
 /**
@@ -111,7 +111,7 @@ export class DataStore {
      */
     async load(path = this.dataPath) {
         try {
-            const adapter = Iadapter.instance.adapter;
+            const adapter = IAdapter.instance.adapter;
 
             if (await adapter.exists(path)) {
                 const data = await adapter.read(path);
@@ -158,7 +158,7 @@ export class DataStore {
      */
     async save(path = this.dataPath) {
         try {
-            await Iadapter.instance.adapter.write(path, JSON.stringify(this.data));
+            await IAdapter.instance.adapter.write(path, JSON.stringify(this.data));
             this.data.mtime = await this.getmtime();
         } catch (error) {
             MiscUtils.notice(t("DATA_UNABLE_TO_SAVE"));
@@ -173,7 +173,7 @@ export class DataStore {
      * @returns
      */
     async getmtime(path = this.dataPath) {
-        const adapter = Iadapter.instance.adapter;
+        const adapter = IAdapter.instance.adapter;
         const stat = await adapter.stat(path.normalize());
         if (stat != null) {
             return stat.mtime;
@@ -361,7 +361,7 @@ export class DataStore {
      * @param {boolean} recursive
      */
     untrackFilesInFolderPath(path: string, recursive?: boolean) {
-        const folder: TFolder = Iadapter.instance.vault.getAbstractFileByPath(path) as TFolder;
+        const folder: TFolder = IAdapter.instance.vault.getAbstractFileByPath(path) as TFolder;
 
         if (folder != null) {
             this.untrackFilesInFolder(folder, recursive);
@@ -412,7 +412,7 @@ export class DataStore {
      * @param {boolean} recursive
      */
     trackFilesInFolderPath(path: string, recursive?: boolean) {
-        const folder: TFolder = Iadapter.instance.vault.getAbstractFileByPath(path) as TFolder;
+        const folder: TFolder = IAdapter.instance.vault.getAbstractFileByPath(path) as TFolder;
 
         if (folder != null) {
             this.trackFilesInFolder(folder, recursive);
@@ -453,7 +453,7 @@ export class DataStore {
      * trackFile.
      *
      * @param {string} path
-     * @param {string} type? "default" , "card"
+     * @param type
      * @param {boolean} notice
      * @returns {{ added: number; removed: number } | null}
      */
@@ -499,11 +499,11 @@ export class DataStore {
         }
 
         const trackedFile = this.getTrackedFile(path);
-        const note = Iadapter.instance.vault.getAbstractFileByPath(path) as TFile;
+        const note = IAdapter.instance.vault.getAbstractFileByPath(path) as TFile;
         let cardName: string = null;
 
         if (note != null && trackedFile) {
-            const fileCachedData = Iadapter.instance.metadataCache.getFileCache(note) || {};
+            const fileCachedData = IAdapter.instance.metadataCache.getFileCache(note) || {};
             const tags = getAllTags(fileCachedData) || [];
             const deckname = Tags.getNoteDeckName(note, this.settings);
             // Use new flashcard tag rules system instead of deprecated flashcardTags
@@ -780,7 +780,7 @@ export class DataStore {
     findMovedFile(path: string): string {
         const pathArr = path.split("/");
         const name = pathArr.last().replace(".md", "");
-        const notes: TFile[] = Iadapter.instance.vault.getMarkdownFiles();
+        const notes: TFile[] = IAdapter.instance.vault.getMarkdownFiles();
         const result: string[] = [];
         notes.some((note: TFile) => {
             if (note.basename.includes(name) || name.includes(note.basename)) {
@@ -809,7 +809,7 @@ export class DataStore {
      * @param {string}path
      */
     async verify(path: string): Promise<boolean> {
-        const adapter = Iadapter.instance.adapter;
+        const adapter = IAdapter.instance.adapter;
         if (path != null) {
             return await adapter.exists(path).catch((_reason) => {
                 console.error("Unable to verify file: ", path);

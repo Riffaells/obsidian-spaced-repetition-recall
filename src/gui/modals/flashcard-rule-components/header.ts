@@ -2,6 +2,7 @@ import { Setting } from "obsidian";
 import { FlashcardTagRule } from "src/parser/header-based/types";
 import { renderCommonSettings } from "./common";
 import { renderButtons } from "./buttons";
+import { t } from "src/lang/helpers";
 
 export function renderHeaderTab(
     containerEl: HTMLElement,
@@ -23,12 +24,12 @@ export function renderHeaderTab(
     renderCommonSettings(containerEl, rule);
 
     const section = containerEl.createDiv("rule-modal-section");
-    section.createEl("h3", { text: "Header Settings" });
+    section.createEl("h3", { text: t("SETTINGS_MODAL_SECTION_HEADER") });
 
     // Heading Levels
     const levelsSetting = new Setting(section)
-        .setName("Heading Levels")
-        .setDesc("Which heading levels to process");
+        .setName(t("HEADING_LEVELS"))
+        .setDesc(t("HEADING_LEVELS_DESC"));
 
     const levelsContainer = levelsSetting.controlEl.createDiv();
     levelsContainer.style.display = "flex";
@@ -65,11 +66,11 @@ export function renderHeaderTab(
 
     // Nesting Mode
     new Setting(section)
-        .setName("Nesting Mode")
+        .setName(t("NESTING_MODE"))
         .addDropdown((dropdown) => {
             dropdown
-                .addOption("nested", "Nested")
-                .addOption("flat", "Flat")
+                .addOption("nested", t("NESTING_MODE_NESTED"))
+                .addOption("flat", t("NESTING_MODE_FLAT"))
                 .setValue(rule.headerRules.nestingMode)
                 .onChange((value) => {
                     rule.headerRules.nestingMode = value as any;
@@ -78,12 +79,12 @@ export function renderHeaderTab(
 
     // Card Mode
     new Setting(section)
-        .setName("Card Mode")
+        .setName(t("CARD_MODE"))
         .addDropdown((dropdown) => {
             dropdown
-                .addOption("qa", "QA (?)")
-                .addOption("visual", "Visual")
-                .addOption("cloze", "Cloze")
+                .addOption("qa", t("CARD_MODE_QA"))
+                .addOption("visual", t("CARD_MODE_VISUAL"))
+                .addOption("cloze", t("CARD_MODE_CLOZE"))
                 .setValue(rule.headerRules.cardMode)
                 .onChange((value) => {
                     rule.headerRules.cardMode = value as any;
@@ -92,7 +93,7 @@ export function renderHeaderTab(
         
     // QA Separator
     new Setting(section)
-        .setName("QA Separator")
+        .setName(t("QA_SEPARATOR"))
         .addText((text) => {
             text.setValue(rule.headerRules.qaSeparator);
             text.onChange((value) => {

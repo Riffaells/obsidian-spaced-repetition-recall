@@ -1,4 +1,4 @@
-import { NoteParser } from "src/NoteParser";
+import { NoteParser } from "src/parser/NoteParser";
 import { TopicPath } from "src/TopicPath";
 import { Deck } from "src/Deck";
 import { Note } from "src/Note";

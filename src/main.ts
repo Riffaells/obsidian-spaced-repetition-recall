@@ -66,7 +66,7 @@ import { RepetitionItem } from "./dataStore/repetitionItem";
 import { IReviewNote } from "./reviewNote/review-note";
 import { ReviewView } from "././gui/views/reviewView";
 import { MixQueSet } from "./dataStore/mixQueSet";
-import { Iadapter } from "./dataStore/adapter";
+import { IAdapter } from "./dataStore/adapter";
 import TabViewManager from "./gui/views/TabViewManager";
 import { TabView } from "./gui/views/TabView";
 import { SRSettingTab } from "src/gui/settings/SettingsTab";
@@ -148,7 +148,7 @@ export default class SRPlugin extends Plugin {
         this.tabViewManager.registerAllTabViews();
 
         SRPlugin._instance = this;
-        Iadapter.create(this.app);
+        IAdapter.create(this.app);
         await this.loadPluginData();
         this.easeByPath = new NoteEaseList(this.data.settings);
         this.questionPostponementList = new QuestionPostponementList(

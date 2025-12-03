@@ -3,14 +3,14 @@
  * Manages both inline and header-based flashcard rules in a single interface
  */
 
-import { Notice, ButtonComponent } from "obsidian";
+import { ButtonComponent, Notice } from "obsidian";
 import type SRPlugin from "src/main";
 import { FlashcardTagRule } from "src/parser/header-based/types";
-import { createInlineRule, createHeaderRule } from "src/settings/flashcardTagRules";
 import { FlashcardRuleModal } from "src/gui/modals/FlashcardRuleModal";
 import { AddFlashcardRuleModal } from "src/gui/modals/AddFlashcardRuleModal";
 import { createInfoSection } from "./InfoSection";
 import { createRuleItem } from "./RuleItem";
+import { t } from "src/lang/helpers";
 
 /**
  * Main rules manager component
@@ -21,29 +21,27 @@ export function createFlashcardRulesManager(
 ): void {
     // Info section at the top
     createInfoSection(containerEl, {
-        title: "Flashcard Tag Rules",
+        title: t("FLASHCARD_RULES_MANAGER_TITLE"),
         icon: "file-text",
-        description:
-            "<strong>Правила определяют, как теги создают карточки.</strong> " +
-            "Вы можете настроить разные типы карточек для разных тегов.",
+        description: t("FLASHCARD_RULES_MANAGER_DESC"),
         items: [
-            "<strong>Inline карточки</strong> — используют разделители (::) внутри строки",
-            "<strong>Header-based карточки</strong> — создаются из заголовков markdown",
-            "<strong>Multiline карточки</strong> — используют многострочный формат с (?)",
+            t("FLASHCARD_RULES_MANAGER_ITEM_1"),
+            t("FLASHCARD_RULES_MANAGER_ITEM_2"),
+            t("FLASHCARD_RULES_MANAGER_ITEM_3"),
         ],
-        tip: "Начните с готовых правил по умолчанию, затем добавьте свои для специфичных нужд.",
+        tip: t("FLASHCARD_RULES_MANAGER_TIP"),
     });
 
     // Main container
     const mainContainer = containerEl.createDiv("flashcard-rules-main-container");
-    
+
     // Header
     const headerDiv = mainContainer.createDiv("flashcard-rules-header");
     const headerTitle = headerDiv.createEl("h4", { cls: "sr-section-title" });
-    headerTitle.textContent = "Управление правилами";
-    
+    headerTitle.textContent = t("MANAGE_RULES_TITLE");
+
     const headerDesc = headerDiv.createDiv({ cls: "sr-section-description" });
-    headerDesc.textContent = "Создавайте, редактируйте и управляйте правилами для карточек. Каждое правило может иметь свой приоритет и настройки.";
+    headerDesc.textContent = t("MANAGE_RULES_DESC");
 
     const controlsContainer = mainContainer.createDiv("flashcard-rules-manager");
 
@@ -51,7 +49,7 @@ export function createFlashcardRulesManager(
     const buttonsRow = controlsContainer.createDiv({ cls: "flashcard-rules-buttons" });
 
     new ButtonComponent(buttonsRow)
-        .setButtonText("+ Add Rule")
+        .setButtonText(t("ADD_RULE_BUTTON"))
         .setCta()
         .onClick(() => {
             new AddFlashcardRuleModal(
@@ -60,7 +58,7 @@ export function createFlashcardRulesManager(
                     plugin.data.settings.flashcardTagRules.push(newRule);
                     await plugin.savePluginData();
                     renderRulesList(rulesListEl, plugin);
-                    new Notice(`Rule "${newRule.name}" created`);
+                    new Notice(t("RULE_CREATED_NOTICE", { ruleName: newRule.name }));
                 },
                 () => {},
             ).open();
@@ -81,7 +79,7 @@ function renderRulesList(containerEl: HTMLElement, plugin: SRPlugin): void {
 
     if (!rules || rules.length === 0) {
         const emptyMsg = containerEl.createDiv({ cls: "flashcard-rules-empty" });
-        emptyMsg.textContent = "No rules configured yet. Add a rule to get started.";
+        emptyMsg.textContent = t("NO_RULES_CONFIGURED");
         return;
     }
 
@@ -107,11 +105,11 @@ function renderRulesList(containerEl: HTMLElement, plugin: SRPlugin): void {
     }
 
     // Render sections
-    const sections: Array<{ title: string; rules: FlashcardTagRule[] }> = [
-        { title: "Inline Rules", rules: rulesBySource.inline },
-        { title: "Header-Based Rules", rules: rulesBySource.header },
-        { title: "Multiline Rules", rules: rulesBySource.multiline },
-        { title: "Cloze Rules", rules: rulesBySource.cloze },
+    const sections: Array<{ title: string; rules: FlashcardTagRule[], id: string }> = [
+        { title: t("INLINE_RULES_SECTION_TITLE"), rules: rulesBySource.inline, id: "inline" },
+        { title: t("HEADER_BASED_RULES_SECTION_TITLE"), rules: rulesBySource.header, id: "header" },
+        { title: t("MULTILINE_RULES_SECTION_TITLE"), rules: rulesBySource.multiline, id: "multiline" },
+        { title: t("CLOZE_RULES_SECTION_TITLE"), rules: rulesBySource.cloze, id: "cloze" },
     ];
 
     for (const section of sections) {
@@ -168,8 +166,8 @@ function openRuleModal(
             renderRulesList(containerEl, plugin);
             new Notice(
                 isEditMode
-                    ? `Rule "${updatedRule.name}" updated`
-                    : `Rule "${updatedRule.name}" created`,
+                    ? t("RULE_UPDATED_NOTICE", { ruleName: updatedRule.name })
+                    : t("RULE_CREATED_NOTICE", { ruleName: updatedRule.name }),
             );
         },
         () => {
@@ -189,11 +187,10 @@ async function deleteRule(
     rule: FlashcardTagRule,
     containerEl: HTMLElement,
 ): Promise<void> {
-    const confirmed = confirm(
-        `Are you sure you want to delete the rule "${rule.name}"?\n\n` +
-            `Tag: ${rule.tagExact || rule.tagPattern}\n` +
-            `This action cannot be undone.`,
-    );
+    const confirmed = confirm(t("DELETE_RULE_CONFIRMATION_MSG", {
+        ruleName: rule.name,
+        tag: rule.tagExact || rule.tagPattern,
+    }));
 
     if (!confirmed) return;
 
@@ -203,7 +200,7 @@ async function deleteRule(
 
     await plugin.savePluginData();
     renderRulesList(containerEl, plugin);
-    new Notice(`Rule "${rule.name}" deleted`);
+    new Notice(t("RULE_DELETED_NOTICE", { ruleName: rule.name }));
 }
 
 /**

@@ -66,20 +66,20 @@ export default {
     GROUP_CONTRIBUTING: "Участие в разработке",
     CHECK_WIKI: 'Для дополнительной информации посетите: <a href="${wikiUrl}">Документацию</a>.',
     GITHUB_DISCUSSIONS:
-        'Visit the <a href="${discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
+        'Посетите раздел <a href="${discussionsUrl}">обсуждений</a> для вопросов и ответов, обратной связи и общих дискуссий.',
     GITHUB_ISSUES:
-        'Raise an <a href="${issuesUrl}">issue</a> if you have a feature request or a bug report.',
+        'Создайте <a href="${issuesUrl}">задачу</a>, если у вас есть предложение по улучшению или сообщение об ошибке.',
     GITHUB_ISSUES_MODIFIED_PLUGIN:
-        'Raise an <a href="${issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
+        'Создайте <a href="${issuesUrl}">задачу</a> об этом измененном sr-плагине, если у вас есть предложение по улучшению или сообщение об ошибке.',
     GITHUB_SOURCE_CODE:
-        'The project\'s source code is available on <a href="${githubProjectUrl}">GitHub</a>.',
+        'Исходный код проекта доступен на <a href="${githubProjectUrl}">GitHub</a>.',
     CODE_CONTRIBUTION_INFO:
-        '<a href="${codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
+        'Узнайте <a href="${codeContributionUrl}">здесь</a>, как внести свой вклад в код плагина.',
     TRANSLATION_CONTRIBUTION_INFO:
-        '<a href="${translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
+        'Узнайте <a href="${translationContributionUrl}">здесь</a>, как перевести плагин на другой язык.',
     FOLDERS_TO_IGNORE: "Игнорируемые папки",
     FOLDERS_TO_IGNORE_DESC:
-        "Enter folder paths or glob patterns on separate lines e.g. Templates/Scripts or **/*.excalidraw.md. This setting is common to both flashcards and notes.",
+        "Введите пути к папкам или glob-шаблоны на отдельных строках, например, Templates/Scripts или **/*.excalidraw.md. Эта настройка является общей как для карточек, так и для заметок.",
     OBSIDIAN_INTEGRATION: "Интеграция с Obsidian",
     FLASHCARDS: "Карточки",
     FLASHCARD_EASY_LABEL: 'Текст кнопки "Легко"',
@@ -93,15 +93,15 @@ export default {
         "Добавить задержку к кнопкам повторения перед тем, как их можно будет нажать снова.",
     FLASHCARD_TAGS: "Теги карточек",
     FLASHCARD_TAGS_DESC:
-        "Enter tags separated by spaces or newlines i.e. #flashcards #deck2 #deck3.",
+        "Введите теги, разделенные пробелами или новыми строками, например, #flashcards #deck2 #deck3.",
     CONVERT_FOLDERS_TO_DECKS: "Конвертировать папки в колоды и подколоды?",
     CONVERT_FOLDERS_TO_DECKS_DESC: "Это альтернатива указанным выше тегам карточек.",
     INLINE_SCHEDULING_COMMENTS:
-        "Save scheduling comment on the same line as the flashcard's last line?",
+        "Сохранять комментарий о планировании на той же строке, что и последняя строка карточки?",
     INLINE_SCHEDULING_COMMENTS_DESC: "HTML комментарии не будут нарушать форматирование списка",
     BURY_SIBLINGS_TILL_NEXT_DAY: "Скрывать родственные карточки до следующего дня?",
     BURY_SIBLINGS_TILL_NEXT_DAY_DESC:
-        "Siblings are cards generated from the same card text i.e. cloze deletions",
+        "Родственные карточки - это карточки, созданные из одного и того же текста, т.е. пропуски в тексте (cloze deletions)",
     BURY_SIBLINGS_TILL_NEXT_DAY_BY_NOTE_REVIEW:
         "Скрывать родственные карточки до следующего дня при повторении заметок",
     MULTI_CLOZE: "включить мульти-закрытые карточки?",
@@ -111,43 +111,43 @@ export default {
     SHOW_CARD_CONTEXT_DESC: "например: Заголовок > Раздел 1 > Подраздел > ... > Подраздел",
     SHOW_INTERVAL_IN_REVIEW_BUTTONS: "Показывать время следующего повторения на кнопках",
     SHOW_INTERVAL_IN_REVIEW_BUTTONS_DESC:
-        "Useful to know how far in the future your cards are being pushed.",
+        "Полезно знать, на какой срок в будущем откладываются ваши карточки.",
     CARD_MODAL_HEIGHT_PERCENT: "Высота карточки в процентах",
     CARD_MODAL_SIZE_PERCENT_DESC:
-        "Should be set to 100% on mobile or if you have very large images",
+        "Следует установить 100% на мобильных устройствах или если у вас очень большие изображения",
     RESET_DEFAULT: "Сбросить по умолчанию",
     CARD_MODAL_WIDTH_PERCENT: "Ширина карточки в процентах",
     RANDOMIZE_CARD_ORDER: "Случайный порядок карточек при изучении?",
     REVIEW_CARD_ORDER_WITHIN_DECK: "Порядок карточек в колоде при изучении",
     REVIEW_CARD_ORDER_NEW_FIRST_SEQUENTIAL: "Последовательно в колоде (сначала все новые карточки)",
-    REVIEW_CARD_ORDER_DUE_FIRST_SEQUENTIAL: "Sequentially within a deck (All due cards first)",
+    REVIEW_CARD_ORDER_DUE_FIRST_SEQUENTIAL: "Последовательно в колоде (сначала все просроченные карточки)",
     REVIEW_CARD_ORDER_NEW_FIRST_RANDOM: "Случайно в колоде (сначала все новые карточки)",
     REVIEW_CARD_ORDER_DUE_FIRST_RANDOM: "Случайно в колоде (сначала все просроченные карточки)",
     REVIEW_CARD_ORDER_RANDOM_DECK_AND_CARD: "Случайные колоды и карточки",
     REVIEW_DECK_ORDER: "Порядок колод при повторении",
     REVIEW_DECK_ORDER_PREV_DECK_COMPLETE_SEQUENTIAL:
-        "Sequentially (once all cards in previous deck reviewed)",
+        "Последовательно (после изучения всех карточек в предыдущей колоде)",
     REVIEW_DECK_ORDER_PREV_DECK_COMPLETE_RANDOM:
-        "Randomly (once all cards in previous deck reviewed)",
+        "Случайно (после изучения всех карточек в предыдущей колоде)",
     REVIEW_DECK_ORDER_RANDOM_DECK_AND_CARD: "Случайная карта из случайной колоды",
     DISABLE_CLOZE_CARDS: "Выключить закрытые карточки (пример: [...])?",
     CONVERT_HIGHLIGHTS_TO_CLOZES:
         "Конвертировать ==выделенный текст== в закрытые карточки (пример: [...])?",
     CONVERT_HIGHLIGHTS_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+        'Добавьте/удалите <code>${defaultPattern}</code> из ваших "Шаблонов пропусков"',
     CONVERT_BOLD_TEXT_TO_CLOZES:
         "Конвертировать **жирный текст** в закрытые карточки (пример: [...])?",
     CONVERT_BOLD_TEXT_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
-    CONVERT_CURLY_BRACKETS_TO_CLOZES: "Convert {{curly brackets}} to clozes",
+        'Добавьте/удалите <code>${defaultPattern}</code> из ваших "Шаблонов пропусков"',
+    CONVERT_CURLY_BRACKETS_TO_CLOZES: "Преобразовать {{curly brackets}} в закрытые карточки",
     CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+        'Добавьте/удалите <code>${defaultPattern}</code> из ваших "Шаблонов пропусков"',
     CLOZE_PATTERNS: "Шаблоны закрытых карточек",
     CLOZE_PATTERNS_DESC:
-        'Enter cloze patterns separated by newlines. Check the <a href="${docsUrl}">wiki</a> for guidance.',
+        'Введите шаблоны пропусков, разделенные новыми строками. Для получения дополнительной информации обратитесь к <a href="${docsUrl}">вики</a>.',
     INLINE_CARDS_SEPARATOR: "Разделитель для внутристрочных карточек",
     FIX_SEPARATORS_MANUALLY_WARNING:
-        "Note that after changing this you have to manually edit any flashcards you already have.",
+        "Обратите внимание, что после изменения этого параметра вам придется вручную отредактировать все уже существующие карточки.",
     INLINE_REVERSED_CARDS_SEPARATOR: "Разделитель для обратных однострочных карточек",
     MULTILINE_CARDS_SEPARATOR: "Разделитель для многострочных карточек",
     MULTILINE_REVERSED_CARDS_SEPARATOR: "Разделитель для обратных многострочных карточек",
@@ -157,7 +157,7 @@ export default {
     NOTE: "Note",
     REVIEW_PANE_ON_STARTUP: "Включить панель изучения карточек при запуске программы",
     TAGS_TO_REVIEW: "Теги для изучения",
-    TAGS_TO_REVIEW_DESC: "Enter tags separated by spaces or newlines i.e. #review #tag2 #tag3.",
+    TAGS_TO_REVIEW_DESC: "Введите теги, разделенные пробелами или новыми строками, т.е. #review #tag2 #tag3.",
     OPEN_RANDOM_NOTE: "Открыть случайную заметку для изучения",
     OPEN_RANDOM_NOTE_DESC: "Если выключить, то заметки будут отсортированы по важности (PageRank).",
     AUTO_NEXT_NOTE: "После изучения автоматически открывать следующую заметку",
@@ -169,19 +169,19 @@ export default {
     OPEN_IN_TAB_DESC: "Отключите, чтобы открывать плагин в модальном окне",
     SHOW_STATUS_BAR: "Показывать строку состояния",
     SHOW_STATUS_BAR_DESC:
-        "Turn this off to hide the flashcard's review status in Obsidian's status bar",
+        "Отключите, чтобы скрыть статус повторения карточек в строке состояния Obsidian",
     SHOW_RIBBON_ICON: "Показывать иконку на панели инструментов",
     SHOW_RIBBON_ICON_DESC: "Отключите, чтобы скрыть иконку плагина с панели инструментов Obsidian",
     ENABLE_FILE_MENU_REVIEW_OPTIONS:
-        "Enable the review options in the file menu (e.g. Review: Easy, Good, Hard)",
+        "Включить опции повторения в файловом меню (например, Повторение: Легко, Хорошо, Сложно)",
     ENABLE_FILE_MENU_REVIEW_OPTIONS_DESC:
-        "If you disable the review options in the file menu, you can review your notes using the plugin commands and, if you defined them, the associated command hotkeys.",
+        "Если вы отключите опции повторения в файловом меню, вы сможете повторять свои заметки с помощью команд плагина и, если вы их определили, соответствующих горячих клавиш.",
     INITIALLY_EXPAND_SUBDECKS_IN_TREE: "Дерево колод должно изначально отображаться развёрнутым",
     INITIALLY_EXPAND_SUBDECKS_IN_TREE_DESC:
-        "Turn this off to collapse nested decks in the same card. Useful if you have cards which belong to many decks in the same file.",
+        "Отключите это, чтобы свернуть вложенные колоды в одной карточке. Полезно, если у вас есть карточки, принадлежащие многим колодам в одном файле.",
     ALGORITHM: "Алгоритм",
     CHECK_ALGORITHM_WIKI:
-        'For more information, check the <a href="${algoUrl}">algorithm details</a>.',
+        'Для получения дополнительной информации см. <a href="${algoUrl}">детали алгоритма</a>.',
     SM2_OSR_VARIANT: "OSR's variant of SM-2",
     BASE_EASE: "Базовая Лёгкость",
     BASE_EASE_DESC: "минимум = 130, предпочтительно около 250.",
@@ -190,24 +190,24 @@ export default {
     LAPSE_INTERVAL_CHANGE_DESC: "новыйИнтервал = старыйИнтервал * изменениеИнтервала / 100.",
     EASY_BONUS: 'Бонус за "Легко"',
     EASY_BONUS_DESC:
-        "The easy bonus allows you to set the difference in intervals between answering Good and Easy on a flashcard/note (minimum = 100%).",
+        "Бонус за 'Легко' позволяет установить разницу в интервалах между ответами 'Хорошо' и 'Легко' на карточке/заметке (минимум = 100%).",
     EASY_BONUS_MIN_WARNING: 'Бонус за "Легко" должен быть не меньше 100.',
     LOAD_BALANCE: "Включить балансировщик нагрузки",
     LOAD_BALANCE_DESC: `Слегка корректирует интервал, чтобы количество повторений в день было более постоянным.
         Это похоже на размытие в Anki, но вместо случайности выбирает день с наименьшим количеством повторений.
         Отключается для малых интервалов.`,
     MAX_INTERVAL: "Максимальный интервал повторения в днях",
-    MAX_INTERVAL_DESC: "Allows you to place an upper limit on the interval (default = 100 years).",
+    MAX_INTERVAL_DESC: "Позволяет установить верхний предел интервала (по умолчанию = 100 лет).",
     MAX_INTERVAL_MIN_WARNING: "Максимальный интервал должен быть не менее 1 дня.",
     MAX_LINK_CONTRIB: "Максимальный вклад ссылок",
     MAX_LINK_CONTRIB_DESC:
         "Maximum contribution of the weighted ease of linked notes to the initial ease.",
     FUZZING: "Размытие",
     FUZZING_DESC:
-        "When enabled, this adds a small random delay to the new interval time to prevent cards from sticking together and always being reviewed on the same day.",
+        "При включении добавляет небольшую случайную задержку к новому интервалу, чтобы предотвратить 'слипание' карточек и их повторение в один и тот же день.",
     SWITCH_SHORT_TERM: "Переключиться на краткосрочное планирование",
     SWITCH_SHORT_TERM_DESC:
-        "When disabled, this allow user to skip the short-term scheduler and directly switch to the long-term scheduler.",
+        "При отключении позволяет пользователю пропустить краткосрочный планировщик и сразу перейти к долгосрочному.",
     LOGGING: "Журналирование",
     DISPLAY_SCHEDULING_DEBUG_INFO: "Отображать отладочную информацию в консоли разработчика",
     DISPLAY_PARSER_DEBUG_INFO: "Показывать отладочную информацию парсера в консоли разработчика",
@@ -220,21 +220,18 @@ export default {
     DATA_FOLDER: "Папка для `tracked_files.json`",
     NEW_PER_DAY: "Новых в день",
     NEW_PER_DAY_DESC:
-        "Maximum number of new (unreviewed) notes to add to the queue each day, set `-1` with unlimit.",
+        "Максимальное количество новых (неповторенных) заметок, добавляемых в очередь каждый день, установите -1 для неограниченного количества.",
     NEW_PER_DAY_NAN: "Должно быть числом",
     NEW_PER_DAY_NEG: "Новых в день должно быть -1 или больше.",
     REPEAT_ITEMS: "Повторять элементы",
-    REPEAT_ITEMS_DESC: "Should items marked as incorrect be repeated until correct?",
-    ALGORITHMS_CONFIRM: `Switching algorithms might reset or impact review timings on existing items.
-    This change is irreversible. Changing algorithms only takes effect after a restart
-    or a plugin reload. Are you sure you want to switch algorithms?
-    `,
+    REPEAT_ITEMS_DESC: "Следует ли повторять элементы, отмеченные как неправильные, до тех пор, пока они не будут отмечены как правильные?",
+    ALGORITHMS_CONFIRM: `Переключение алгоритмов может сбросить или повлиять на время повторения существующих элементов. Это изменение необратимо. Смена алгоритма вступает в силу только после перезапуска или перезагрузки плагина. Вы уверены, что хотите переключить алгоритм?`,
     ALGORITHMS_DESC:
-        'The algorithm used for spaced repetition. For more information see <a href="https://github.com/martin-jw/obsidian-recall">algorithms</a>.',
+        'Алгоритм, используемый для интервального повторения. Для получения дополнительной информации см. <a href="https://github.com/martin-jw/obsidian-recall">алгоритмы</a>.',
     CONVERT_TRACKED_TO_DECK: "Конвертировать отслеживаемые заметки в колоды?",
     REVIEW_FLOATBAR: "Плавающая панель ответов при повторении",
     REVIEW_FLOATBAR_DESC:
-        "only working when autoNextNote is true. show it when reviewing note via click statusbar/sidebar/command.",
+        "Работает только при включенном autoNextNote. Показывается при повторении заметки через строку состояния/боковую панель/команду.",
     REVIEW_NOTE_DIRECTLY: "Повторять заметку напрямую?",
     REVIEW_NOTE_DIRECTLY_DESC:
         "when reviewing note via click statusbar or command, open it directly without having to select a tag to open a note",
@@ -242,18 +239,18 @@ export default {
     INTERVAL_SHOWHIDE_DESC: "Отображать ли интервал следующего повторения на кнопках ответов.",
     REQUEST_RETENTION: "Запрашиваемое удержание",
     REQUEST_RETENTION_DESC:
-        "The probability (percentage) that you expect to recall the answer the next time you review",
+        "Вероятность (в процентах), с которой вы ожидаете вспомнить ответ при следующем повторении",
     REVLOG_TAGS: "Теги для вывода в журнал повторений",
     REVLOG_TAGS_DESC:
-        "Tags for output review log, could be flashcards tags or/and notes tags(e.g. #review #flashcards #tag1), default empty means it output to the review log file normally without filtered by tags",
+        "Теги для вывода журнала повторений, могут быть тегами карточек и/или тегами заметок (например, #review #flashcards #tag1), по умолчанию пустое значение означает, что вывод в файл журнала повторений осуществляется без фильтрации по тегам",
     FLASHCARD_AGAIN_LABEL: 'Текст кнопки "Снова"',
     FLASHCARD_BLACKOUT_LABEL: 'Текст кнопки "Забыл"',
     FLASHCARD_INCORRECT_LABEL: 'Текст кнопки "Неправильно"',
-    "FLASHCARD_INCORRECT (EASY)_LABEL": "Incorrect (Easy) Button Text",
+    "FLASHCARD_INCORRECT (EASY)_LABEL": 'Текст кнопки "Неправильно (Легко)"',
     FLASHCARD_AGAIN_DESC: 'Настроить ярлык для кнопки "Снова"',
     FLASHCARD_BLACKOUT_DESC: 'Настроить ярлык для кнопки "Забыл"',
     FLASHCARD_INCORRECT_DESC: 'Настроить ярлык для кнопки "Неправильно"',
-    "FLASHCARD_INCORRECT (EASY)_DESC": 'Customize the label for the "Incorrect (Easy)" Button',
+    "FLASHCARD_INCORRECT (EASY)_DESC": 'Настроить ярлык для кнопки "Неправильно (Легко)"',
     UNTRACK_WITH_REVIEWTAG: "Не отслеживать с тегом повторения",
     NEW_DESIGN: "Новая Боковая Панель",
     NEW_DESIGN_DESC: "Новый экспериментальный дизайн Боковой Панели",
@@ -428,18 +425,18 @@ export default {
     MENU_UNTRACK_NOTE: "Не отслеживать заметку",
     // data.ts
     DATA_TAGGED_FILE_CANT_UNTRACK:
-        "it is taged file, can't untrack by this. You can delete the #review tag in note file.",
+        "Это файл с тегом, отменить отслеживание таким способом нельзя. Вы можете удалить тег #review в файле заметки.",
     // data.ts
     DATA_UNTRACKED_ITEMS: "Отменено отслеживание ${numItems} элементов${nulrstr}",
     DATA_UNABLE_TO_SAVE: "Не удалось сохранить файл данных!",
     DATA_FOLDER_UNTRACKED:
-        "In folder ${folderPath}, ${totalRemoved} files are no longer tracked for repetition",
+        "В папке ${folderPath} ${totalRemoved} файлов больше не отслеживаются для повторения",
     DATA_ADDED_REMOVED_ITEMS:
         "Добавлено ${totalAdded} новых элементов, удалено ${totalRemoved} элементов.",
     DATA_ADDED_REMOVED_ITEMS_SHORT:
         "Добавлено ${added} новых элементов, удалено ${removed} элементов.",
     DATA_FILE_UPDATE:
-        "${filePath} update - lineNo: ${lineNo}\nAdded: ${added} new card items, removed ${removed} card items.",
+        "Обновление ${filePath} - строка: ${lineNo}\nДобавлено: ${added} новых карточек, удалено: ${removed} карточек.",
     DATA_ALL_ITEMS_UPDATED: "Все элементы были обновлены.",
     RECALCULATE_NOTES: "Пересчёт заметок",
     RECALCULATING_NOTES_NOTICE_START: "Пересчитывая заметки...",
@@ -458,4 +455,53 @@ export default {
         "Конвертация не удалась, восстановлен старый алгоритм и данные, пожалуйста, сообщите об этом.",
     ALGORITHM_SWITCH_SUCCESS:
         "Конвертация завершена, из-за различных параметров алгоритма последующие интервалы повторения будут скорректированы",
+    
+    // FlashcardRuleModal.tsx
+    EDIT: "Редактировать",
+    CREATE: "Создать",
+    FLASHCARD_RULE: "Правило для карточек",
+    EDIT_FLASHCARD_RULE: "Редактировать правило для карточек",
+    CREATE_FLASHCARD_RULE: "Создать правило для карточек",
+    RULE_NAME: "Название правила",
+    RULE_NAME_PLACEHOLDER: "например, Экзаменационные вопросы",
+    TAG_MATCHER: "Фильтр тегов",
+    TAG_MATCHER_DESC: "Фильтровать по точному тегу или регулярному выражению.",
+    EXACT_TAG: "Точный тег",
+    REGEX_PATTERN: "Регулярное выражение",
+    TAG_PLACEHOLDER: "#карточки",
+    REGEX_PLACEHOLDER: "^#карточки/.*",
+    PRIORITY: "Приоритет",
+    PRIORITY_HINT: "0-100",
+    ENABLED: "Включено",
+    SETTINGS_MODAL_SECTION_INLINE: "Настройки для встроенных карточек",
+    SEPARATOR: "Разделитель",
+    SEPARATOR_DESC_INLINE: "Разделитель между вопросом и ответом",
+    REVERSED_SEPARATOR: "Обратный разделитель",
+    REVERSED_SEPARATOR_DESC_INLINE: "Разделитель для обратных карточек",
+    SETTINGS_MODAL_SECTION_HEADER: "Настройки для заголовков",
+    HEADING_LEVELS: "Уровни заголовков",
+    HEADING_LEVELS_DESC: "Какие уровни заголовков обрабатывать",
+    NESTING_MODE: "Режим вложенности",
+    NESTING_MODE_NESTED: "Вложенный",
+    NESTING_MODE_FLAT: "Плоский",
+    CARD_MODE: "Режим карточки",
+    CARD_MODE_QA: "Вопрос/Ответ (?)",
+    CARD_MODE_VISUAL: "Визуальный",
+    CARD_MODE_ALL: "Все",
+    CARD_MODE_CLOZE: "Пропуски",
+    QA_SEPARATOR: "Разделитель В/О",
+    INCLUDE_PARENTS: "Включить родительские заголовки",
+    INCLUDE_PARENTS_DESC: "Количество родительских заголовков для контекста (0 = нет, -1 = все)",
+    SETTINGS_MODAL_SECTION_MULTILINE: "Настройки для многострочных карточек",
+    SEPARATOR_DESC_MULTILINE: "Разделитель для многострочных карточек",
+    REVERSED_SEPARATOR_DESC_MULTILINE: "Разделитель для обратных многострочных карточек",
+    END_MARKER: "Маркер конца",
+    END_MARKER_DESC: "Необязательный маркер для завершения карточки",
+    END_MARKER_PLACEHOLDER: "(пусто)",
+    SETTINGS_MODAL_SECTION_CLOZE: "Настройки пропусков",
+    PATTERNS: "Шаблоны",
+    PATTERNS_DESC: "Один шаблон на строку. Используйте {{...}} или подобный синтаксис.",
+    FLASHCARD_RULE_ERRORS: "Пожалуйста, исправьте следующие ошибки:\n${errors}",
+    TAG: "Тег",
+    TAG_DESC: "Точный тег (например, #flashcards) или регулярное выражение",
 };

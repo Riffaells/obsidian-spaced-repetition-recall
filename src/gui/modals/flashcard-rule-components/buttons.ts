@@ -1,4 +1,5 @@
 import { ButtonComponent } from "obsidian";
+import { t } from "src/lang/helpers";
 
 export function renderButtons(
     containerEl: HTMLElement,
@@ -12,11 +13,11 @@ export function renderButtons(
     buttonsDiv.style.marginTop = "20px";
 
     new ButtonComponent(buttonsDiv)
-        .setButtonText("Cancel")
+        .setButtonText(t("CANCEL"))
         .onClick(onCancel);
 
     new ButtonComponent(buttonsDiv)
-        .setButtonText("Create Rule")
+        .setButtonText(t("CREATE_FLASHCARD_RULE"))
         .setCta()
         .onClick(onSave);
 }
