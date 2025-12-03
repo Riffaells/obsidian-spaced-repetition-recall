@@ -27,7 +27,7 @@ export class FlashcardRuleModal extends Modal {
     private nameInput: HTMLInputElement;
     private tagInput: HTMLInputElement;
     private priorityInput: HTMLInputElement;
-    private enabledCheckbox: HTMLInputElement;
+    private enabledCheckbox: HTMLElement;
 
     // Header specific
     private headingLevelsCheckboxes: HTMLInputElement[] = [];
