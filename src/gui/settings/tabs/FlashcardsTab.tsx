@@ -1,7 +1,8 @@
 import { Notice, Setting, App } from "obsidian";
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
-import { DEFAULT_SETTINGS } from "src/settings";
+import { DEFAULT_SETTINGS, SRSettings } from "src/settings";
+import { SRSettingTab } from "src/gui/settings/SettingsTab";
 import { addMultiClozeSetting } from "src/settings/multiClozeSetting";
 import { addburySiblingSetting } from "src/settings/burySiblingSetting";
 import { addcardBlockIDSetting } from "src/settings/cardBlockIDSetting";
@@ -14,7 +15,7 @@ export class FlashcardsTab {
     static async render(
         containerEl: HTMLElement,
         plugin: SRPlugin,
-        settingsTab: any,
+        settingsTab: SRSettingTab,
     ): Promise<void> {
         containerEl.createEl("h3", { text: t("GROUP_TAGS_FOLDERS") });
 
@@ -64,7 +65,7 @@ export class FlashcardsTab {
     private static addClozeSettings(
         containerEl: HTMLElement,
         plugin: SRPlugin,
-        settingsTab: any,
+        settingsTab: SRSettingTab,
     ): void {
         this.addClozePatternToggles(containerEl, plugin, settingsTab);
         this.addClozePatternsTextArea(containerEl, plugin);
@@ -73,7 +74,7 @@ export class FlashcardsTab {
     private static addCardOrderSettings(
         containerEl: HTMLElement,
         plugin: SRPlugin,
-        settingsTab: any,
+        settingsTab: SRSettingTab,
     ): void {
         new Setting(containerEl)
             .setName(t("REVIEW_CARD_ORDER_WITHIN_DECK"))
@@ -133,9 +134,9 @@ export class FlashcardsTab {
     private static addClozePatternToggles(
         containerEl: HTMLElement,
         plugin: SRPlugin,
-        settingsTab: any,
+        settingsTab: SRSettingTab,
     ): void {
-        const patterns = {
+        const patterns: Record<string, { key: keyof SRSettings; pattern: string; name: string; desc: string }> = {
             highlights: {
                 key: "convertHighlightsToClozes",
                 pattern: "==[123;;]answer[;;hint]==",
@@ -157,10 +158,10 @@ export class FlashcardsTab {
         };
 
         for (const config of Object.values(patterns)) {
-            const setting = new Setting(containerEl).setName(t(config.name));
+            const setting = new Setting(containerEl).setName(t(config.name as any));
             setting.descEl.insertAdjacentHTML(
                 "beforeend",
-                t(config.desc, { defaultPattern: config.pattern }),
+                t(config.desc as any, { defaultPattern: config.pattern }),
             );
             setting.addToggle((toggle) =>
                 toggle
@@ -225,9 +226,9 @@ export class FlashcardsTab {
     private static addCardSeparators(
         containerEl: HTMLElement,
         plugin: SRPlugin,
-        settingsTab: any,
+        settingsTab: SRSettingTab,
     ): void {
-        const separators = [
+        const separators: { key: keyof SRSettings; name: string }[] = [
             { key: "singleLineCardSeparator", name: "INLINE_CARDS_SEPARATOR" },
             { key: "singleLineReversedCardSeparator", name: "INLINE_REVERSED_CARDS_SEPARATOR" },
             { key: "multilineCardSeparator", name: "MULTILINE_CARDS_SEPARATOR" },
@@ -237,12 +238,12 @@ export class FlashcardsTab {
 
         for (const sep of separators) {
             new Setting(containerEl)
-                .setName(t(sep.name))
+                .setName(t(sep.name as any))
                 .setDesc(t("FIX_SEPARATORS_MANUALLY_WARNING"))
                 .addText((text) =>
                     text
                         .setValue(
-                            plugin.data.settings[sep.key as keyof typeof plugin.data.settings] as string,
+                            plugin.data.settings[sep.key] as string,
                         )
                         .onChange((value) => {
                             applySettingsUpdate(async () => {

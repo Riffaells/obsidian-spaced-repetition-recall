@@ -4,7 +4,8 @@ import { t } from "src/lang/helpers";
 export function renderButtons(
     containerEl: HTMLElement,
     onSave: () => void,
-    onCancel: () => void
+    onCancel: () => void,
+    isEditMode: boolean = true
 ): void {
     const buttonsDiv = containerEl.createDiv("modal-button-container");
     buttonsDiv.style.display = "flex";
@@ -17,7 +18,7 @@ export function renderButtons(
         .onClick(onCancel);
 
     new ButtonComponent(buttonsDiv)
-        .setButtonText(t("CREATE_FLASHCARD_RULE"))
+        .setButtonText(isEditMode ? t("SAVE") : t("CREATE"))
         .setCta()
         .onClick(onSave);
 }

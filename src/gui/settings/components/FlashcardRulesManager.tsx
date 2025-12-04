@@ -7,7 +7,7 @@ import { ButtonComponent, Notice } from "obsidian";
 import type SRPlugin from "src/main";
 import { FlashcardTagRule } from "src/parser/header-based/types";
 import { FlashcardRuleModal } from "src/gui/modals/FlashcardRuleModal";
-import { AddFlashcardRuleModal } from "src/gui/modals/AddFlashcardRuleModal";
+
 import { createInfoSection } from "./InfoSection";
 import { createRuleItem } from "./RuleItem";
 import { t } from "src/lang/helpers";
@@ -52,16 +52,14 @@ export function createFlashcardRulesManager(
         .setButtonText(t("ADD_RULE_BUTTON"))
         .setCta()
         .onClick(() => {
-            new AddFlashcardRuleModal(
-                plugin.app,
-                async (newRule) => {
-                    plugin.data.settings.flashcardTagRules.push(newRule);
-                    await plugin.savePluginData();
-                    renderRulesList(rulesListEl, plugin);
-                    new Notice(t("RULE_CREATED_NOTICE", { ruleName: newRule.name }));
-                },
-                () => {},
-            ).open();
+            const defaultRule: FlashcardTagRule = {
+                id: `rule-${Date.now()}`,
+                name: "",
+                enabled: true,
+                priority: 0,
+                tagExact: "#flashcards",
+            };
+            openRuleModal(plugin, defaultRule, false, rulesListEl);
         });
 
     // Rules list

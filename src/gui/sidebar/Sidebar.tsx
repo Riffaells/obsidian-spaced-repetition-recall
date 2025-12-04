@@ -1,4 +1,4 @@
-import { debounce, ItemView, Menu, Notice, TFile, WorkspaceLeaf } from "obsidian";
+import { debounce, ItemView, Menu, Notice, setIcon, TFile, WorkspaceLeaf } from "obsidian";
 
 import type SRPlugin from "src/main";
 import { t } from "src/lang/helpers";
@@ -23,6 +23,8 @@ import {
 } from "./utils";
 import { FlashcardDeckComponent } from "./FlashcardDeckComponent";
 import { Deck } from "src/Deck";
+import { Card } from "src/Card";
+import { FlashcardReviewMode } from "src/FlashcardReviewSequencer";
 
 export const REVIEW_QUEUE_VIEW_TYPE = "review-queue-list-view";
 
@@ -73,8 +75,11 @@ export class ReviewQueueListView extends ItemView {
         this.registerEvent(this.app.vault.on("rename", () => this.debouncedRedraw()));
         
         // Listen for note review events (from compact buttons)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // Listen for note review events (from compact buttons)
         this.registerEvent(this.app.workspace.on("sr:note-reviewed" as any, () => this.debouncedRedraw()));
+
+        // Register scroll listener for scroll-to-top button
+        this.registerDomEvent(this.contentEl, "scroll", this.handleScroll);
     }
 
     public getViewType(): string {
@@ -156,7 +161,29 @@ export class ReviewQueueListView extends ItemView {
         this.stats.render();
 
         this.decksContainer = this.mainContainer.createDiv("sr-new-sidebar-decks");
+
+        // Scroll to top button
+        const scrollToTopBtn = this.contentEl.createDiv("sr-scroll-to-top");
+        setIcon(scrollToTopBtn, "arrow-up");
+        scrollToTopBtn.ariaLabel = "Scroll to Top";
+        
+        scrollToTopBtn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.contentEl.scrollTo({ top: 0, behavior: "smooth" });
+        };
     }
+
+    private handleScroll = () => {
+        const scrollToTopBtn = this.contentEl.querySelector(".sr-scroll-to-top");
+        if (scrollToTopBtn) {
+            if (this.contentEl.scrollTop > 1000) {
+                scrollToTopBtn.addClass("visible");
+            } else {
+                scrollToTopBtn.removeClass("visible");
+            }
+        }
+    };
 
     private handleRecalculate = async () => {
         new Notice(t("RECALCULATING_NOTES_NOTICE_START"));
@@ -767,7 +794,7 @@ export class ReviewQueueListView extends ItemView {
         }
 
         const allDecks = this.plugin.deckTree.toDeckArray();
-        const allNewCards: Array<{ card: any; deck: Deck }> = [];
+        const allNewCards: Array<{ card: Card; deck: Deck }> = [];
 
         for (const deck of allDecks) {
             if (deck.newFlashcards && deck.newFlashcards.length > 0) {
@@ -794,13 +821,13 @@ export class ReviewQueueListView extends ItemView {
 
         if (this.plugin.data.settings.openViewInNewTab) {
             await this.plugin.tabViewManager.openSRTabView(
-                import("src/FlashcardReviewSequencer").then((m) => m.FlashcardReviewMode.Review),
+                await import("src/FlashcardReviewSequencer").then((m) => m.FlashcardReviewMode.Review),
             );
         } else {
-            (this.plugin as any).openFlashcardModal(
+            this.plugin.openFlashcardModal(
                 rootDeck,
                 rootDeck,
-                import("src/FlashcardReviewSequencer").then((m) => m.FlashcardReviewMode.Review),
+                FlashcardReviewMode.Review,
             );
         }
     }

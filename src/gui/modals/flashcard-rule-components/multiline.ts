@@ -8,7 +8,8 @@ export function renderMultilineTab(
     containerEl: HTMLElement,
     rule: FlashcardTagRule,
     onSave: () => void,
-    onCancel: () => void
+    onCancel: () => void,
+    isEditMode: boolean
 ): void {
     if (!rule.multilineRules) {
         rule.multilineRules = {
@@ -48,5 +49,5 @@ export function renderMultilineTab(
             text.onChange(v => rule.multilineRules.endMarker = v);
         });
 
-    renderButtons(containerEl, onSave, onCancel);
+    renderButtons(containerEl, onSave, onCancel, isEditMode);
 }

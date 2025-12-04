@@ -2,6 +2,7 @@ import { Notice, Setting, App } from "obsidian";
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
 import { DEFAULT_SETTINGS } from "src/settings";
+import { SRSettingTab } from "src/gui/settings/SettingsTab";
 import { addmixQueueSetting } from "src/settings/mixQueueSetting";
 import { addTrackedNoteToDecksSetting, addUntrackSetting } from "src/settings/trackSetting";
 import { addResponseFloatBarSetting } from "src/settings/responseBarSetting";
@@ -14,7 +15,7 @@ export class NotesTab {
     static async render(
         containerEl: HTMLElement,
         plugin: SRPlugin,
-        settingsTab: any,
+        settingsTab: SRSettingTab,
     ): Promise<void> {
         containerEl.createEl("h3", { text: t("GROUP_TAGS_FOLDERS") });
 
@@ -68,8 +69,8 @@ export class NotesTab {
         );
 
         new Setting(containerEl)
-            .setName("Show Compact Review Buttons")
-            .setDesc("Show compact fruit-themed review buttons (🍎 Hard, 🍌 Good, 🍒 Easy) in notes that are due for review")
+            .setName("Show Compact Review Buttons" as any)
+            .setDesc("Show compact fruit-themed review buttons (🍎 Hard, 🍌 Good, 🍒 Easy) in notes that are due for review" as any)
             .addToggle((toggle) =>
                 toggle
                     .setValue(plugin.data.settings.showCompactReviewButtons)
@@ -88,8 +89,8 @@ export class NotesTab {
 
         if (plugin.data.settings.showCompactReviewButtons) {
             new Setting(containerEl)
-                .setName("Collapse Buttons by Default")
-                .setDesc("Start with review buttons collapsed (can be expanded with chevron)")
+                .setName("Collapse Buttons by Default" as any)
+                .setDesc("Start with review buttons collapsed (can be expanded with chevron)" as any)
                 .addToggle((toggle) =>
                     toggle
                         .setValue(plugin.data.settings.compactReviewButtonsCollapsed ?? false)
@@ -100,8 +101,8 @@ export class NotesTab {
                 );
 
             new Setting(containerEl)
-                .setName("Button Position")
-                .setDesc("Where to show the review buttons")
+                .setName("Button Position" as any)
+                .setDesc("Where to show the review buttons" as any)
                 .addDropdown((dropdown) =>
                     dropdown
                         .addOption("top-right", "Top Right")
@@ -110,15 +111,15 @@ export class NotesTab {
                         .addOption("bottom-left", "Bottom Left")
                         .setValue(plugin.data.settings.compactReviewButtonsPosition || "top-right")
                         .onChange(async (value) => {
-                            plugin.data.settings.compactReviewButtonsPosition = value as any;
+                            plugin.data.settings.compactReviewButtonsPosition = value as "top-right" | "top-left" | "bottom-right" | "bottom-left";
                             await plugin.savePluginData();
                             await plugin.noteReviewManager.refreshAllButtons();
                         }),
                 );
 
             new Setting(containerEl)
-                .setName("Auto-hide Buttons")
-                .setDesc("Automatically fade buttons after inactivity")
+                .setName("Auto-hide Buttons" as any)
+                .setDesc("Automatically fade buttons after inactivity" as any)
                 .addToggle((toggle) =>
                     toggle
                         .setValue(plugin.data.settings.compactReviewButtonsAutoHide ?? false)
@@ -131,8 +132,8 @@ export class NotesTab {
 
             if (plugin.data.settings.compactReviewButtonsAutoHide) {
                 new Setting(containerEl)
-                    .setName("Auto-hide Delay (seconds)")
-                    .setDesc("Time before buttons fade out")
+                    .setName("Auto-hide Delay (seconds)" as any)
+                    .setDesc("Time before buttons fade out" as any)
                     .addSlider((slider) =>
                         slider
                             .setLimits(2, 30, 1)

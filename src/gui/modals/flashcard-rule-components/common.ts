@@ -15,13 +15,47 @@ export function renderCommonSettings(
     });
 
     // Tag Matching
-    new Setting(section)
-        .setName(t("TAG"))
-        .setDesc(t("TAG_DESC"))
-        .addText((text) => {
+    const tagSetting = new Setting(section)
+        .setName(t("TAG_MATCHER"))
+        .setDesc(t("TAG_MATCHER_DESC"));
+
+    let tagInputType: "exact" | "pattern" = rule.tagPattern ? "pattern" : "exact";
+
+    tagSetting.addDropdown((dropdown) => {
+        dropdown
+            .addOption("exact", t("EXACT_TAG"))
+            .addOption("pattern", t("REGEX_PATTERN"))
+            .setValue(tagInputType)
+            .onChange((value: "exact" | "pattern") => {
+                tagInputType = value;
+                // Update placeholder and clear old values
+                const textInput = tagSetting.controlEl.querySelector("input[type='text']") as HTMLInputElement;
+                if (value === "exact") {
+                    textInput.placeholder = t("TAG_PLACEHOLDER");
+                    rule.tagPattern = undefined;
+                } else {
+                    textInput.placeholder = t("REGEX_PLACEHOLDER");
+                    rule.tagExact = undefined;
+                }
+                textInput.value = "";
+            });
+    });
+
+    tagSetting.addText((text) => {
+        text.inputEl.style.marginLeft = "8px";
+        if (tagInputType === "exact") {
             text.setValue(rule.tagExact || "").setPlaceholder(t("TAG_PLACEHOLDER"));
-            text.onChange(v => rule.tagExact = v);
+        } else {
+            text.setValue(rule.tagPattern || "").setPlaceholder(t("REGEX_PLACEHOLDER"));
+        }
+        text.onChange((v) => {
+            if (tagInputType === "exact") {
+                rule.tagExact = v;
+            } else {
+                rule.tagPattern = v;
+            }
         });
+    });
         
     // Priority & Enabled
     const metaDiv = section.createDiv("sr-flex-row");
@@ -34,14 +68,14 @@ export function renderCommonSettings(
         .setDesc(t("PRIORITY_HINT"))
         .addText((text) => {
             text.inputEl.type = "number";
-            text.setValue(String(rule.priority));
+            text.setValue(String(rule.priority || 0));
             text.onChange(v => rule.priority = parseInt(v) || 0);
         });
 
     new Setting(metaDiv)
         .setName(t("ENABLED"))
         .addToggle((toggle) => {
-            toggle.setValue(rule.enabled);
+            toggle.setValue(rule.enabled !== false);
             toggle.onChange(v => rule.enabled = v);
         });
 }

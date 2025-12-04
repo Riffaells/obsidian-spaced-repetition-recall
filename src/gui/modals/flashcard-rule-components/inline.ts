@@ -8,7 +8,8 @@ export function renderInlineTab(
     containerEl: HTMLElement,
     rule: FlashcardTagRule,
     onSave: () => void,
-    onCancel: () => void
+    onCancel: () => void,
+    isEditMode: boolean
 ): void {
     if (!rule.inlineRules) {
         rule.inlineRules = {
@@ -38,5 +39,5 @@ export function renderInlineTab(
             text.onChange(v => rule.inlineRules.reversedSeparator = v);
         });
 
-    renderButtons(containerEl, onSave, onCancel);
+    renderButtons(containerEl, onSave, onCancel, isEditMode);
 }

@@ -189,29 +189,28 @@ export class Queue implements IQueue {
         );
         const validItems = store.items.filter((item) => item != null && item.isTracked);
 
-        validItems
-            .filter((item) => !item.isCard)
-            .forEach(async (item) => {
+        for (const item1 of validItems
+            .filter((item) => !item.isCard)) {
                 // note Queue
-                if (item.isNew) {
+                if (item1.isNew) {
                     // This is a new item.
                     if (maxNew == -1 || newAdd < maxNew) {
                         // data.newAdded += 1;
-                        newAdd += this.push(this.queue[KEY_ALL], item.ID);
+                        newAdd += this.push(this.queue[KEY_ALL], item1.ID);
                     }
                 } else {
-                    this.InitQIfMissing(item.deckName, this.queue);
-                    if (item.nextReview <= now.getTime()) {
-                        this.remove(item, this.repeatQueue);
-                        oldAdd += this.push(this.queue[KEY_ALL], item.ID);
+                    this.InitQIfMissing(item1.deckName, this.queue);
+                    if (item1.nextReview <= now.getTime()) {
+                        this.remove(item1, this.repeatQueue);
+                        oldAdd += this.push(this.queue[KEY_ALL], item1.ID);
                     } else if (
                         newDayFlag &&
-                        item.nextReview <= globalDateProvider.endofToday.valueOf()
+                        item1.nextReview <= globalDateProvider.endofToday.valueOf()
                     ) {
-                        this.push(this.queue[item.deckName], item.ID);
+                        this.push(this.queue[item1.deckName], item1.ID);
                     }
                 }
-            });
+            }
 
         this.lastQueue = now.getTime();
         // if (this.settings.shuffleQueue && oldAdd + newAdd > 0) {

@@ -338,5 +338,20 @@ export class NoteReviewButtonsManager {
             this.destroyInstance(path);
         }
     }
+
+    public async refreshAllButtons(): Promise<void> {
+        // Clear all existing instances
+        for (const path of Array.from(this.instances.keys())) {
+            this.destroyInstance(path);
+        }
+
+        // Re-create for all active markdown views
+        const leaves = this.plugin.app.workspace.getLeavesOfType("markdown");
+        for (const leaf of leaves) {
+            if (leaf.view instanceof MarkdownView && leaf.view.file) {
+                await this.createButtonsForNote(leaf.view.file);
+            }
+        }
+    }
 }
 

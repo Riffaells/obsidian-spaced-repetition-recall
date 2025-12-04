@@ -451,7 +451,7 @@ export default class SRPlugin extends Plugin {
         );
     }
 
-    private openFlashcardModal(
+    public openFlashcardModal(
         fullDeckTree: Deck,
         remainingDeckTree: Deck,
         reviewMode: FlashcardReviewMode,

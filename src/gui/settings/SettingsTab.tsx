@@ -9,7 +9,7 @@ import { UiPreferencesTab } from "./tabs/UiPreferencesTab";
 import { HelpTab } from "./tabs/HelpTab";
 
 export class SRSettingTab extends PluginSettingTab {
-    private plugin: SRPlugin;
+    private readonly plugin: SRPlugin;
     private tabStructure: TabStructure;
 
     constructor(app: App, plugin: SRPlugin) {

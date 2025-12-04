@@ -551,4 +551,18 @@ export default {
     FLASHCARD_RULE_ERRORS: "Please fix the following errors:\n${errors}",
     TAG: "Tag",
     TAG_DESC: "The tag to trigger this rule, e.g., #cards.",
+    POSITIONAL_SELECTORS: "Positional Selectors",
+    POSITIONAL_SELECTORS_DESC: "Filter headings by their position (e.g., first 3, last 1).",
+    ADD_SELECTOR: "Add Selector",
+
+    // Missing keys (auto-added)
+    FLASHCARD_: "FLASHCARD_",
+    HIDE_REVIEW_BUTTONS: "HIDE_REVIEW_BUTTONS",
+    NOTE_IN_IGNORED_TAGS: "NOTE_IN_IGNORED_TAGS",
+    REVIEW_BUTTON_TOOLTIP: "REVIEW_BUTTON_TOOLTIP",
+    REVIEW_BUTTON_TOOLTIP_WITH_INTERVAL: "REVIEW_BUTTON_TOOLTIP_WITH_INTERVAL",
+    REVIEW_EASY_FILE_MENU: "REVIEW_EASY_FILE_MENU",
+    SHOW_REVIEW_BUTTONS: "SHOW_REVIEW_BUTTONS",
+    TAGS_TO_IGNORE: "TAGS_TO_IGNORE",
+    TAGS_TO_IGNORE_DESC: "TAGS_TO_IGNORE_DESC",
 };

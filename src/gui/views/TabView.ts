@@ -10,11 +10,6 @@ import { SRSettings } from "src/settings";
 import { FlashcardEditModal } from "../modals/EditModal";
 import { FlashcardReviewMode, IFlashcardReviewSequencer } from "src/FlashcardReviewSequencer";
 
-interface TabViewState {
-    reviewMode?: FlashcardReviewMode;
-    singleNotePath?: string;
-}
-
 /**
  * Represents a tab view for spaced repetition plugin.
  *

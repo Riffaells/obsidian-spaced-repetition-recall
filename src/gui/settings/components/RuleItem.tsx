@@ -98,7 +98,13 @@ function getConfigurationText(rule: FlashcardTagRule): string {
         details.push(`Mode: ${hr.cardMode}`);
         details.push(`Nesting: ${hr.nestingMode}`);
         if (hr.selectors.length > 0) {
-            details.push(`Selectors: ${hr.selectors.length}`);
+            const selectorText = hr.selectors.map(s => {
+                if (s.type === "first" || s.type === "last") return `${s.type}(${s.count})`;
+                if (s.type === "nth") return `nth(${s.index})`;
+                if (s.type === "nthFromEnd") return `nthFromEnd(${s.offset})`;
+                return "";
+            }).join(", ");
+            details.push(`Selectors: [${selectorText}]`);
         }
         if (hr.includeParents > 0) {
             details.push(`Context: ${hr.includeParents} parent(s)`);

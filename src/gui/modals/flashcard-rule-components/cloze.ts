@@ -8,7 +8,8 @@ export function renderClozeTab(
     containerEl: HTMLElement,
     rule: FlashcardTagRule,
     onSave: () => void,
-    onCancel: () => void
+    onCancel: () => void,
+    isEditMode: boolean
 ): void {
     if (!rule.clozeRules) {
         rule.clozeRules = {
@@ -33,5 +34,5 @@ export function renderClozeTab(
             });
         });
 
-    renderButtons(containerEl, onSave, onCancel);
+    renderButtons(containerEl, onSave, onCancel, isEditMode);
 }
