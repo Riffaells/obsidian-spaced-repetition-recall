@@ -1,7 +1,7 @@
 import { TagCache } from "obsidian";
-import { ISRFile } from "src/SRFile";
+import { ISRFile } from "src/core/services/SRFile";
 import { unitTest_GetAllTagsFromTextEx } from "./UnitTestHelper";
-import { TextDirection } from "src/util/TextDirection";
+import { TextDirection } from "src/utils/TextDirection";
 
 export class UnitTestSRFile implements ISRFile {
     content: string;

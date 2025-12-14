@@ -1,4 +1,4 @@
-import { MarkdownFormatter } from "../../src/util/markdown-formatter";
+import { MarkdownFormatter } from "src/utils/markdown-formatter";
 
 describe("MarkdownFormatter", () => {
     describe("formatForDisplay", () => {

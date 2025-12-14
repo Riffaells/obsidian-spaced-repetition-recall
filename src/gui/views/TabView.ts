@@ -1,14 +1,17 @@
 import { ItemView, TFile, WorkspaceLeaf } from "obsidian";
 
 import { SR_TAB_VIEW } from "src/constants";
-import { Deck } from "src/Deck";
+import { Deck } from "src/core/models/Deck";
 import { CardUI } from "../components/CardUI";
 import { DeckUI } from "../components/DeckUI";
 import SRPlugin from "src/main";
-import { Question } from "src/Question";
-import { SRSettings } from "src/settings";
+import { Question } from "src/core/models/Question";
+import { SRSettings } from "src/settings/settings";
 import { FlashcardEditModal } from "../modals/EditModal";
-import { FlashcardReviewMode, IFlashcardReviewSequencer } from "src/FlashcardReviewSequencer";
+import {
+    FlashcardReviewMode,
+    IFlashcardReviewSequencer,
+} from "src/core/scheduling/FlashcardReviewSequencer";
 
 /**
  * Represents a tab view for spaced repetition plugin.
@@ -77,7 +80,7 @@ export class TabView extends ItemView {
 
     async setState(state: any, result: any): Promise<void> {
         // Extract our custom state if it exists
-        if (state && typeof state === 'object') {
+        if (state && typeof state === "object") {
             this.reviewMode = state.reviewMode ?? FlashcardReviewMode.Review;
             this.singleNotePath = state.singleNotePath;
         }

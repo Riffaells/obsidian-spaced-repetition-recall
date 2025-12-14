@@ -1,5 +1,5 @@
-import { debug, MiscUtils } from "src/util/utils_recall";
-import { SRSettings } from "../settings";
+import { debug, MiscUtils } from "src/utils/utils_recall";
+import { SRSettings } from "../settings/settings";
 
 import { getAllTags, TFile, TFolder } from "obsidian";
 
@@ -7,7 +7,7 @@ import { FsrsData } from "src/algorithms/fsrs";
 import { AnkiData } from "src/algorithms/anki";
 
 import { getStorePath } from "src/dataStore/dataLocation";
-import { Tags } from "src/tags";
+import { Tags } from "src/utils/tags";
 import { algorithmNames, SrsAlgorithm } from "src/algorithms/algorithms";
 import { CardInfo, TrackedFile } from "./trackedFile";
 import { RepetitionItem, ReviewResult, RPITEMTYPE } from "./repetitionItem";
@@ -506,11 +506,20 @@ export class DataStore {
             const fileCachedData = IAdapter.instance.metadataCache.getFileCache(note) || {};
             const tags = getAllTags(fileCachedData) || [];
             const deckname = Tags.getNoteDeckName(note, this.settings);
-            // Use new flashcard tag rules system instead of deprecated flashcardTags
-            const flashcardTags = this.settings.flashcardTagRules
-                .filter(rule => rule.enabled && rule.tagExact)
-                .map(rule => rule.tagExact);
-            cardName = Tags.getTagFromSettingTags(tags, flashcardTags);
+            // Check if any flashcard tags match using the new rule system
+            cardName = null;
+            for (const tag of tags) {
+                for (const rule of this.settings.flashcardRules) {
+                    if (rule.enabled) {
+                        const regex = new RegExp(rule.tagPattern);
+                        if (regex.test(tag)) {
+                            cardName = tag;
+                            break;
+                        }
+                    }
+                }
+                if (cardName) break;
+            }
             if (deckname !== null) {
                 // || cardName !== null
                 // it's taged file, can't untrack by this.

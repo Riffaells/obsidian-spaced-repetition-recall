@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { App, MarkdownRenderer, Modal, moment, Notice, request } from "obsidian";
-import { errorlog, isVersionNewerThanOther } from "src/util/utils_recall";
+import { errorlog, isVersionNewerThanOther } from "src/utils/utils_recall";
 import SRPlugin from "src/main";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -10,7 +10,7 @@ import README from "README.md";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import RELEASE_changelog from "docs/docs/changelog.md";
-import { buildDonation } from "src/settings/donation";
+import { buildDonation } from "../settings-views/donation";
 
 // const fmd = fs.readFileSync("CHANGELOG.md", "utf8");
 

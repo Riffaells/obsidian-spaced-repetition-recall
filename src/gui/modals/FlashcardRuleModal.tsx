@@ -1,7 +1,6 @@
 import { App, Modal, Notice } from "obsidian";
-import { FlashcardTagRule } from "src/parser/header-based/types";
+import { FlashcardRule } from "src/parser/rule-based/types";
 import { createTabs, TabStructure } from "../components/tabs";
-import { validateRule } from "src/parser/header-based/ruleResolver";
 import { t } from "src/lang/helpers";
 import { renderInlineTab } from "./flashcard-rule-components/inline";
 import { renderHeaderTab } from "./flashcard-rule-components/header";
@@ -11,19 +10,19 @@ import { renderClozeTab } from "./flashcard-rule-components/cloze";
 type ActiveTab = "inline" | "header" | "multiline" | "cloze";
 
 export class FlashcardRuleModal extends Modal {
-    private readonly onSave: (rule: FlashcardTagRule) => void;
+    private readonly onSave: (rule: FlashcardRule) => void;
     private readonly onCancel: () => void;
     private readonly isEditMode: boolean;
 
     // State
-    private readonly rule: Partial<FlashcardTagRule>;
+    private readonly rule: Partial<FlashcardRule>;
     private tabStructure: TabStructure;
     private activeTab: ActiveTab = "inline";
 
     constructor(
         app: App,
-        rule: FlashcardTagRule,
-        onSave: (rule: FlashcardTagRule) => void,
+        rule: FlashcardRule,
+        onSave: (rule: FlashcardRule) => void,
         onCancel: () => void,
         isEditMode: boolean = true,
     ) {
@@ -36,9 +35,11 @@ export class FlashcardRuleModal extends Modal {
         this.rule = JSON.parse(JSON.stringify(rule));
 
         // Determine initial state
-        if (this.rule.headerRules) this.activeTab = "header";
-        else if (this.rule.multilineRules) this.activeTab = "multiline";
-        else if (this.rule.clozeRules) this.activeTab = "cloze";
+        if (this.rule.type === "header") this.activeTab = "header";
+        else if (this.rule.type === "multiline") this.activeTab = "multiline";
+        // Heuristic: if it's inline but has cloze patterns and no separator (or default), maybe it's cloze tab?
+        // For now, just default to inline unless we add a specific flag.
+        // But if the user clicks "Cloze" tab, we want to treat it as cloze.
         else this.activeTab = "inline";
     }
 
@@ -62,10 +63,10 @@ export class FlashcardRuleModal extends Modal {
                     contentGenerator: async (el) => {
                         renderInlineTab(
                             el,
-                            this.rule as FlashcardTagRule,
+                            this.rule as any, // Cast to any to avoid union issues in render
                             () => this.handleSave(),
                             () => this.handleCancel(),
-                            this.isEditMode
+                            this.isEditMode,
                         );
                     },
                 },
@@ -75,10 +76,8 @@ export class FlashcardRuleModal extends Modal {
                     contentGenerator: async (el) => {
                         renderHeaderTab(
                             el,
-                            this.rule as FlashcardTagRule,
+                            this.rule as any,
                             () => this.handleSave(),
-                            () => this.handleCancel(),
-                            this.isEditMode
                         );
                     },
                 },
@@ -88,10 +87,10 @@ export class FlashcardRuleModal extends Modal {
                     contentGenerator: async (el) => {
                         renderMultilineTab(
                             el,
-                            this.rule as FlashcardTagRule,
+                            this.rule as any,
                             () => this.handleSave(),
                             () => this.handleCancel(),
-                            this.isEditMode
+                            this.isEditMode,
                         );
                     },
                 },
@@ -101,10 +100,10 @@ export class FlashcardRuleModal extends Modal {
                     contentGenerator: async (el) => {
                         renderClozeTab(
                             el,
-                            this.rule as FlashcardTagRule,
+                            this.rule as any,
                             () => this.handleSave(),
                             () => this.handleCancel(),
-                            this.isEditMode
+                            this.isEditMode,
                         );
                     },
                 },
@@ -116,25 +115,29 @@ export class FlashcardRuleModal extends Modal {
         for (const tabId in this.tabStructure.buttons) {
             this.tabStructure.buttons[tabId].addEventListener("click", () => {
                 this.activeTab = tabId as ActiveTab;
+                // Update rule type when switching tabs
+                if (this.activeTab === "header") this.rule.type = "header";
+                else if (this.activeTab === "multiline") this.rule.type = "multiline";
+                else this.rule.type = "inline";
+                
+                // Reset config if switching types to avoid type mismatch
+                // (Optional: could try to preserve some common fields, but safer to reset or let render init)
+                if (!this.rule.config) this.rule.config = {} as any;
             });
         }
     }
 
     private handleSave(): void {
-        // Clear rule-specific properties based on active tab to ensure clean state
-        if (this.activeTab !== "header") this.rule.headerRules = undefined;
-        if (this.activeTab !== "inline") this.rule.inlineRules = undefined;
-        if (this.activeTab !== "multiline") this.rule.multilineRules = undefined;
-        if (this.activeTab !== "cloze") this.rule.clozeRules = undefined;
-
-        // Final validation
-        const errors = validateRule(this.rule as FlashcardTagRule);
-        if (errors.length > 0) {
-            new Notice(t("FLASHCARD_RULE_ERRORS", { errors: errors.join("\n") }));
-            return;
+        // Finalize rule type based on active tab
+        if (this.activeTab === "header") {
+            this.rule.type = "header";
+        } else if (this.activeTab === "multiline") {
+            this.rule.type = "multiline";
+        } else {
+            this.rule.type = "inline";
         }
 
-        this.onSave(this.rule as FlashcardTagRule);
+        this.onSave(this.rule as FlashcardRule);
         this.close();
     }
 

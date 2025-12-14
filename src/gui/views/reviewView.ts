@@ -5,8 +5,9 @@ import { reviewResponseModal } from "../modals/reviewresponse-modal";
 import { t } from "src/lang/helpers";
 import SRPlugin from "src/main";
 import { IReviewNote } from "src/reviewNote/review-note";
+import { SrsAlgorithm } from "src/algorithms/algorithms";
 
-import { SRSettings } from "src/settings";
+import { SRSettings } from "src/settings/settings";
 
 export class ReviewView {
     private static _instance: ReviewView;
@@ -53,9 +54,10 @@ export class ReviewView {
                 state.item = que.getNextId();
                 // state.mode = "question";
 
-                reviewFloatBar.display(item, (opt) => {
-                    IReviewNote.recallReviewResponse(this.itemId, opt);
-                    plugin.postponeResponse(note, itemToShedNote(item, note));
+                reviewFloatBar.display(item, async (opt) => {
+                    const response = SrsAlgorithm.getInstance().srsOptions()[opt];
+                    IReviewNote.recallReviewResponse(this.itemId, response);
+                    plugin.reviewManager.postponeResponse(note, itemToShedNote(item, note));
                     if (settings.autoNextNote) {
                         this.recallReviewNote(settings);
                     }
@@ -78,7 +80,7 @@ export class ReviewView {
 
         ReviewView.nextReviewNotice(IReviewNote.minNextView, store.data.queues.laterSize);
 
-        reviewFloatBar.selfDestruct();
+        reviewFloatBar.close();
         new Notice(t("ALL_CAUGHT_UP"));
         this.plugin.sync();
     }

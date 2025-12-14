@@ -1,5 +1,5 @@
 import type SRPlugin from "src/main";
-import { Deck } from "src/Deck";
+import { Deck } from "src/core/models/Deck";
 import { FilterType } from "./types";
 import { groupFlashcards } from "./grouping";
 import { CardGroupComponent } from "src/gui/sidebar/CardGroupComponent";

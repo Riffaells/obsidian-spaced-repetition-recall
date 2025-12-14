@@ -1,6 +1,6 @@
 import { Menu, TFile } from "obsidian";
 import type SRPlugin from "src/main";
-import { ReviewDeck, SchedNote } from "src/ReviewDeck";
+import { ReviewDeck, SchedNote } from "src/core/models/ReviewDeck";
 import { DataLocation } from "src/dataStore/dataLocation";
 import { NoteSortType } from "./types";
 

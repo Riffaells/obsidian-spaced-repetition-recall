@@ -27,7 +27,6 @@ export default {
     OPEN_NOTE: "打開筆記",
     FAILED_TO_EDIT_QUESTION_TEXT: "Failed to edit question text:", // New entry
 
-   
     // main.ts
     OPEN_NOTE_FOR_REVIEW: "打開一個筆記開始復習",
     REVIEW_CARDS: "復習卡片",
@@ -385,7 +384,7 @@ export default {
     FOLDER_PLACEHOLDER: "Example: folder1/folder2",
     SAVE_BUTTON: "Save",
     LOCATION_CHANGE_FINISHED: "Finished location change.",
-    // commands.ts
+    // CommandManager.ts
     CMD_ITEM_INFO: "項目信息",
     CMD_TRACK_NOTE: "追蹤筆記",
     CMD_UNTRACK_NOTE: "取消追蹤筆記",
@@ -439,27 +438,35 @@ export default {
     ALGORITHM_SWITCH_SUCCESS:
         "conversion completed, due to different algorithm parameters, subsequent review intervals will be adjusted",
     FLASHCARD_RULES_MANAGER_TITLE: "Flashcard Tag Rules",
-    FLASHCARD_RULES_MANAGER_DESC: "<strong>Rules determine how tags create cards.</strong> You can set up different card types for different tags.",
-    FLASHCARD_RULES_MANAGER_ITEM_1: "<strong>Inline cards</strong> — use separators (::) within a line",
-    FLASHCARD_RULES_MANAGER_ITEM_2: "<strong>Header-based cards</strong> — are created from markdown headings",
-    FLASHCARD_RULES_MANAGER_ITEM_3: "<strong>Multiline cards</strong> — use a multi-line format with (?)",
-    FLASHCARD_RULES_MANAGER_TIP: "Start with the default rules, then add your own for specific needs.",
+    FLASHCARD_RULES_MANAGER_DESC:
+        "<strong>Rules determine how tags create cards.</strong> You can set up different card types for different tags.",
+    FLASHCARD_RULES_MANAGER_ITEM_1:
+        "<strong>Inline cards</strong> — use separators (::) within a line",
+    FLASHCARD_RULES_MANAGER_ITEM_2:
+        "<strong>Header-based cards</strong> — are created from markdown headings",
+    FLASHCARD_RULES_MANAGER_ITEM_3:
+        "<strong>Multiline cards</strong> — use a multi-line format with (?)",
+    FLASHCARD_RULES_MANAGER_TIP:
+        "Start with the default rules, then add your own for specific needs.",
     MANAGE_RULES_TITLE: "Manage Rules",
-    MANAGE_RULES_DESC: "Create, edit, and manage rules for flashcards. Each rule can have its own priority and settings.",
+    MANAGE_RULES_DESC:
+        "Create, edit, and manage rules for flashcards. Each rule can have its own priority and settings.",
     ADD_RULE_BUTTON: "+ Add Rule",
-    RULE_CREATED_NOTICE: "Rule \"${ruleName}\" created",
-    RULE_UPDATED_NOTICE: "Rule \"${ruleName}\" updated",
-    RULE_DELETED_NOTICE: "Rule \"${ruleName}\" deleted",
+    RULE_CREATED_NOTICE: 'Rule "${ruleName}" created',
+    RULE_UPDATED_NOTICE: 'Rule "${ruleName}" updated',
+    RULE_DELETED_NOTICE: 'Rule "${ruleName}" deleted',
     NO_RULES_CONFIGURED: "No rules configured yet. Add a rule to get started.",
     INLINE_RULES_SECTION_TITLE: "Inline Rules",
     HEADER_BASED_RULES_SECTION_TITLE: "Header-Based Rules",
     MULTILINE_RULES_SECTION_TITLE: "Multiline Rules",
     CLOZE_RULES_SECTION_TITLE: "Cloze Rules",
-    DELETE_RULE_CONFIRMATION_MSG: "Are you sure you want to delete the rule \"${ruleName}\"?\n\nTag: ${tag}\nThis action cannot be undone.",
+    DELETE_RULE_CONFIRMATION_MSG:
+        'Are you sure you want to delete the rule "${ruleName}"?\n\nTag: ${tag}\nThis action cannot be undone.',
 
     CLOZE_SETTINGS_TITLE: "Cloze Settings",
     DEFAULT_CARD_SEPARATORS_ADVANCED_TITLE: "Default Card Separators (Advanced)",
-    CLOZE_PATTERNS_PLACEHOLDER: "Example:\n==[123;;]answer[;;hint]==\n**[123;;]answer[;;hint]**\n{{[123;;]answer[;;hint]}}",
+    CLOZE_PATTERNS_PLACEHOLDER:
+        "Example:\n==[123;;]answer[;;hint]==\n**[123;;]answer[;;hint]**\n{{[123;;]answer[;;hint]}}",
 
     EDIT_FLASHCARD_RULE: "Edit Flashcard Rule",
     CREATE_FLASHCARD_RULE: "Create Flashcard Rule",

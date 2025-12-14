@@ -5,7 +5,7 @@ export function renderButtons(
     containerEl: HTMLElement,
     onSave: () => void,
     onCancel: () => void,
-    isEditMode: boolean = true
+    isEditMode: boolean = true,
 ): void {
     const buttonsDiv = containerEl.createDiv("modal-button-container");
     buttonsDiv.style.display = "flex";
@@ -13,9 +13,7 @@ export function renderButtons(
     buttonsDiv.style.gap = "8px";
     buttonsDiv.style.marginTop = "20px";
 
-    new ButtonComponent(buttonsDiv)
-        .setButtonText(t("CANCEL"))
-        .onClick(onCancel);
+    new ButtonComponent(buttonsDiv).setButtonText(t("CANCEL")).onClick(onCancel);
 
     new ButtonComponent(buttonsDiv)
         .setButtonText(isEditMode ? t("SAVE") : t("CREATE"))

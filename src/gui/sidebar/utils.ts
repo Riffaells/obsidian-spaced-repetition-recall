@@ -1,11 +1,11 @@
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
-import { SchedNote } from "src/ReviewDeck";
+import { SchedNote } from "src/core/models/ReviewDeck";
 import { DataLocation } from "src/dataStore/dataLocation";
-import { globalDateProvider } from "src/util/DateProvider";
+import { globalDateProvider } from "src/utils/DateProvider";
 import { SidebarStats } from "./types";
 import { moment } from "obsidian";
-import { DEFAULT_SETTINGS } from "src/settings";
+import { DEFAULT_SETTINGS } from "src/settings/settings";
 
 /**
  * Calculates the number of days until the note is repeated
@@ -14,7 +14,7 @@ export function calculateDaysUntilDue(dueUnix: number, plugin: SRPlugin): number
     const now =
         plugin.data.settings.dataLocation === DataLocation.SaveOnNoteFile
             ? Date.now()
-            : globalDateProvider.endofToday.valueOf();
+            : globalDateProvider.endOfToday.valueOf();
 
     return Math.ceil((dueUnix - now) / (24 * 3600 * 1000));
 }

@@ -8,12 +8,12 @@
 
 import { MarkdownView, Notice, TFile, WorkspaceLeaf } from "obsidian";
 import type SRPlugin from "src/main";
-import { ReviewResponse } from "src/scheduling";
+import { ReviewResponse } from "src/core/scheduling/scheduling";
 import { CompactReviewButtons } from "./CompactReviewButtons";
 import { IReviewNote } from "src/reviewNote/review-note";
 import { DataStore } from "src/dataStore/data";
 import { t } from "src/lang/helpers";
-import { Debouncer } from "src/util/Debouncer";
+import { Debouncer } from "src/utils/Debouncer";
 
 interface UndoState {
     file: TFile;
@@ -37,20 +37,17 @@ export class NoteReviewButtonsManager {
     private instances: Map<string, ButtonInstance> = new Map();
     private managerAbortController = new AbortController();
     private saveDebouncer = new Debouncer(500);
-    private pendingOperation: Symbol | null = null;
+    private pendingOperation: symbol | null = null;
 
     constructor(plugin: SRPlugin) {
         this.plugin = plugin;
         this.registerEventHandlers();
     }
 
-
     private registerEventHandlers(): void {
         const workspace = this.plugin.app.workspace;
 
-        this.plugin.registerEvent(
-            workspace.on("layout-change", () => this.cleanupZombies()),
-        );
+        this.plugin.registerEvent(workspace.on("layout-change", () => this.cleanupZombies()));
 
         this.plugin.registerEvent(
             workspace.on("active-leaf-change", (leaf) => this.handleLeafChange(leaf)),
@@ -80,9 +77,9 @@ export class NoteReviewButtonsManager {
             if (leaf.view instanceof MarkdownView) {
                 const container = this.findContainer(leaf.view as MarkdownView);
                 if (container) {
-                    const orphanedBanners = container.querySelectorAll('.sr-note-review-banner');
+                    const orphanedBanners = container.querySelectorAll(".sr-note-review-banner");
                     orphanedBanners.forEach((banner) => {
-                        const filePath = banner.getAttribute('data-file-path');
+                        const filePath = banner.getAttribute("data-file-path");
                         if (filePath && !validPaths.has(filePath)) {
                             banner.remove();
                         }
@@ -90,7 +87,7 @@ export class NoteReviewButtonsManager {
                 }
             }
         });
-    }
+    };
 
     private handleLeafChange = (leaf: WorkspaceLeaf | null): void => {
         if (!leaf?.view) return;
@@ -99,14 +96,16 @@ export class NoteReviewButtonsManager {
         }
     };
 
-    private isNoteDueForReview(file: TFile): boolean {
+    private shouldShowReviewButtons(file: TFile): boolean {
         try {
             const store = DataStore.getInstance();
             const trackedFile = store.getTrackedFile(file.path);
             if (!trackedFile?.isTrackedNote) return false;
 
             const noteItem = store.getNoteItem(file.path);
-            return noteItem?.isDue ?? false;
+            if (!noteItem) return false;
+
+            return noteItem.isDue || noteItem.isNew;
         } catch (e) {
             console.error(e);
             return false;
@@ -150,8 +149,8 @@ export class NoteReviewButtonsManager {
             return;
         }
 
-        // Check if note is due for review (synchronous check first)
-        if (!this.isNoteDueForReview(file)) {
+        // Check if note is due for review or is new
+        if (!this.shouldShowReviewButtons(file)) {
             return;
         }
 
@@ -165,20 +164,20 @@ export class NoteReviewButtonsManager {
         if (!targetContainer) return;
 
         // Ensure target container has position: relative for absolute positioning
-        if (!targetContainer.style.position || targetContainer.style.position === 'static') {
-            targetContainer.style.position = 'relative';
+        if (!targetContainer.style.position || targetContainer.style.position === "static") {
+            targetContainer.style.position = "relative";
         }
 
         // Remove any existing banners for this file (cleanup orphaned elements)
         const existingBanners = targetContainer.querySelectorAll(
-            `.sr-note-review-banner[data-file-path="${file.path}"]`
+            `.sr-note-review-banner[data-file-path="${file.path}"]`,
         );
         existingBanners.forEach((banner) => banner.remove());
 
         const container = document.createElement("div");
         container.addClass("sr-note-review-banner", this.getPositionClass());
         container.setAttribute("data-file-path", file.path);
-        
+
         // Add to the target container (not body)
         targetContainer.appendChild(container);
 
@@ -196,16 +195,13 @@ export class NoteReviewButtonsManager {
         const remaining = this.getRemainingCount();
         const counter = container.createDiv("sr-remaining-counter");
         counter.setText(`${remaining.due + remaining.new}`);
-        counter.setAttribute(
-            "title",
-            `Due: ${remaining.due}, New: ${remaining.new}`,
-        );
+        counter.setAttribute("title", `Due: ${remaining.due}, New: ${remaining.new}`);
 
         const buttons = new CompactReviewButtons(container, {
             onReview: (response) => this.handleReview(file, response),
             initialCollapsed: this.plugin.data.settings.compactReviewButtonsCollapsed ?? false,
             onToggle: (collapsed) => this.saveCollapsed(collapsed),
-            icons: this.plugin.data.settings.compactReviewButtonIcons,
+            icons: this.plugin.data.settings.compactReviewButtonsIcons,
         });
 
         console.log(`SR: Created review buttons for ${file.path}`, {
@@ -225,7 +221,7 @@ export class NoteReviewButtonsManager {
         if (this.plugin.data.settings.compactReviewButtonsAutoHide) {
             this.setupAutoHideListeners(instance);
         }
-    }
+    };
 
     private setupAutoHideListeners(instance: ButtonInstance): void {
         const delay = (this.plugin.data.settings.compactReviewButtonsAutoHideDelay || 5) * 1000;
@@ -276,7 +272,7 @@ export class NoteReviewButtonsManager {
         if (!instance) return;
 
         try {
-            await this.plugin.saveReviewResponse(file, response);
+            await this.plugin.reviewManager.saveReviewResponse(file, response);
         } catch (error) {
             console.error("Error reviewing note:", error);
             new Notice("Error reviewing note");
@@ -354,4 +350,3 @@ export class NoteReviewButtonsManager {
         }
     }
 }
-

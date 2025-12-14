@@ -1,12 +1,12 @@
 import { Notice, Setting, App } from "obsidian";
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
-import { DEFAULT_SETTINGS, SRSettings } from "src/settings";
+import { DEFAULT_SETTINGS, SRSettings } from "src/settings/settings";
 import { SRSettingTab } from "src/gui/settings/SettingsTab";
-import { addMultiClozeSetting } from "src/settings/multiClozeSetting";
-import { addburySiblingSetting } from "src/settings/burySiblingSetting";
-import { addcardBlockIDSetting } from "src/settings/cardBlockIDSetting";
-import { addIntervalShowHideSetting } from "src/settings/intervalShowHideSetting";
+import { addMultiClozeSetting } from "../../settings-views/multiClozeSetting";
+import { addBurySiblingSetting } from "../../settings-views/burySiblingSetting";
+import addCardBlockIDSetting from "../../settings-views/cardBlockIDSetting";
+import { addIntervalShowHideSetting } from "../../settings-views/intervalShowHideSetting";
 import { applySettingsUpdate } from "../utils";
 import { createFoldersToIgnoreSetting } from "../components/FoldersToIgnoreSetting";
 import { createFlashcardRulesManager } from "../components/FlashcardRulesManager";
@@ -38,8 +38,8 @@ export class FlashcardsTab {
 
         containerEl.createEl("h3", { text: t("GROUP_FLASHCARD_REVIEW") });
         addMultiClozeSetting(containerEl, plugin);
-        addburySiblingSetting(containerEl, plugin);
-        addcardBlockIDSetting(containerEl, plugin);
+        addBurySiblingSetting(containerEl, plugin);
+        addCardBlockIDSetting(containerEl, plugin);
 
         new Setting(containerEl)
             .setName(t("BURY_SIBLINGS_TILL_NEXT_DAY"))
@@ -58,7 +58,9 @@ export class FlashcardsTab {
         this.addClozeSettings(containerEl, plugin, settingsTab);
 
         const separatorsDetails = containerEl.createEl("details");
-        separatorsDetails.createEl("summary", { text: t("DEFAULT_CARD_SEPARATORS_ADVANCED_TITLE") });
+        separatorsDetails.createEl("summary", {
+            text: t("DEFAULT_CARD_SEPARATORS_ADVANCED_TITLE"),
+        });
         this.addCardSeparators(separatorsDetails, plugin, settingsTab);
     }
 
@@ -136,7 +138,10 @@ export class FlashcardsTab {
         plugin: SRPlugin,
         settingsTab: SRSettingTab,
     ): void {
-        const patterns: Record<string, { key: keyof SRSettings; pattern: string; name: string; desc: string }> = {
+        const patterns: Record<
+            string,
+            { key: keyof SRSettings; pattern: string; name: string; desc: string }
+        > = {
             highlights: {
                 key: "convertHighlightsToClozes",
                 pattern: "==[123;;]answer[;;hint]==",
@@ -241,16 +246,12 @@ export class FlashcardsTab {
                 .setName(t(sep.name as any))
                 .setDesc(t("FIX_SEPARATORS_MANUALLY_WARNING"))
                 .addText((text) =>
-                    text
-                        .setValue(
-                            plugin.data.settings[sep.key] as string,
-                        )
-                        .onChange((value) => {
-                            applySettingsUpdate(async () => {
-                                (plugin.data.settings as any)[sep.key] = value;
-                                await plugin.savePluginData();
-                            });
-                        }),
+                    text.setValue(plugin.data.settings[sep.key] as string).onChange((value) => {
+                        applySettingsUpdate(async () => {
+                            (plugin.data.settings as any)[sep.key] = value;
+                            await plugin.savePluginData();
+                        });
+                    }),
                 )
                 .addExtraButton((button) => {
                     button

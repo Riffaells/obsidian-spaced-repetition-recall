@@ -6,7 +6,7 @@
 
 import { setIcon } from "obsidian";
 import { t } from "src/lang/helpers";
-import { ReviewResponse } from "src/scheduling";
+import { ReviewResponse } from "src/core/scheduling/scheduling";
 
 export interface CompactReviewButtonsOptions {
     onReview: (response: ReviewResponse) => void;
@@ -17,23 +17,24 @@ export interface CompactReviewButtonsOptions {
 }
 
 // Configuration for review buttons, now with i18n keys and hotkey characters
-const getButtonConfig = (icons?: { hard: string; good: string; easy: string }) => ({
-    [ReviewResponse.Hard]: {
-        icon: icons?.hard || "x",
-        labelKey: "REVIEW_HARD",
-        className: "sr-compact-btn-hard",
-    },
-    [ReviewResponse.Good]: {
-        icon: icons?.good || "minus",
-        labelKey: "REVIEW_GOOD",
-        className: "sr-compact-btn-good",
-    },
-    [ReviewResponse.Easy]: {
-        icon: icons?.easy || "check",
-        labelKey: "REVIEW_EASY",
-        className: "sr-compact-btn-easy",
-    },
-} as const);
+const getButtonConfig = (icons?: { hard: string; good: string; easy: string }) =>
+    ({
+        [ReviewResponse.Hard]: {
+            icon: icons?.hard || "x",
+            labelKey: "REVIEW_HARD",
+            className: "sr-compact-btn-hard",
+        },
+        [ReviewResponse.Good]: {
+            icon: icons?.good || "minus",
+            labelKey: "REVIEW_GOOD",
+            className: "sr-compact-btn-good",
+        },
+        [ReviewResponse.Easy]: {
+            icon: icons?.easy || "check",
+            labelKey: "REVIEW_EASY",
+            className: "sr-compact-btn-easy",
+        },
+    }) as const;
 
 export class CompactReviewButtons {
     private containerEl: HTMLElement;
@@ -69,29 +70,35 @@ export class CompactReviewButtons {
         }
 
         // Create buttons in order: Hard, Good, Easy
-        for (const response of [ReviewResponse.Hard, ReviewResponse.Good, ReviewResponse.Easy]) {
+        const responses = [ReviewResponse.Hard, ReviewResponse.Good, ReviewResponse.Easy] as const;
+        for (const response of responses) {
             const btn = this.createButton(response);
             this.buttonsContainer.appendChild(btn);
         }
     }
 
-    private createButton(response: ReviewResponse): HTMLButtonElement {
+    private createButton(response: ReviewResponse.Hard | ReviewResponse.Good | ReviewResponse.Easy): HTMLButtonElement {
         const buttonConfig = getButtonConfig(this.options.icons);
         const config = buttonConfig[response];
         const button = document.createElement("button");
         button.addClass("sr-compact-btn", config.className);
 
         const label = t(config.labelKey);
-        const hotkey = config.hotkey;
-        
+        // const hotkey = config.hotkey;
+
         let tooltip: string;
-        const intervalKey = response === ReviewResponse.Hard ? 'hard' : response === ReviewResponse.Good ? 'good' : 'easy';
+        const intervalKey =
+            response === ReviewResponse.Hard
+                ? "hard"
+                : response === ReviewResponse.Good
+                  ? "good"
+                  : "easy";
         const interval = this.options.intervals?.[intervalKey];
 
         if (interval) {
-            tooltip = t("REVIEW_BUTTON_TOOLTIP_WITH_INTERVAL", { label, hotkey, interval });
+            tooltip = t("REVIEW_BUTTON_TOOLTIP_WITH_INTERVAL", { label, interval });
         } else {
-            tooltip = t("REVIEW_BUTTON_TOOLTIP", { label, hotkey });
+            tooltip = t("REVIEW_BUTTON_TOOLTIP", { label });
         }
 
         button.setAttribute("aria-label", tooltip);
@@ -113,7 +120,7 @@ export class CompactReviewButtons {
 
     private updateToggleButton(): void {
         this.toggleButton.empty();
-        
+
         const icon = this.toggleButton.createSpan("sr-compact-toggle-icon");
         if (this.isCollapsed) {
             setIcon(icon, "chevron-right");
@@ -126,25 +133,32 @@ export class CompactReviewButtons {
 
     private toggle(): void {
         this.isCollapsed = !this.isCollapsed;
-        
+
         if (this.isCollapsed) {
             this.buttonsContainer.addClass("sr-collapsed");
         } else {
             this.buttonsContainer.removeClass("sr-collapsed");
         }
-        
+
         this.updateToggleButton();
-        
+
         if (this.options.onToggle) {
             this.options.onToggle(this.isCollapsed);
         }
     }
 
     private handleReview(response: ReviewResponse): void {
+        if (response === ReviewResponse.Reset) return;
+        
         // Add visual feedback
         const buttonConfig = getButtonConfig(this.options.icons);
+        // @ts-ignore
         const config = buttonConfig[response];
-        const button = this.buttonsContainer.querySelector<HTMLButtonElement>(`.${config.className}`);
+        if (!config) return;
+
+        const button = this.buttonsContainer.querySelector<HTMLButtonElement>(
+            `.${config.className}`,
+        );
 
         if (button) {
             button.addClass("sr-compact-btn-clicked");

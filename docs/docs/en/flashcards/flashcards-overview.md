@@ -37,6 +37,9 @@ Three types of flashcards are supported:
 !!! tip
 For guidelines on how to write and structure flashcards, see [Spaced Repetition Guides](../resources.md#flashcards)
 
+!!! info "Configuration"
+Flashcards are now configured using the **Flashcard Rules** system. See [Flashcard Rules](flashcard-rules.md) for details on how to customize separators, heading levels, and more.
+
 ---
 
 ## Flashcard Text, Flashcards and Cards
@@ -51,7 +54,7 @@ For some flashcard types, the flashcard text defines a single card. For other fl
 cards are defined.
 
 | Flashcard Type                                                        | Cards Defined                                                                                 |
-|-----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | [Single-line Basic](qanda-cards.md#single-line-basic)                 | flashcard defines the front and back of a single card.                                        |
 | [Single-line Bidirectional](qanda-cards.md#single-line-bidirectional) | flashcard defines two cards.                                                                  |
 | [Multi-line Basic](qanda-cards.md#multi-line-basic)                   | flashcard defines the front and back of a single card.                                        |

@@ -1,4 +1,4 @@
-import { MiscUtils } from "src/util/utils_recall";
+import { MiscUtils } from "src/utils/utils_recall";
 import { RepetitionItem, ReviewResult } from "src/dataStore/repetitionItem";
 
 export enum algorithmNames {

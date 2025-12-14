@@ -4,14 +4,15 @@
     "description": "Fight the forgetting curve by reviewing flashcards & entire notes.",
     "main": "main.js",
     "scripts": {
-        "build": "node esbuild.config.mjs production",
-        "dev": "node esbuild.config.mjs",
-        "format": "pnpm prettier --write . && pnpm eslint src/ tests/ --fix",
-        "lint": "pnpm prettier --check . && pnpm eslint src/ tests/",
-        "test": "pnpm jest",
-        "validate": "concurrently --kill-others-on-fail -g -p \"[{name}]\" -n \"format,lint,test\" \"pnpm:format\" \"pnpm:lint\" \"pnpm:test\"",
+        "build": "bun run type-check && bun esbuild.config.mjs production",
+        "type-check": "tsc --noEmit",
+        "dev": "bun esbuild.config.mjs",
+        "format": "bun prettier --write . && bun eslint src/ tests/ --fix",
+        "lint": "bun prettier --check . && bun eslint src/ tests/",
+        "test": "bun test",
+        "validate": "concurrently --kill-others-on-fail -g -p \"[{name}]\" -n \"format,lint,test\" \"bun:format\" \"bun:lint\" \"bun:test\"",
         "precommit-msg": "echo 'Pre-commit checks...'",
-        "changelog": "pnpm auto-changelog --template=compact --package && pnpm prettier --write docs/docs/changelog.md"
+        "changelog": "bun auto-changelog --template=compact --package && bun prettier --write docs/docs/changelog.md"
     },
     "keywords": [
         "obsidian",
@@ -57,9 +58,5 @@
         "precommit-msg",
         "validate"
     ],
-    "packageManager": "pnpm@9.10.0",
-    "engines": {
-        "pnpm": ">=9.10.0"
-    },
-    "engineStrict": true
+    "packageManager": "bun@1.0.0"
 }

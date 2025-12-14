@@ -5,7 +5,7 @@ import { t } from "src/lang/helpers";
 import { DeckComponent } from "./DeckComponent";
 import { SidebarHeader } from "./SidebarHeader";
 import { SidebarStats } from "./SidebarStats";
-import { ReviewDeck, SchedNote } from "src/ReviewDeck";
+import { ReviewDeck, SchedNote } from "src/core/models/ReviewDeck";
 import {
     FilterType,
     NoteSortType,
@@ -22,9 +22,9 @@ import {
     getGroupTitle,
 } from "./utils";
 import { FlashcardDeckComponent } from "./FlashcardDeckComponent";
-import { Deck } from "src/Deck";
-import { Card } from "src/Card";
-import { FlashcardReviewMode } from "src/FlashcardReviewSequencer";
+import { Deck } from "src/core/models/Deck";
+import { Card } from "src/core/models/Card";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewSequencer";
 
 export const REVIEW_QUEUE_VIEW_TYPE = "review-queue-list-view";
 
@@ -73,10 +73,15 @@ export class ReviewQueueListView extends ItemView {
 
         this.registerEvent(this.app.workspace.on("file-open", () => this.debouncedRedraw()));
         this.registerEvent(this.app.vault.on("rename", () => this.debouncedRedraw()));
-        
+
         // Listen for note review events (from compact buttons)
         // Listen for note review events (from compact buttons)
-        this.registerEvent(this.app.workspace.on("sr:note-reviewed" as any, () => this.debouncedRedraw()));
+        this.registerEvent(
+            this.app.workspace.on("sr:note-reviewed" as any, () => this.debouncedRedraw()),
+        );
+        this.registerEvent(
+            this.app.workspace.on("sr:stats-updated" as any, () => this.debouncedRedraw()),
+        );
 
         // Register scroll listener for scroll-to-top button
         this.registerDomEvent(this.contentEl, "scroll", this.handleScroll);
@@ -166,7 +171,7 @@ export class ReviewQueueListView extends ItemView {
         const scrollToTopBtn = this.contentEl.createDiv("sr-scroll-to-top");
         setIcon(scrollToTopBtn, "arrow-up");
         scrollToTopBtn.ariaLabel = "Scroll to Top";
-        
+
         scrollToTopBtn.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -473,7 +478,7 @@ export class ReviewQueueListView extends ItemView {
         }
 
         this.scrollFrameId = window.requestAnimationFrame(() => {
-            const activeDeck = this.contentEl.querySelector(`.sr-flashcard-deck.sr-deck-active`);
+            const activeDeck = this.contentEl.querySelector(".sr-flashcard-deck.sr-deck-active");
             if (activeDeck) {
                 activeDeck.scrollIntoView({ behavior: "smooth", block: "center" });
             }
@@ -821,14 +826,12 @@ export class ReviewQueueListView extends ItemView {
 
         if (this.plugin.data.settings.openViewInNewTab) {
             await this.plugin.tabViewManager.openSRTabView(
-                await import("src/FlashcardReviewSequencer").then((m) => m.FlashcardReviewMode.Review),
+                await import("src/core/scheduling/FlashcardReviewSequencer").then(
+                    (m) => m.FlashcardReviewMode.Review,
+                ),
             );
         } else {
-            this.plugin.openFlashcardModal(
-                rootDeck,
-                rootDeck,
-                FlashcardReviewMode.Review,
-            );
+            this.plugin.openFlashcardModal(rootDeck, rootDeck, FlashcardReviewMode.Review);
         }
     }
 
@@ -867,13 +870,15 @@ export class ReviewQueueListView extends ItemView {
 
         if (this.plugin.data.settings.openViewInNewTab) {
             await this.plugin.tabViewManager.openSRTabView(
-                (await import("src/FlashcardReviewSequencer")).FlashcardReviewMode.Review,
+                (await import("src/core/scheduling/FlashcardReviewSequencer")).FlashcardReviewMode
+                    .Review,
             );
         } else {
             (this.plugin as any).openFlashcardModal(
                 rootDeck,
                 rootDeck,
-                (await import("src/FlashcardReviewSequencer")).FlashcardReviewMode.Review,
+                (await import("src/core/scheduling/FlashcardReviewSequencer")).FlashcardReviewMode
+                    .Review,
             );
         }
     }

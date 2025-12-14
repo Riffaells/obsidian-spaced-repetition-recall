@@ -9,60 +9,59 @@ import {
 } from "obsidian";
 import * as graph from "pagerank.js";
 
-import { DEFAULT_SETTINGS, SettingsUtil, SRSettings } from "src/settings";
+import { DEFAULT_SETTINGS, SettingsUtil, SRSettings } from "src/settings/settings";
 import { FlashcardModal } from "./gui/modals/FlashcardModal";
 import { StatsModal } from "./gui/modals/StatsModal";
 import { REVIEW_QUEUE_VIEW_TYPE, ReviewQueueListView } from "src/gui/sidebar/Sidebar";
-import { ReviewResponse, schedule } from "src/scheduling";
+import { ReviewResponse, schedule } from "src/core/scheduling/scheduling";
 import { SCHEDULING_INFO_REGEX, YAML_FRONT_MATTER_REGEX } from "src/constants";
-import { ReviewDeck, SchedNote } from "src/ReviewDeck";
+import { ReviewDeck, SchedNote } from "src/core/models/ReviewDeck";
 import { t } from "src/lang/helpers";
 import { appIcon } from "src/icons/appicon";
-import { TopicPath } from "./TopicPath";
-import { CardListType, Deck, DeckTreeFilter } from "./Deck";
-import { Stats } from "./stats";
+import { TopicPath } from "./core/services/TopicPath";
+import { CardListType, Deck, DeckTreeFilter } from "./core/models/Deck";
+import { Stats } from "./core/services/stats";
 import {
     FlashcardReviewMode,
     FlashcardReviewSequencer as FlashcardReviewSequencer,
     IFlashcardReviewSequencer as IFlashcardReviewSequencer,
-} from "./FlashcardReviewSequencer";
+} from "./core/scheduling/FlashcardReviewSequencer";
 import {
     CardOrder,
     DeckOrder,
     DeckTreeIterator,
     IDeckTreeIterator,
     IIteratorOrder,
-} from "./DeckTreeIterator";
-import { CardScheduleCalculator } from "./CardSchedule";
-import { Note } from "./Note";
-import { NoteFileLoader } from "./NoteFileLoader";
-import { ISRFile, SrTFile as SrTFile } from "./SRFile";
-import { NoteEaseCalculator } from "./NoteEaseCalculator";
-import { DeckTreeStatsCalculator } from "./DeckTreeStatsCalculator";
-import { NoteEaseList } from "./NoteEaseList";
-import { QuestionPostponementList } from "./QuestionPostponementList";
-import { TextDirection } from "./util/TextDirection";
-import { convertToStringOrEmpty } from "./util/utils";
+} from "./core/scheduling/DeckTreeIterator";
+import { CardScheduleCalculator } from "./core/scheduling/CardSchedule";
+import { Note } from "./core/models/Note";
+import { NoteFileLoader } from "./core/services/NoteFileLoader";
+import { ISRFile, SrTFile as SrTFile } from "./core/services/SRFile";
+import { NoteEaseCalculator } from "./core/scheduling/NoteEaseCalculator";
+import { DeckTreeStatsCalculator } from "./core/scheduling/DeckTreeStatsCalculator";
+import { NoteEaseList } from "./core/scheduling/NoteEaseList";
+import { QuestionPostponementList } from "./core/scheduling/QuestionPostponementList";
+import { TextDirection } from "./utils/TextDirection";
+import { convertToStringOrEmpty } from "./utils/utils";
 import { setDebugParser } from "src/parser";
 
 // https://github.com/martin-jw/obsidian-recall
 import { DataStore } from "./dataStore/data";
-import Commands from "./commands";
-import { algorithmNames, SrsAlgorithm } from "src/algorithms/algorithms";
+import CommandManager from "./managers/CommandManager";
+import { ReviewManager } from "src/managers/ReviewManager";
+import { SrsAlgorithm } from "src/algorithms/algorithms";
 
 import { reviewResponseModal } from "./gui/modals/reviewresponse-modal";
-import { debug, isVersionNewerThanOther } from "./util/utils_recall";
+import { isVersionNewerThanOther } from "./utils/utils_recall";
 import { ReleaseNotes } from "./gui/modals/ReleaseNotes";
 
 import { algorithms } from "src/algorithms/algorithms_switch";
 import { DataLocation } from "./dataStore/dataLocation";
-import { addFileMenuEvt, registerTrackFileEvents } from "./Events/trackFileEvents";
+import { addFileMenuEvt, registerTrackFileEvents } from "src/events/trackFileEvents";
 import { ItemTrans } from "./dataStore/itemTrans";
 import { LinkRank } from "src/algorithms/priorities/linkPageranks";
 import { Queue } from "./dataStore/queue";
-import { ReviewDeckSelectionModal } from "././gui/modals/reviewDeckSelectionModal";
 import { setDueDates } from "./algorithms/balance/balance";
-import { RepetitionItem } from "./dataStore/repetitionItem";
 import { IReviewNote } from "./reviewNote/review-note";
 import { ReviewView } from "././gui/views/reviewView";
 import { MixQueSet } from "./dataStore/mixQueSet";
@@ -71,6 +70,7 @@ import TabViewManager from "./gui/views/TabViewManager";
 import { TabView } from "./gui/views/TabView";
 import { SRSettingTab } from "src/gui/settings/SettingsTab";
 import { NoteReviewButtonsManager } from "src/gui/components/NoteReviewButtons";
+import { SettingsMigration } from "src/core/settings/SettingsMigration";
 
 interface PluginData {
     settings: SRSettings;
@@ -102,7 +102,6 @@ const DEFAULT_DATA: PluginData = {
 export default class SRPlugin extends Plugin {
     private isSRInFocus: boolean = false;
     private statusBar: HTMLElement;
-    private reviewQueueView: ReviewQueueListView;
     public data: PluginData;
     public tabViewManager: TabViewManager;
     public syncLock = false;
@@ -112,24 +111,20 @@ export default class SRPlugin extends Plugin {
 
     public easeByPath: NoteEaseList;
     private questionPostponementList: QuestionPostponementList;
-    // public incomingLinks: Record<string, LinkStat[]> = {}; // del, has linkRank
-    // public pageranks: Record<string, number> = {}; // del, has linkRank
-    private linkRank: LinkRank;
-    private dueNotesCount = 0; // del , has noteStats
-    public dueDatesNotes: Record<number, number> = {}; // Record<# of days in future, due count>
+    public linkRank: LinkRank;
 
     public deckTree: Deck = new Deck("root", null);
     public remainingDeckTree: Deck;
     public cardStats: Stats;
-    public noteStats: Stats;
 
     // https://github.com/martin-jw/obsidian-recall/blob/main/src/main.ts
     public store: DataStore;
-    public commands: Commands;
+    public commands: CommandManager;
     public algorithm: SrsAlgorithm;
     public reviewFloatBar: reviewResponseModal;
     public settingTab: SRSettingTab;
     public noteReviewManager: NoteReviewButtonsManager;
+    public reviewManager: ReviewManager;
 
     public clock_start: number;
     private static _instance: SRPlugin;
@@ -140,10 +135,10 @@ export default class SRPlugin extends Plugin {
     async onload(): Promise<void> {
         // Initialize tab view manager
         this.tabViewManager = new TabViewManager(this);
-        
+
         // Clean up any existing views first (in case of hot reload)
         this.tabViewManager.closeAllTabViews();
-        
+
         // Register views
         this.tabViewManager.registerAllTabViews();
 
@@ -166,10 +161,17 @@ export default class SRPlugin extends Plugin {
         }
 
         const settings = this.data.settings;
+        
+        // Migrate settings if needed
+        if (SettingsMigration.migrate(settings)) {
+            await this.savePluginData();
+            console.log("SR: Settings migrated to new format");
+        }
+
         this.algorithm = algorithms[settings.algorithm];
         this.algorithm.updateSettings(settings.algorithmSettings[settings.algorithm]);
         settings.algorithmSettings[settings.algorithm] = this.algorithm.settings;
-        this.savePluginData();
+        await this.savePluginData();
 
         IReviewNote.create(
             settings,
@@ -180,7 +182,7 @@ export default class SRPlugin extends Plugin {
         );
         ReviewView.create(this, this.data.settings);
         MixQueSet.create(settings.mixDue, settings.mixNew, settings.mixCard, settings.mixNote);
-        this.commands = new Commands(this);
+        this.commands = new CommandManager(this);
         this.commands.addCommands();
         if (this.data.settings.showSchedulingDebugMessages) {
             this.commands.addDebugCommands();
@@ -190,7 +192,7 @@ export default class SRPlugin extends Plugin {
         this.reviewFloatBar.submitCallback = (resp) => {
             const openFile: TFile | null = this.app.workspace.getActiveFile();
             if (openFile && openFile.extension === "md") {
-                this.saveReviewResponse(openFile, resp);
+                this.reviewManager.saveReviewResponse(openFile, resp);
             }
         };
         this.reviewFloatBar.openNextNoteCB = () => {
@@ -208,13 +210,14 @@ export default class SRPlugin extends Plugin {
                     return;
                 }
             }
-            this.reviewNextNote(this.lastSelectedReviewDeck);
+            this.reviewManager.reviewNextNote(this.lastSelectedReviewDeck);
         };
 
         registerTrackFileEvents(this);
 
         // Initialize compact review buttons manager
         this.noteReviewManager = new NoteReviewButtonsManager(this);
+        this.reviewManager = new ReviewManager(this);
 
         if (this.data.settings.dataLocation !== DataLocation.SaveOnNoteFile) {
             this.registerInterval(
@@ -235,7 +238,7 @@ export default class SRPlugin extends Plugin {
         this.statusBar.addEventListener("click", async () => {
             if (!this.syncLock) {
                 await this.sync();
-                this.reviewNextNoteModal();
+                await this.reviewManager.reviewNextNoteModal();
             }
         });
 
@@ -243,7 +246,7 @@ export default class SRPlugin extends Plugin {
             if (!this.syncLock) {
                 await this.sync();
                 if (this.data.settings.openViewInNewTab) {
-                    this.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
+                    await this.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
                 } else {
                     this.openFlashcardModal(
                         this.deckTree,
@@ -271,7 +274,7 @@ export default class SRPlugin extends Plugin {
                                 )
                                     .setIcon("SpacedRepIcon")
                                     .onClick(() => {
-                                        this.saveReviewResponse(fileish, i);
+                                        this.reviewManager.saveReviewResponse(fileish, i);
                                     });
                             });
                         }
@@ -288,7 +291,7 @@ export default class SRPlugin extends Plugin {
             callback: async () => {
                 if (!this.syncLock) {
                     await this.sync();
-                    this.reviewNextNoteModal();
+                    await this.reviewManager.reviewNextNoteModal();
                 }
             },
         });
@@ -305,7 +308,7 @@ export default class SRPlugin extends Plugin {
                 callback: () => {
                     const openFile: TFile | null = this.app.workspace.getActiveFile();
                     if (openFile && openFile.extension === "md") {
-                        this.saveReviewResponse(openFile, i);
+                        this.reviewManager.saveReviewResponse(openFile, i);
                     }
                 },
             });
@@ -322,7 +325,7 @@ export default class SRPlugin extends Plugin {
                 await this.sync();
 
                 if (this.data.settings.openViewInNewTab) {
-                    this.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
+                    await this.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
                 } else {
                     this.openFlashcardModal(
                         this.deckTree,
@@ -339,7 +342,7 @@ export default class SRPlugin extends Plugin {
             callback: async () => {
                 await this.sync(FlashcardReviewMode.Cram);
                 if (this.data.settings.openViewInNewTab) {
-                    this.tabViewManager.openSRTabView(FlashcardReviewMode.Cram);
+                    await this.tabViewManager.openSRTabView(FlashcardReviewMode.Cram);
                 } else {
                     this.openFlashcardModal(
                         this.deckTree,
@@ -360,9 +363,12 @@ export default class SRPlugin extends Plugin {
                 }
 
                 if (this.data.settings.openViewInNewTab) {
-                    this.tabViewManager.openSRTabView(FlashcardReviewMode.Review, openFile);
+                    await this.tabViewManager.openSRTabView(FlashcardReviewMode.Review, openFile);
                 } else {
-                    this.openFlashcardModalForSingleNote(openFile, FlashcardReviewMode.Review);
+                    await this.openFlashcardModalForSingleNote(
+                        openFile,
+                        FlashcardReviewMode.Review,
+                    );
                 }
             },
         });
@@ -377,9 +383,9 @@ export default class SRPlugin extends Plugin {
                 }
 
                 if (this.data.settings.openViewInNewTab) {
-                    this.tabViewManager.openSRTabView(FlashcardReviewMode.Cram, openFile);
+                    await this.tabViewManager.openSRTabView(FlashcardReviewMode.Cram, openFile);
                 } else {
-                    this.openFlashcardModalForSingleNote(openFile, FlashcardReviewMode.Cram);
+                    await this.openFlashcardModalForSingleNote(openFile, FlashcardReviewMode.Cram);
                 }
             },
         });
@@ -429,7 +435,7 @@ export default class SRPlugin extends Plugin {
         if (this.reviewFloatBar) {
             this.reviewFloatBar.close();
         }
-        
+
         // Clean up note review buttons
         if (this.noteReviewManager) {
             this.noteReviewManager.destroy();
@@ -584,13 +590,13 @@ export default class SRPlugin extends Plugin {
             );
         }
 
-        this.updateAndSortDueNotes();
+        this.reviewManager.updateAndSortDueNotes();
         const fbar = this.reviewFloatBar;
         fbar.cardtotalCB = () => {
             return this.remainingDeckTree.getCardCount(CardListType.All, true);
         };
         fbar.notetotalCB = () => {
-            return this.noteStats.getTotalCount();
+            return this.reviewManager.noteStats.getTotalCount();
         };
         this.syncLock = false;
     }
@@ -654,36 +660,6 @@ export default class SRPlugin extends Plugin {
         });
     }
 
-    private updateAndSortDueNotes() {
-        this.dueNotesCount = 0;
-        this.dueDatesNotes = {};
-        this.noteStats = new Stats();
-
-        const now = window.moment(Date.now());
-        Object.values(this.reviewDecks).forEach((reviewDeck: ReviewDeck) => {
-            this.dueNotesCount += reviewDeck.dueNotesCount;
-            this.noteStats.newCount += reviewDeck.newNotes.length;
-            reviewDeck.scheduledNotes.forEach((scheduledNote: SchedNote) => {
-                const nDays: number = Math.ceil(
-                    (scheduledNote.dueUnix - now.valueOf()) / (24 * 3600 * 1000),
-                );
-                if (!Object.prototype.hasOwnProperty.call(this.dueDatesNotes, nDays)) {
-                    this.dueDatesNotes[nDays] = 0;
-                }
-                this.dueDatesNotes[nDays]++;
-                this.noteStats.update(nDays, scheduledNote.interval, scheduledNote.ease);
-            });
-
-            reviewDeck.sortNotes(this.linkRank.pageranks);
-        });
-
-        setDueDates(this.noteStats.delayedDays.dict, this.cardStats.delayedDays.dict);
-
-        this.updateStatusBar();
-
-        if (this.getActiveLeaf(REVIEW_QUEUE_VIEW_TYPE)) this.reviewQueueView.redraw();
-    }
-
     async loadNote(noteFile: TFile): Promise<Note> {
         const loader: NoteFileLoader = new NoteFileLoader(this.data.settings);
         const srFile: ISRFile = this.createSrTFile(noteFile);
@@ -700,7 +676,7 @@ export default class SRPlugin extends Plugin {
         ItemTrans.updateCardsSchedbyItems(note, folderTopicPath);
         note.createMultiCloze(this.data.settings);
         if (note.hasChanged) {
-            note.writeNoteFile(this.data.settings);
+            await note.writeNoteFile(this.data.settings);
         }
         return note;
     }
@@ -710,31 +686,6 @@ export default class SRPlugin extends Plugin {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const v: any = (this.app.vault as any).getConfig("rightToLeft");
         return convertToStringOrEmpty(v) == "true" ? TextDirection.Rtl : TextDirection.Ltr;
-    }
-
-    async saveReviewResponse(note: TFile, response: ReviewResponse): Promise<void> {
-        const settings = this.data.settings;
-        if (SettingsUtil.isPathInNoteIgnoreFolder(settings, note.path)) {
-            new Notice(t("NOTE_IN_IGNORED_FOLDER"));
-            return;
-        }
-        const revnote = IReviewNote.getInstance();
-        if (!revnote.tagCheck(note)) {
-            return;
-        }
-
-        let ease: number;
-        if (revnote.isNew && settings.algorithm !== algorithmNames.Fsrs) {
-            ease = this.linkRank.getContribution(note, this.easeByPath).ease;
-        }
-        const result = await revnote.responseProcess(note, response, ease);
-        if (settings.burySiblingCardsByNoteReview) {
-            this.data.buryList.push(...result.buryList);
-            await this.savePluginData();
-        }
-
-        // Update note's properties to update our due notes.
-        this.postponeResponse(note, result.sNote);
     }
 
     // return false if is ignored
@@ -814,7 +765,7 @@ export default class SRPlugin extends Plugin {
             ease,
             delayBeforeReview,
             this.data.settings,
-            this.dueDatesNotes,
+            this.reviewManager.dueDatesNotes,
         );
         interval = schedObj.interval;
         ease = schedObj.ease;
@@ -859,171 +810,17 @@ export default class SRPlugin extends Plugin {
         return { sNote: snote, buryList };
     }
 
-    postponeResponse(note: TFile, sNote: SchedNote) {
-        Object.values(this.reviewDecks).forEach((reviewDeck: ReviewDeck) => {
-            let wasDueInDeck = false;
-            reviewDeck.scheduledNotes.findIndex((newNote, ind) => {
-                if (newNote.note.path === note.path) {
-                    reviewDeck.scheduledNotes[ind] = sNote;
-                    wasDueInDeck = true;
-                    return true;
-                }
-            });
-
-            // It was a new note, remove it from the new notes and schedule it.
-            if (!wasDueInDeck) {
-                const newidx = reviewDeck.newNotes.findIndex(
-                    (newNote) => newNote.note.path === note.path,
-                );
-                if (newidx >= 0) {
-                    reviewDeck.newNotes.splice(newidx, 1);
-                    reviewDeck.scheduledNotes.push(sNote);
-                }
-            }
-        });
-
-        this.updateAndSortDueNotes();
-
-        if (!this.data.settings.reviewResponseFloatBar) {
-            new Notice(t("RESPONSE_RECEIVED"));
-        }
-        if (MixQueSet.isCard() && this.reviewFloatBar.openNextCardCB) {
-            return;
-        }
-
-        if (this.data.settings.autoNextNote) {
-            if (!this.lastSelectedReviewDeck) {
-                const reviewDeckKeys: string[] = Object.keys(this.reviewDecks);
-                if (reviewDeckKeys.length > 0) this.lastSelectedReviewDeck = reviewDeckKeys[0];
-                else {
-                    new Notice(t("ALL_CAUGHT_UP"));
-                    return;
-                }
-            }
-            this.reviewNextNote(this.lastSelectedReviewDeck);
-        }
-    }
-
     async reviewNextNoteModal(): Promise<void> {
-        const reviewDeckNames: string[] = Object.keys(this.reviewDecks);
-        if (reviewDeckNames.length === 1) {
-            this.reviewNextNote(reviewDeckNames[0]);
-        } else if (this.data.settings.reviewingNoteDirectly) {
-            const rdname =
-                this.lastSelectedReviewDeck ??
-                IReviewNote.getDeckNameForReviewDirectly(this.reviewDecks) ??
-                reviewDeckNames[0];
-            this.reviewNextNote(rdname);
-        } else {
-            const deckSelectionModal = new ReviewDeckSelectionModal(this.app, reviewDeckNames);
-            deckSelectionModal.submitCallback = (deckKey: string) => this.reviewNextNote(deckKey);
-            deckSelectionModal.open();
-        }
+        return this.reviewManager.reviewNextNoteModal();
     }
 
     async reviewNextNote(deckKey: string): Promise<void> {
-        if (!Object.prototype.hasOwnProperty.call(this.reviewDecks, deckKey)) {
-            new Notice(t("NO_DECK_EXISTS", { deckName: deckKey }));
-            return;
-        }
-
-        this.lastSelectedReviewDeck = deckKey;
-        const deck = this.reviewDecks[deckKey];
-        const queue = this.store.data.queues;
-        const mqs = MixQueSet.getInstance();
-        let show = false;
-        let item;
-        let index = -1;
-
-        MixQueSet.calcNext(deck.dueNotesCount, deck.newNotes.length);
-
-        const isPreviewUndueNote = (item: RepetitionItem) => {
-            return item.nextReview > Date.now() && !item.isDue;
-        };
-        const fShowItemInfo = (item: RepetitionItem, msg: string) => {
-            if (this.data.settings.dataLocation !== DataLocation.SaveOnNoteFile) {
-                if (isPreviewUndueNote(item)) {
-                    const calcDueCnt = deck.scheduledNotes.filter(
-                        (snote) => snote.dueUnix < Date.now(),
-                    ).length;
-                    if (calcDueCnt !== deck.dueNotesCount) {
-                        debug(
-                            "check cnt",
-                            0,
-                            msg,
-                            `${deck.deckName} due cnt error: calc ${calcDueCnt}, dnc: ${deck.dueNotesCount}`,
-                        );
-                        console.debug("schedNotes:", deck.scheduledNotes);
-                    }
-                    const id = "obsidian-spaced-repetition-recall:view-item-info";
-                    // eslint-disable-next-line
-                    // @ts-ignore
-                    this.app.commands.executeCommandById(id);
-                }
-            }
-        };
-
-        if (MixQueSet.isDue() && deck.dueNotesCount > 0) {
-            index = IReviewNote.getNextNoteIndex(
-                deck.dueNotesCount,
-                this.data.settings.openRandomNote,
-            );
-            await this.app.workspace.getLeaf().openFile(deck.scheduledNotes[index].note);
-            item = deck.scheduledNotes[index].item;
-            fShowItemInfo(item, "scheduledNoes index: " + index);
-            show = true;
-            // return;
-        } else if (MixQueSet.isDue() && queue.queueSize(deckKey) > 0) {
-            item = this.store.getNext(deckKey);
-            fShowItemInfo(item, "queue");
-            const path = this.store.getFilePath(item);
-            const note = this.app.vault.getAbstractFileByPath(path) as TFile;
-            if (item != null && item.isTracked && path != null && note instanceof TFile) {
-                // debug("nextNote inside que");
-                await this.app.workspace.getLeaf().openFile(note);
-                show = true;
-            } else {
-                queue.remove(item, queue.queue[deckKey]);
-            }
-        }
-        if (!MixQueSet.isDue() && deck.newNotes.length > 0) {
-            const index = IReviewNote.getNextNoteIndex(
-                deck.newNotes.length,
-                this.data.settings.openRandomNote,
-            );
-            await this.app.workspace.getLeaf().openFile(deck.newNotes[index].note);
-            item = deck.newNotes[index].item;
-            fShowItemInfo(item, "newNotes index:" + index);
-            show = true;
-            // return;
-        }
-        if (show) {
-            if (this.data.settings.dataLocation !== DataLocation.SaveOnNoteFile) {
-                this.reviewFloatBar.display(item);
-                // fShowItemInfo(item);
-            }
-            return;
-        }
-
-        // add repeat items to review.
-        // this.store.loadRepeatQueue(this.reviewDecks);
-        await this.sync();
-
-        if (
-            this.data.settings.reviewingNoteDirectly &&
-            this.noteStats.onDueCount + this.noteStats.newCount > 0
-        ) {
-            const rdname: string = IReviewNote.getDeckNameForReviewDirectly(this.reviewDecks);
-            if (rdname != undefined) {
-                this.reviewNextNote(rdname);
-                return;
-            }
-        }
-
         ReviewView.nextReviewNotice(IReviewNote.minNextView, Queue.getInstance().laterSize);
 
         this.reviewFloatBar.close();
-        this.reviewQueueView.redraw();
+        this.reviewFloatBar.close();
+        this.app.workspace.trigger("sr:stats-updated");
+        new Notice(t("ALL_CAUGHT_UP"));
         new Notice(t("ALL_CAUGHT_UP"));
     }
 
@@ -1059,10 +856,7 @@ export default class SRPlugin extends Plugin {
         // Unregister existing view first to prevent duplicates
         this.app.workspace.detachLeavesOfType(REVIEW_QUEUE_VIEW_TYPE);
 
-        this.registerView(
-            REVIEW_QUEUE_VIEW_TYPE,
-            (leaf) => (this.reviewQueueView = new ReviewQueueListView(leaf, this)),
-        );
+        this.registerView(REVIEW_QUEUE_VIEW_TYPE, (leaf) => new ReviewQueueListView(leaf, this));
 
         if (
             this.data.settings.enableNoteReviewPaneOnStartup &&
@@ -1088,7 +882,7 @@ export default class SRPlugin extends Plugin {
 
         if (reviewQueueLeaf !== null) {
             this.app.workspace.revealLeaf(reviewQueueLeaf);
-            this.updateAndSortDueNotes();
+            this.reviewManager.updateAndSortDueNotes();
         }
     }
 
@@ -1097,14 +891,14 @@ export default class SRPlugin extends Plugin {
         console.log(`SR: ${t("DECKS")}`, this.deckTree);
         console.log(`SR: NOTE ${t("DECKS")}`, this.reviewDecks);
         console.log("SR: cardStats ", this.cardStats);
-        console.log("SR: noteStats ", this.noteStats);
-        console.log("SR: this.dueDatesNotes", this.dueDatesNotes);
+        console.log("SR: noteStats ", this.reviewManager.noteStats);
+        console.log("SR: this.dueDatesNotes", this.reviewManager.dueDatesNotes);
     }
 
     updateStatusBar() {
         this.statusBar.setText(
             t("STATUS_BAR", {
-                dueNotesCount: this.noteStats.onDueCount, // this.dueNotesCount, + this.store.data.queues.todaylatterSize()
+                dueNotesCount: this.reviewManager.noteStats.onDueCount, // this.dueNotesCount, + this.store.data.queues.todaylatterSize()
                 dueFlashcardsCount: this.remainingDeckTree.getDistinctCardCount(
                     CardListType.All,
                     true,

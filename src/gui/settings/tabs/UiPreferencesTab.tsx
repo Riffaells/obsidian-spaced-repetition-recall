@@ -1,8 +1,8 @@
 import { App, Setting } from "obsidian";
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
-import { DEFAULT_SETTINGS } from "src/settings";
-import { addResponseButtonTextSetting } from "src/settings/algorithmSetting";
+import { DEFAULT_SETTINGS } from "src/settings/settings";
+import { addResponseButtonTextSetting } from "../../settings-views/algorithmSetting";
 
 export class UiPreferencesTab {
     static async render(

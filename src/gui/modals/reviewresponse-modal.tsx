@@ -1,17 +1,17 @@
 // https://img.shields.io/github/v/release/chetachiezikeuzor/cMenu-Plugin
 import { App, MarkdownView, Menu, MenuItem, Platform, setIcon } from "obsidian";
-import { textInterval } from "src/scheduling";
-import { SRSettings } from "src/settings";
+import { textInterval } from "src/core/scheduling/scheduling";
+import { SRSettings } from "src/settings/settings";
 import { t } from "src/lang/helpers";
 // import { FlashcardModalMode } from "src/gui/flashcard-modal";
 import { SrsAlgorithm } from "src/algorithms/algorithms";
 import { RepetitionItem } from "src/dataStore/repetitionItem";
 // import { debug } from "src/util/utils_recall";
-import { TouchOnMobile } from "src/Events/touchEvent";
+import { TouchOnMobile } from "src/events/touchEvent";
 import { IAdapter } from "src/dataStore/adapter";
 import SRPlugin from "src/main";
 import { MixQueSet } from "src/dataStore/mixQueSet";
-import { FlashcardReviewMode } from "src/FlashcardReviewSequencer";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewSequencer";
 
 export class reviewResponseModal {
     private static instance: reviewResponseModal;

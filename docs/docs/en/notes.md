@@ -62,35 +62,35 @@ When reviewing a note, the float bar appears at the bottom of the screen with re
 
 When the note is in reading/preview mode (not edit mode), you can use number keys to quickly select your review response:
 
-- `0` - Reset/Again (restart the learning process)
-- `1` - Hard (difficult to recall)
-- `2` - Good (recalled with some effort)
-- `3` - Easy (recalled easily)
+-   `0` - Reset/Again (restart the learning process)
+-   `1` - Hard (difficult to recall)
+-   `2` - Good (recalled with some effort)
+-   `3` - Easy (recalled easily)
 
 **Float Bar Controls:**
 
-- **Right-click** on the float bar to close it
-- **Set visibility** for time intervals in the float bar settings
+-   **Right-click** on the float bar to close it
+-   **Set visibility** for time intervals in the float bar settings
 
 #### Mobile Usage
 
 The float bar is also available on mobile devices with touch-optimized controls:
 
-- **Swipe up** from the float bar to show/hide the menu
-- **Long-press** on the float bar to access settings and configure time interval visibility
+-   **Swipe up** from the float bar to show/hide the menu
+-   **Long-press** on the float bar to access settings and configure time interval visibility
 
 #### Visibility Settings
 
 You can configure whether the float bar displays the next review interval times. The recommended settings depend on your use case:
 
-- **Hide intervals during review** - When doing traditional spaced repetition review, hiding the intervals helps you focus on recall without being influenced by the scheduling information
-- **Show intervals during progressive summarization** - When using notes for progressive summarization or incremental writing, showing the intervals helps you make informed decisions about when to revisit the material
+-   **Hide intervals during review** - When doing traditional spaced repetition review, hiding the intervals helps you focus on recall without being influenced by the scheduling information
+-   **Show intervals during progressive summarization** - When using notes for progressive summarization or incremental writing, showing the intervals helps you make informed decisions about when to revisit the material
 
 These visibility settings can be adjusted in the plugin settings under the note review section.
 
 !!! tip "Use Cases for Float Bar"
-    The float bar is particularly useful for:
-    
+The float bar is particularly useful for:
+
     - **Spaced Repetition Review** - Quick review responses without leaving the note
     - **Progressive Summarization** - Scheduling when to revisit and refine notes
     - **Incremental Writing** - Managing attention and review timing for works in progress
@@ -106,15 +106,15 @@ You can create custom hotkeys for the review result in `Settings -> HotKeys`.
 
 There are a few ways to open a note for review:
 
-- Open a note via the standard Obsidian features
-- Double click on a note title from the Note Review Queue
-- Click on the `Spaced Repetition Status Area` in the status bar at the bottom of the screen
-- Select the command [Open a note to review review](plugin-commands.md)
+-   Open a note via the standard Obsidian features
+-   Double click on a note title from the Note Review Queue
+-   Click on the `Spaced Repetition Status Area` in the status bar at the bottom of the screen
+-   Select the command [Open a note to review review](plugin-commands.md)
 
 There are also the following relevant options:
 
-- [Open a random note for review](user-options.md)
-- [Open next note automatically after a review](user-options.md)
+-   [Open a random note for review](user-options.md)
+-   [Open next note automatically after a review](user-options.md)
 
 ## Multiple Note Review Decks
 

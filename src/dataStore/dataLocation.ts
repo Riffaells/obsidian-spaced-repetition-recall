@@ -1,4 +1,4 @@
-import { SRSettings } from "src/settings";
+import { SRSettings } from "src/settings/settings";
 import { t } from "src/lang/helpers";
 
 const ROOT_DATA_PATH = "./tracked_files.json";

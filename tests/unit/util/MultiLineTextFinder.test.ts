@@ -1,5 +1,5 @@
-import { MultiLineTextFinder } from "src/util/MultiLineTextFinder";
-import { splitTextIntoLineArray } from "src/util/utils";
+import { MultiLineTextFinder } from "src/utils/MultiLineTextFinder";
+import { splitTextIntoLineArray } from "src/utils/utils";
 
 const space: string = " ";
 const text10: string = `Some Stuff 0 More Stuff

@@ -3,7 +3,7 @@ module.exports = {
     verbose: false,
     preset: "ts-jest",
     testEnvironment: "jsdom",
-    setupFilesAfterEnv: ["jest-expect-message"],
+    setupFilesAfterEnv: ["jest-expect-message", "<rootDir>/tests/unit/setup.ts"],
     reporters: [
         [
             "default",

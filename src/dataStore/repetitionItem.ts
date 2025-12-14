@@ -2,8 +2,8 @@ import { Notice } from "obsidian";
 import { AnkiData } from "src/algorithms/anki";
 import { balance } from "src/algorithms/balance/balance";
 import { FsrsData } from "src/algorithms/fsrs";
-import { globalDateProvider } from "src/util/DateProvider";
-import { DateUtils } from "src/util/utils_recall";
+import { globalDateProvider } from "src/utils/DateProvider";
+import { DateUtils } from "src/utils/utils_recall";
 
 export enum RPITEMTYPE {
     NOTE = "note",
@@ -274,11 +274,11 @@ export class RepetitionItem {
             if (this.nextReview < now_number) {
                 return true;
             }
-            if (this.nextReview < globalDateProvider.endofToday.valueOf()) {
+            if (this.nextReview < globalDateProvider.endOfToday.valueOf()) {
                 if (this.isFsrs) {
                     const data: FsrsData = this.data as FsrsData;
                     const lastr = data.last_review.valueOf();
-                    if (lastr > 0 && lastr < globalDateProvider.startofToday.valueOf()) {
+                    if (lastr > 0 && lastr < globalDateProvider.startOfToday.valueOf()) {
                         return true;
                     }
                 } else {

@@ -1,6 +1,6 @@
 /**
  * Utility functions for flashcard parsing
- * 
+ *
  * @module parser/utils
  */
 
@@ -16,12 +16,12 @@ export function setDebugParser(value: boolean) {
 
 /**
  * Checks if a marker is inside an inline code block by counting backticks.
- * 
+ *
  * @param text - The full text line
  * @param marker - The marker to check (e.g., "::", "?")
  * @param markerIndex - The index position of the marker in the text
  * @returns true if the marker is inside an inline code block, false otherwise
- * 
+ *
  * @example
  * markerInsideCodeBlock("This is `code::block` text", "::", 11) // returns true
  * markerInsideCodeBlock("This is normal::text", "::", 14) // returns false
@@ -52,11 +52,11 @@ export function markerInsideCodeBlock(text: string, marker: string, markerIndex:
 /**
  * Checks if a line contains a valid inline flashcard marker.
  * Performs validation to avoid false positives from URLs, times, etc.
- * 
+ *
  * @param text - The text line to check
  * @param marker - The marker to look for (e.g., "::", ":::", "?")
  * @returns true if the line contains a valid flashcard marker, false otherwise
- * 
+ *
  * @example
  * hasInlineMarker("Question::Answer", "::") // returns true
  * hasInlineMarker("http://example.com", "::") // returns false (URL)
@@ -80,13 +80,13 @@ export function hasInlineMarker(text: string, marker: string): boolean {
         // Check if there's meaningful text before and after the marker
         const beforeMarker = text.substring(0, markerIdx).trim();
         const afterMarker = text.substring(markerIdx + marker.length).trim();
-        
+
         // Must have text on both sides
         if (beforeMarker.length === 0 || afterMarker.length === 0) return false;
-        
+
         // Check if it's part of a URL (http://, https://, ftp://)
         if (beforeMarker.match(/(https?|ftp)$/i)) return false;
-        
+
         // Check if it's a time format (e.g., 10:30)
         if (beforeMarker.match(/\d$/) && afterMarker.match(/^\d/)) return false;
     }

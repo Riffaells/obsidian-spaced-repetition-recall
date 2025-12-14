@@ -1,14 +1,14 @@
 import { App, Modal } from "obsidian";
 
 import type SRPlugin from "src/main";
-import { SRSettings } from "src/settings";
+import { SRSettings } from "src/settings/settings";
 
-import { Deck } from "src/Deck";
-import { Question } from "src/Question";
+import { Deck } from "src/core/models/Deck";
+import { Question } from "src/core/models/Question";
 import {
     FlashcardReviewMode,
     IFlashcardReviewSequencer as IFlashcardReviewSequencer,
-} from "src/FlashcardReviewSequencer";
+} from "src/core/scheduling/FlashcardReviewSequencer";
 import { FlashcardEditModal } from "./EditModal";
 import { DeckUI } from "../components/DeckUI";
 import { CardUI } from "../components/CardUI";

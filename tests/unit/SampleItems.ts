@@ -1,21 +1,11 @@
-import { Deck } from "src/Deck";
-import { Note } from "src/Note";
-import { NoteParser } from "src/parser/NoteParser";
-import { NoteQuestionParser } from "src/parser/NoteQuestionParser";
-import { DEFAULT_SETTINGS, SRSettings } from "src/settings";
-import { TopicPath } from "src/TopicPath";
-import { TextDirection } from "src/util/TextDirection";
+import { Deck } from "src/core/models/Deck";
+import { Note } from "src/core/models/Note";
+import { DEFAULT_SETTINGS, SRSettings } from "src/settings/settings";
+import { TopicPath } from "src/core/services/TopicPath";
+import { TextDirection } from "src/utils/TextDirection";
 import { UnitTestSRFile } from "./helpers/UnitTestSRFile";
-import { CardOrder, DeckOrder, DeckTreeIterator } from "src/DeckTreeIterator";
-
-export function createTest_NoteQuestionParser(settings: SRSettings): NoteQuestionParser {
-    const questionParser: NoteQuestionParser = new NoteQuestionParser(settings);
-    return questionParser;
-}
-export function createTest_NoteParser(): NoteParser {
-    const result = new NoteParser(DEFAULT_SETTINGS);
-    return result;
-}
+import { CardOrder, DeckOrder, DeckTreeIterator } from "src/core/scheduling/DeckTreeIterator";
+import { NoteFileLoader } from "src/core/services/NoteFileLoader";
 export const test_RefDate_20230906: Date = new Date(2023, 8, 6);
 
 export class SampleItemDecks {
@@ -67,9 +57,11 @@ Q3::A3`;
         folderTopicPath: TopicPath = TopicPath.emptyPath,
     ): Promise<Deck> {
         const deck: Deck = new Deck("Root", null);
-        const noteParser: NoteParser = createTest_NoteParser();
-        const note: Note = await noteParser.parse(file, TextDirection.Ltr, folderTopicPath);
-        note.appendCardsToDeck(deck);
+        const noteFileLoader: NoteFileLoader = new NoteFileLoader(DEFAULT_SETTINGS);
+        const note: Note = await noteFileLoader.load(file, TextDirection.Ltr, folderTopicPath);
+        if (note) {
+            note.appendCardsToDeck(deck);
+        }
         return deck;
     }
 }

@@ -28,7 +28,7 @@ Fight the forgetting curve by reviewing flashcards & notes using spaced repetiti
 !!! tip "Features"
 
     :material-circle-medium: [Flashcards](flashcards/flashcards-overview.md) &nbsp; &nbsp; :material-circle-medium: [Notes](notes.md) <br/>
-    :material-circle-medium: [User Options](user-options.md) &nbsp; &nbsp; :material-circle-medium: [Commands](plugin-commands.md)
+    :material-circle-medium: [User Options](user-options.md) &nbsp; &nbsp; :material-circle-medium: [CommandManager](plugin-commands.md)
     <hr class="thin">
     :material-circle-medium: [Repetition Algorithms](algorithms.md) &nbsp; &nbsp; :material-circle-medium: [Data Storage](data-storage.md)
 
@@ -77,7 +77,7 @@ the [translation guide here](contributing.md#translating).<br/>
 ### Manual Installation (Recommended)
 
 !!! note "Flow Installation"
-    Flow is currently available through manual installation. Follow these steps:
+Flow is currently available through manual installation. Follow these steps:
 
     1. Download the latest release from the [Flow releases page](https://github.com/martin-jw/obsidian-recall/releases)
     2. Create an `obsidian-spaced-repetition-recall` folder under `.obsidian/plugins` in your vault
@@ -88,16 +88,16 @@ the [translation guide here](contributing.md#translating).<br/>
 ### Migrating from Original Spaced Repetition Plugin
 
 !!! warning "Important: Backup Your Vault First!"
-    
+
     If you're migrating from the original Spaced Repetition plugin:
-    
+
     1. **BACKUP YOUR VAULT** - This is critical!
     2. Disable the original Spaced Repetition plugin
     3. Close Obsidian
     4. Copy `obsidian-spaced-repetition/data.json` to `obsidian-spaced-repetition-recall/data.json`
     5. Reopen Obsidian and enable Flow
     6. Review the [Flow Features](flow-features.md) documentation to understand new capabilities
-    
+
     **Note:** If you change the Data Location setting, review information will be moved from your notes to `tracked_files.json`. This action cannot be easily undone, so backup first!
 
 ---

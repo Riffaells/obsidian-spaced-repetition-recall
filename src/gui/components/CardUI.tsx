@@ -1,25 +1,25 @@
 import { App, MarkdownView, Notice, Platform, setIcon } from "obsidian";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type SRPlugin from "src/main";
-import { SRSettings } from "src/settings";
-import { ReviewResponse, textInterval } from "src/scheduling";
+import { SRSettings } from "src/settings/settings";
+import { ReviewResponse, textInterval } from "src/core/scheduling/scheduling";
 import { t } from "src/lang/helpers";
-import { Card } from "../../Card";
-import { CardListType, Deck } from "../../Deck";
-import { CardType, Question } from "../../Question";
+import { Card } from "../../core/models/Card";
+import { CardListType, Deck } from "../../core/models/Deck";
+import { CardType, Question } from "../../core/models/Question";
 import {
     FlashcardReviewMode,
     IFlashcardReviewSequencer as IFlashcardReviewSequencer,
-} from "src/FlashcardReviewSequencer";
-import { Note } from "src/Note";
-import { RenderMarkdownWrapper } from "src/util/RenderMarkdownWrapper";
-import { CardScheduleInfo } from "src/CardSchedule";
+} from "src/core/scheduling/FlashcardReviewSequencer";
+import { Note } from "src/core/models/Note";
+import { RenderMarkdownWrapper } from "src/utils/RenderMarkdownWrapper";
+import { CardScheduleInfo } from "src/core/scheduling/CardSchedule";
 import { FlashcardMode } from "../modals/FlashcardModal";
 import { RepetitionItem } from "src/dataStore/repetitionItem";
-import { SrTFile } from "src/SRFile";
+import { SrTFile } from "src/core/services/SRFile";
 import { ItemInfoModal } from "../utils/info";
 import { DataLocation } from "src/dataStore/dataLocation";
-import { debug } from "src/util/utils_recall";
+import { debug } from "src/utils/utils_recall";
 
 export class CardUI {
     public app: App;
@@ -405,7 +405,7 @@ export class CardUI {
 
     private _getContextText(): string {
         const question = this._currentQuestion;
-        
+
         // For header-based flashcards, show heading context if enabled
         if (question.isHeaderBased && this.settings.showContextInCards) {
             const headingContext = question.getDisplayContext();
@@ -413,12 +413,12 @@ export class CardUI {
                 return this._currentNote.file.basename + " > " + headingContext;
             }
         }
-        
+
         // For regular flashcards, show question context if enabled
         if (this.settings.showContextInCards && question.questionContext?.length > 0) {
             return this._formatQuestionContextText(question.questionContext);
         }
-        
+
         return "";
     }
 
@@ -469,11 +469,9 @@ export class CardUI {
     private _setTitle(deck: Deck) {
         const totalCards = deck.getCardCount(CardListType.All, true);
         const reviewedInSession = this._getReviewedCount();
-        
+
         if (reviewedInSession > 0) {
-            this.title.setText(
-                `${deck.deckName}: ${totalCards} (${reviewedInSession} изучено)`
-            );
+            this.title.setText(`${deck.deckName}: ${totalCards} (${reviewedInSession} изучено)`);
         } else {
             this.title.setText(`${deck.deckName}: ${totalCards}`);
         }
@@ -483,10 +481,10 @@ export class CardUI {
         // Calculate how many cards were reviewed in this session
         const currentDeck = this.reviewSequencer.currentDeck;
         if (!currentDeck) return 0;
-        
+
         const originalStats = this.reviewSequencer.getDeckStats(currentDeck.getTopicPath());
         const currentTotal = currentDeck.getCardCount(CardListType.All, true);
-        
+
         return Math.max(0, originalStats.totalCount - currentTotal);
     }
 

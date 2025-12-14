@@ -52,31 +52,31 @@ Flow introduces the ability to store all scheduling information in a separate JS
 
 The scheduling data is stored in `tracked_files.json` in one of these locations (configurable in settings):
 
-- Plugin folder (`.obsidian/plugins/obsidian-spaced-repetition-recall/`)
-- Vault root folder
-- Custom specified folder
+-   Plugin folder (`.obsidian/plugins/obsidian-spaced-repetition-recall/`)
+-   Vault root folder
+-   Custom specified folder
 
 **Benefits:**
 
-- **Cleaner Notes**: Your markdown files remain unmodified, containing only your content
-- **Better Version Control**: Git diffs show only content changes, not scheduling metadata
-- **Easier Collaboration**: Share notes without exposing your personal review schedule
-- **Simpler Backups**: Separate your content from your review data
+-   **Cleaner Notes**: Your markdown files remain unmodified, containing only your content
+-   **Better Version Control**: Git diffs show only content changes, not scheduling metadata
+-   **Easier Collaboration**: Share notes without exposing your personal review schedule
+-   **Simpler Backups**: Separate your content from your review data
 
 **Configuration:**
 
 1. Open plugin settings
 2. Navigate to the "Data Location" setting
 3. Choose one of the following options:
-   - **In plugin folder** (recommended for most users)
-   - **In vault root folder**
-   - **In specified folder** (enter custom path)
+    - **In plugin folder** (recommended for most users)
+    - **In vault root folder**
+    - **In specified folder** (enter custom path)
 4. To use in-note storage instead, select **"In notes"**
 
 !!! warning "Important: Data Migration"
 
     When you change the Data Location setting from "In notes" to a separate file location:
-    
+
     - All scheduling information will be **removed from your note files**
     - The data will be **moved to** `tracked_files.json`
     - This change is **immediate and automatic**
@@ -90,9 +90,9 @@ The scheduling data is stored in `tracked_files.json` in one of these locations 
 2. Open plugin settings
 3. Change "Data Location" from "In notes" to your preferred location
 4. The plugin will automatically:
-   - Extract all scheduling data from your notes
-   - Create `tracked_files.json` with the extracted data
-   - Remove scheduling comments and frontmatter from your notes
+    - Extract all scheduling data from your notes
+    - Create `tracked_files.json` with the extracted data
+    - Remove scheduling comments and frontmatter from your notes
 
 **From Separate File to In-Note:**
 
@@ -100,10 +100,10 @@ The scheduling data is stored in `tracked_files.json` in one of these locations 
 2. Open plugin settings
 3. Change "Data Location" to "In notes"
 4. The plugin will automatically:
-   - Read scheduling data from `tracked_files.json`
-   - Add scheduling comments to cards
-   - Add frontmatter to notes
-   - The `tracked_files.json` file will remain but won't be used
+    - Read scheduling data from `tracked_files.json`
+    - Add scheduling comments to cards
+    - Add frontmatter to notes
+    - The `tracked_files.json` file will remain but won't be used
 
 !!! tip "Recommendation for New Users"
 
@@ -112,7 +112,7 @@ The scheduling data is stored in `tracked_files.json` in one of these locations 
 !!! warning "For Users Migrating from Original SR Plugin"
 
     If you're migrating from the original Obsidian Spaced Repetition plugin:
-    
+
     - **BACKUP YOUR VAULT** before making any changes
     - Your existing in-note scheduling data will be preserved
     - You can optionally migrate to separate file storage after confirming everything works

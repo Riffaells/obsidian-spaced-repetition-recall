@@ -2,15 +2,15 @@
 import h from "vhtml";
 
 import type SRPlugin from "src/main";
-import { SRSettings } from "src/settings";
+import { SRSettings } from "src/settings/settings";
 import { COLLAPSE_ICON } from "src/constants";
 import { t } from "src/lang/helpers";
-import { Deck } from "../../Deck";
+import { Deck } from "../../core/models/Deck";
 import {
     DeckStats,
     IFlashcardReviewSequencer as IFlashcardReviewSequencer,
-} from "src/FlashcardReviewSequencer";
-import { TopicPath } from "src/TopicPath";
+} from "src/core/scheduling/FlashcardReviewSequencer";
+import { TopicPath } from "src/core/services/TopicPath";
 import { FlashcardMode } from "../modals/FlashcardModal";
 
 export class DeckUI {

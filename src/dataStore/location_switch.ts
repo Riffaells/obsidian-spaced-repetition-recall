@@ -1,5 +1,5 @@
 import { CachedMetadata, FrontMatterCache, Notice, TFile } from "obsidian";
-import { TopicPath } from "src/TopicPath";
+import { TopicPath } from "src/core/services/TopicPath";
 import {
     DEFAULT_DECK_NAME,
     MULTI_SCHEDULING_EXTRACTOR,
@@ -11,18 +11,18 @@ import {
 } from "src/constants";
 import { t } from "src/lang/helpers";
 import SRPlugin from "src/main";
-import { SRSettings } from "src/settings";
-import { escapeRegexString } from "src/util/utils";
+import { SRSettings } from "src/settings/settings";
+import { escapeRegexString } from "src/utils/utils";
 import { DataStore } from "./data";
-import { Tags } from "src/tags";
+import { Tags } from "src/utils/tags";
 
-import { Stats } from "src/stats";
-import { SettingsUtil } from "src/settings";
+import { Stats } from "src/core/services/stats";
+import { SettingsUtil } from "src/settings/settings";
 import { RPITEMTYPE } from "./repetitionItem";
 import deepcopy from "deepcopy";
-import { NoteCardScheduleParser } from "src/CardSchedule";
+import { NoteCardScheduleParser } from "src/core/scheduling/CardSchedule";
 import { DataLocation, getStorePath } from "./dataLocation";
-import { globalDateProvider } from "src/util/DateProvider";
+import { globalDateProvider } from "src/utils/DateProvider";
 import { IAdapter } from "./adapter";
 
 export class LocationSwitch {
@@ -228,8 +228,8 @@ export class LocationSwitch {
             const trackedFile = store.getTrackedFile(note.path);
             // let fileText: string = await note.vault.read(note);
             // let fileChanged = false;
-            trackedFile.syncNoteCardsIndex(fileText, settings, (cardText, cardinfo) => {
-                let scheduling: RegExpMatchArray[] = [
+            trackedFile.syncNoteCardsIndex(fileText, note.path, settings, (cardText, cardinfo) => {
+                const scheduling: RegExpMatchArray[] = [
                     ...cardText.matchAll(MULTI_SCHEDULING_EXTRACTOR),
                 ];
                 if (scheduling.length > 0) {
@@ -322,38 +322,43 @@ export class LocationSwitch {
                     let fileText: string = await note.vault.read(note);
                     let fileChanged = false;
                     if (deckPath.length !== 0) {
-                        tkfile.syncNoteCardsIndex(fileText, this.settings, (cardText, cardinfo) => {
-                            if (cardinfo == null || cardinfo?.itemIds == null) {
-                                return;
-                            }
-                            const ids = cardinfo.itemIds;
-                            const scheduling: RegExpMatchArray[] = [];
-                            ids.map((id: number) => store.getItembyID(id))
-                                .filter((citem) => citem.isTracked)
-                                .forEach((citem) => {
-                                    // const citem = store.getItembyID(id);
-                                    // if (citem.isTracked) {
-                                    const sched = citem.getSchedDurAsStr();
-                                    if (citem.hasDue && sched != null) {
-                                        scheduling.push(sched);
-                                        dueIds.push(citem.ID);
-                                    }
-                                    this.aftercardStats.updateStats(
-                                        citem,
-                                        globalDateProvider.endofToday.valueOf(),
-                                    );
-                                    // }
-                                });
-                            const newCardText = updateCardSchedXml(
-                                cardText,
-                                this.settings.cardCommentOnSameLine,
-                                scheduling,
-                            );
-                            fileText = cardTextReplace(fileText, cardText, newCardText);
-                            // const replacementRegex = new RegExp(escapeRegexString(cardText), "gm");
-                            // fileText = fileText.replace(replacementRegex, () => newCardText);
-                            fileChanged = true;
-                        });
+                        tkfile.syncNoteCardsIndex(
+                            fileText,
+                            note.path,
+                            this.settings,
+                            (cardText, cardinfo) => {
+                                if (cardinfo == null || cardinfo?.itemIds == null) {
+                                    return;
+                                }
+                                const ids = cardinfo.itemIds;
+                                const scheduling: RegExpMatchArray[] = [];
+                                ids.map((id: number) => store.getItembyID(id))
+                                    .filter((citem) => citem.isTracked)
+                                    .forEach((citem) => {
+                                        // const citem = store.getItembyID(id);
+                                        // if (citem.isTracked) {
+                                        const sched = citem.getSchedDurAsStr();
+                                        if (citem.hasDue && sched != null) {
+                                            scheduling.push(sched);
+                                            dueIds.push(citem.ID);
+                                        }
+                                        this.aftercardStats.updateStats(
+                                            citem,
+                                            globalDateProvider.endOfToday.valueOf(),
+                                        );
+                                        // }
+                                    });
+                                const newCardText = updateCardSchedXml(
+                                    cardText,
+                                    this.settings.cardCommentOnSameLine,
+                                    scheduling,
+                                );
+                                fileText = cardTextReplace(fileText, cardText, newCardText);
+                                // const replacementRegex = new RegExp(escapeRegexString(cardText), "gm");
+                                // fileText = fileText.replace(replacementRegex, () => newCardText);
+                                fileChanged = true;
+                            },
+                        );
                     }
                     // console.debug("_convert CardsSched end :\n", fileText);
                     if (
@@ -372,7 +377,7 @@ export class LocationSwitch {
                         }
                         this.afternoteStats.updateStats(
                             item,
-                            globalDateProvider.endofToday.valueOf(),
+                            globalDateProvider.endOfToday.valueOf(),
                         );
                         //update tag to note
                         if (item?.itemType === RPITEMTYPE.NOTE) {
@@ -429,11 +434,11 @@ export class LocationSwitch {
     }
 
     private setBeforeStats() {
-        this.beforenoteStats = deepcopy(this.plugin.noteStats);
+        this.beforenoteStats = deepcopy(this.plugin.reviewManager.noteStats);
         this.beforecardStats = deepcopy(this.plugin.cardStats);
     }
     private setAfterStats() {
-        this.afternoteStats = deepcopy(this.plugin.noteStats);
+        this.afternoteStats = deepcopy(this.plugin.reviewManager.noteStats);
         this.aftercardStats = deepcopy(this.plugin.cardStats);
     }
 

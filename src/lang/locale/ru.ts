@@ -27,7 +27,6 @@ export default {
     OPEN_NOTE: "Открыть заметку",
     FAILED_TO_EDIT_QUESTION_TEXT: "Не удалось отредактировать текст вопроса:",
 
-   
     // main.ts
     OPEN_NOTE_FOR_REVIEW: "Открыть заметку для повторения",
     REVIEW_CARDS: "Изучать карточки",
@@ -123,7 +122,8 @@ export default {
     RANDOMIZE_CARD_ORDER: "Случайный порядок карточек при изучении?",
     REVIEW_CARD_ORDER_WITHIN_DECK: "Порядок карточек в колоде при изучении",
     REVIEW_CARD_ORDER_NEW_FIRST_SEQUENTIAL: "Последовательно в колоде (сначала все новые карточки)",
-    REVIEW_CARD_ORDER_DUE_FIRST_SEQUENTIAL: "Последовательно в колоде (сначала все просроченные карточки)",
+    REVIEW_CARD_ORDER_DUE_FIRST_SEQUENTIAL:
+        "Последовательно в колоде (сначала все просроченные карточки)",
     REVIEW_CARD_ORDER_NEW_FIRST_RANDOM: "Случайно в колоде (сначала все новые карточки)",
     REVIEW_CARD_ORDER_DUE_FIRST_RANDOM: "Случайно в колоде (сначала все просроченные карточки)",
     REVIEW_CARD_ORDER_RANDOM_DECK_AND_CARD: "Случайные колоды и карточки",
@@ -160,7 +160,8 @@ export default {
     NOTE: "Note",
     REVIEW_PANE_ON_STARTUP: "Включить панель изучения карточек при запуске программы",
     TAGS_TO_REVIEW: "Теги для изучения",
-    TAGS_TO_REVIEW_DESC: "Введите теги, разделенные пробелами или новыми строками, т.е. #review #tag2 #tag3.",
+    TAGS_TO_REVIEW_DESC:
+        "Введите теги, разделенные пробелами или новыми строками, т.е. #review #tag2 #tag3.",
     OPEN_RANDOM_NOTE: "Открыть случайную заметку для изучения",
     OPEN_RANDOM_NOTE_DESC: "Если выключить, то заметки будут отсортированы по важности (PageRank).",
     AUTO_NEXT_NOTE: "После изучения автоматически открывать следующую заметку",
@@ -227,8 +228,9 @@ export default {
     NEW_PER_DAY_NAN: "Должно быть числом",
     NEW_PER_DAY_NEG: "Новых в день должно быть -1 или больше.",
     REPEAT_ITEMS: "Повторять элементы",
-    REPEAT_ITEMS_DESC: "Следует ли повторять элементы, отмеченные как неправильные, до тех пор, пока они не будут отмечены как правильные?",
-    ALGORITHMS_CONFIRM: `Переключение алгоритмов может сбросить или повлиять на время повторения существующих элементов. Это изменение необратимо. Смена алгоритма вступает в силу только после перезапуска или перезагрузки плагина. Вы уверены, что хотите переключить алгоритм?`,
+    REPEAT_ITEMS_DESC:
+        "Следует ли повторять элементы, отмеченные как неправильные, до тех пор, пока они не будут отмечены как правильные?",
+    ALGORITHMS_CONFIRM: "Переключение алгоритмов может сбросить или повлиять на время повторения существующих элементов. Это изменение необратимо. Смена алгоритма вступает в силу только после перезапуска или перезагрузки плагина. Вы уверены, что хотите переключить алгоритм?",
     ALGORITHMS_DESC:
         'Алгоритм, используемый для интервального повторения. Для получения дополнительной информации см. <a href="https://github.com/martin-jw/obsidian-recall">алгоритмы</a>.',
     CONVERT_TRACKED_TO_DECK: "Конвертировать отслеживаемые заметки в колоды?",
@@ -401,7 +403,7 @@ export default {
     FOLDER_PLACEHOLDER: "Пример: папка1/папка2",
     SAVE_BUTTON: "Сохранить",
     LOCATION_CHANGE_FINISHED: "Изменение местоположения завершено.",
-    // commands.ts
+    // CommandManager.ts
     CMD_ITEM_INFO: "Информация об элементе",
     CMD_TRACK_NOTE: "Отслеживать заметку",
     CMD_UNTRACK_NOTE: "Не отслеживать заметку",
@@ -458,29 +460,37 @@ export default {
         "Конвертация не удалась, восстановлен старый алгоритм и данные, пожалуйста, сообщите об этом.",
     ALGORITHM_SWITCH_SUCCESS:
         "Конвертация завершена, из-за различных параметров алгоритма последующие интервалы повторения будут скорректированы",
-    
+
     FLASHCARD_RULES_MANAGER_TITLE: "Правила тегов для карточек",
-    FLASHCARD_RULES_MANAGER_DESC: "<strong>Правила определяют, как теги создают карточки.</strong> Вы можете настроить разные типы карточек для разных тегов.",
-    FLASHCARD_RULES_MANAGER_ITEM_1: "<strong>Встроенные карточки</strong> - Используйте сепараторы (::) внутри линии",
-    FLASHCARD_RULES_MANAGER_ITEM_2: "<strong>Карточки на основе заголовков</strong> - создаются из заголовков markdown",
-    FLASHCARD_RULES_MANAGER_ITEM_3: "<strong>Многострочные карточки</strong> - Используйте многолинейный формат с (?)",
-    FLASHCARD_RULES_MANAGER_TIP: "Начните с стандартных правил, затем добавьте свои для конкретных нужд.",
+    FLASHCARD_RULES_MANAGER_DESC:
+        "<strong>Правила определяют, как теги создают карточки.</strong> Вы можете настроить разные типы карточек для разных тегов.",
+    FLASHCARD_RULES_MANAGER_ITEM_1:
+        "<strong>Встроенные карточки</strong> - Используйте сепараторы (::) внутри линии",
+    FLASHCARD_RULES_MANAGER_ITEM_2:
+        "<strong>Карточки на основе заголовков</strong> - создаются из заголовков markdown",
+    FLASHCARD_RULES_MANAGER_ITEM_3:
+        "<strong>Многострочные карточки</strong> - Используйте многолинейный формат с (?)",
+    FLASHCARD_RULES_MANAGER_TIP:
+        "Начните с стандартных правил, затем добавьте свои для конкретных нужд.",
     MANAGE_RULES_TITLE: "Управление правилами",
-    MANAGE_RULES_DESC: "Создавайте, редактируйте и управляйте правилами для карточек. Каждое правило может иметь свой приоритет и настройки.",
+    MANAGE_RULES_DESC:
+        "Создавайте, редактируйте и управляйте правилами для карточек. Каждое правило может иметь свой приоритет и настройки.",
     ADD_RULE_BUTTON: "+ Добавить Правило",
-    RULE_CREATED_NOTICE: "Правило \"${ruleName}\" создано",
-    RULE_UPDATED_NOTICE: "Правило \"${ruleName}\" обновлено",
-    RULE_DELETED_NOTICE: "Правило \"${ruleName}\" удалено",
+    RULE_CREATED_NOTICE: 'Правило "${ruleName}" создано',
+    RULE_UPDATED_NOTICE: 'Правило "${ruleName}" обновлено',
+    RULE_DELETED_NOTICE: 'Правило "${ruleName}" удалено',
     NO_RULES_CONFIGURED: "Пока нет установленных правил. Добавьте правило для начала",
     INLINE_RULES_SECTION_TITLE: "Inline Rules",
     HEADER_BASED_RULES_SECTION_TITLE: "Header-Based Rules",
     MULTILINE_RULES_SECTION_TITLE: "Multiline Rules",
     CLOZE_RULES_SECTION_TITLE: "Cloze Rules",
-    DELETE_RULE_CONFIRMATION_MSG: "Are you sure you want to delete the rule \"${ruleName}\"?\n\nTag: ${tag}\nThis action cannot be undone.",
+    DELETE_RULE_CONFIRMATION_MSG:
+        'Are you sure you want to delete the rule "${ruleName}"?\n\nTag: ${tag}\nThis action cannot be undone.',
 
     CLOZE_SETTINGS_TITLE: "Cloze Settings",
     DEFAULT_CARD_SEPARATORS_ADVANCED_TITLE: "Default Card Separators (Advanced)",
-    CLOZE_PATTERNS_PLACEHOLDER: "Example:\n==[123;;]answer[;;hint]==\n**[123;;]answer[;;hint]**\n{{[123;;]answer[;;hint]}}",
+    CLOZE_PATTERNS_PLACEHOLDER:
+        "Example:\n==[123;;]answer[;;hint]==\n**[123;;]answer[;;hint]**\n{{[123;;]answer[;;hint]}}",
 
     // FlashcardRuleModal.tsx
     EDIT_FLASHCARD_RULE: "Редактировать правило для карточек",
@@ -516,7 +526,8 @@ export default {
     CARD_MODE_ALL: "Все",
     QA_SEPARATOR: "Разделитель В/О",
     INCLUDE_PARENTS: "Включить родительские заголовки",
-    INCLUDE_PARENTS_DESC: "Количество родительских заголовков для включения в карточку. Используйте -1 для всех.",
+    INCLUDE_PARENTS_DESC:
+        "Количество родительских заголовков для включения в карточку. Используйте -1 для всех.",
     SEPARATOR_DESC_MULTILINE: "Текст, разделяющий вопрос и ответ.",
     REVERSED_SEPARATOR_DESC_MULTILINE: "Разделитель для карточек, где ответ идет первым.",
     END_MARKER: "Маркер конца",
@@ -529,8 +540,16 @@ export default {
     TAG: "Тег",
     TAG_DESC: "Тег, который активирует это правило, например, #cards.",
     POSITIONAL_SELECTORS: "Позиционные селекторы",
-    POSITIONAL_SELECTORS_DESC: "Фильтрация заголовков по их позиции (например, первые 3, последний 1).",
+    POSITIONAL_SELECTORS_DESC:
+        "Фильтрация заголовков по их позиции (например, первые 3, последний 1).",
     ADD_SELECTOR: "Добавить селектор",
+    SELECTION_MODE: "Режим выборки",
+    SELECTION_MODE_DESC: "Выберите между простым (плоским) или цепным (иерархическим) режимом.",
+    SELECTION_MODE_SIMPLE: "Простой (Плоский)",
+    SELECTION_MODE_CHAIN: "Цепной (Иерархический)",
+    STEP: "Шаг",
+    ADD_STEP: "Добавить шаг",
+    DELETE_STEP: "Удалить шаг",
     FLASHCARD_: "КАРТОЧКА_",
     HIDE_REVIEW_BUTTONS: "Скрыть кнопки повторения",
     NOTE_IN_IGNORED_TAGS: "Заметка находится среди игнорируемых тегов (проверьте настройки).",
@@ -539,5 +558,6 @@ export default {
     REVIEW_EASY_FILE_MENU: "Повторить: Легко",
     SHOW_REVIEW_BUTTONS: "Показать кнопки повторения",
     TAGS_TO_IGNORE: "Теги для игнорирования",
-    TAGS_TO_IGNORE_DESC: "Введите теги, разделенные пробелами или новыми строками, например, #tag1 #tag2.",
+    TAGS_TO_IGNORE_DESC:
+        "Введите теги, разделенные пробелами или новыми строками, например, #tag1 #tag2.",
 };

@@ -1,9 +1,8 @@
-import { SRSettings } from "src/settings";
-import { BlockUtils } from "src/util/utils_recall";
-import { RuleBasedCardParser, ParsedQuestionInfo } from "src/parser";
+import { SRSettings } from "src/settings/settings";
+import { RuleBasedParser, NoteContext, ParsedFlashcard, DocumentStructureParser } from "src/parser";
 import { RPITEMTYPE } from "./repetitionItem";
 import { DEFAULT_DECK_NAME } from "src/constants";
-import { Tags } from "src/tags";
+import { Tags } from "src/utils/tags";
 
 /**
  * TrackedFile.
@@ -161,40 +160,78 @@ export class TrackedFile implements ITrackedFile {
 
     /**
      * syncNoteCardsIndex
-     * only check and sync index, not add/remove cardinfo/ids/items.
-     * @param note
-     * @returns
+     * Sync note cards index using the RuleBasedParser
+     * Only check and sync index, not add/remove cardinfo/ids/items.
+     * @param fileText - The text content of the file
+     * @param filePath - The full path to the file
+     * @param settings - SR settings containing flashcard rules
+     * @param callback - Optional callback for each card
+     * @returns true if sync successful, false otherwise
      */
     syncNoteCardsIndex(
         fileText: string,
+        filePath: string,
         settings: SRSettings,
         callback?: (cardText: string, cardinfo: CardInfo) => void,
-    ) {
+        tagsFromCache?: string[],
+    ): boolean {
         if (callback == null) {
             if (!this.hasCards) {
-                return;
+                return false;
             }
         }
 
-        // const settings = plugin.data.settings;
         let negIndFlag = false;
         const lines: number[] = [];
         const cardHashList: Record<number, string> = {};
 
-        const parsedCards: ParsedQuestionInfo[] = new RuleBasedCardParser(settings.flashcardTagRules).parse(fileText);
-        if (!this.hasCards && parsedCards.length === 0) {
+        // Create RuleBasedParser with settings.flashcardRules
+        const parser = new RuleBasedParser(settings.flashcardRules);
+
+        // Extract tags - prefer cache over regex parsing
+        let tags: string[];
+        if (tagsFromCache) {
+            tags = tagsFromCache;
+        } else {
+            // Fallback to regex parsing if cache not available
+            const docStructure = DocumentStructureParser.parse(fileText);
+            tags = docStructure.tags;
+        }
+
+        // Extract folder path from file path
+        const pathParts = filePath.split("/");
+        const fileName = pathParts[pathParts.length - 1];
+        const folderPath = pathParts.slice(0, -1).join("/");
+
+        // Create NoteContext from fileText and filePath
+        const noteContext: NoteContext = {
+            filePath: filePath,
+            fileName: fileName,
+            text: fileText,
+            tags: tags,
+            folderPath: folderPath,
+        };
+
+        // Call parser.parse(noteContext) to get ParsedFlashcard[]
+        const flashcards: ParsedFlashcard[] = parser.parse(noteContext);
+
+        if (!this.hasCards && flashcards.length === 0) {
             return false;
         }
 
-        for (const parsedCard of parsedCards) {
-            // deckPath = noteDeckPath;
-            const lineNo: number = parsedCard.firstLineNum;
-            let cardText: string = parsedCard.text;
+        // For each flashcard, extract lineNo from context.lineNumber
+        for (const flashcard of flashcards) {
+            const lineNo: number = flashcard.context.lineNumber;
 
+            // Reconstruct card text for filtering
+            let cardText: string = `${flashcard.front}\n${flashcard.back}`;
+
+            // Skip cards with edit later tag
             if (cardText.includes(settings.editLaterTag)) {
                 continue;
             }
 
+            // Handle deck path extraction if not converting folders to decks
             if (!settings.convertFoldersToDecks) {
                 const tagInCardRegEx = /^#[^\s#]+/gi;
                 const cardDeckPath = cardText
@@ -203,46 +240,53 @@ export class TrackedFile implements ITrackedFile {
                     .replace("#", "")
                     .split("/");
                 if (cardDeckPath) {
-                    // deckPath = cardDeckPath;
                     cardText = cardText.replaceAll(tagInCardRegEx, "");
                 }
             }
 
-            const cardTextHash: string = BlockUtils.getTxtHash(cardText);
+            // Use flashcard.id as cardTextHash (it's already deterministic)
+            const cardTextHash: string = flashcard.id;
 
-            const cardinfo = this.getSyncCardInfo(lineNo, cardTextHash);
+            // Detect block IDs (flashcard.id starts with '^')
+            const blockID: string | undefined = flashcard.id.startsWith("^")
+                ? flashcard.id
+                : undefined;
+
+            // Call getSyncCardInfo() to match existing cards
+            const cardinfo = this.getSyncCardInfo(lineNo, cardTextHash, blockID);
+
+            // Call callback if provided
             if (callback != null) {
                 callback(cardText, {
                     lineNo: lineNo,
                     cardTextHash: cardTextHash,
+                    blockID: blockID,
                     itemIds: cardinfo?.itemIds,
                 });
             }
+
             lines.push(lineNo);
             cardHashList[lineNo] = cardTextHash;
             if (cardinfo == null) {
                 negIndFlag = true;
             }
         }
-        // console.debug("cardHashList: ", cardHashList);
 
-        // sync by total parsedCards.length
+        // sync by total flashcards.length
         if (!this.hasCards) {
             return false;
         }
         const carditems = this?.cardItems;
         if (lines.length === carditems.length && negIndFlag) {
             for (let i = 0; i < lines.length; i++) {
-                // fix: don't match
-                // if (this.getSyncCardInfo(lines[i], cardHashList[lines[i]]) == null) {
-                // }
                 if (lines[i] !== carditems[i].lineNo) {
                     carditems[i].lineNo = lines[i];
                     this.getSyncCardInfo(lines[i], cardHashList[lines[i]]);
                 }
             }
         }
-        // store.save();
+
+        // Return true if sync successful
         return true;
     }
 

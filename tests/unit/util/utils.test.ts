@@ -5,7 +5,7 @@ import {
     findLineIndexOfSearchStringIgnoringWs,
     isEqualOrSubPath,
     literalStringReplace,
-} from "src/util/utils";
+} from "src/utils/utils";
 
 describe("literalStringReplace", () => {
     test("Replacement string doesn't have any dollar signs", async () => {

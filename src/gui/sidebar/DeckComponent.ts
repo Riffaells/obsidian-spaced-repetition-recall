@@ -1,7 +1,7 @@
 import { groupNotes } from "./grouping";
 import { calculateDaysUntilDue, createGroupKey, getGroupTitle, isNoteActive } from "./utils";
 import SRPlugin from "src/main";
-import { ReviewDeck, SchedNote } from "src/ReviewDeck";
+import { ReviewDeck, SchedNote } from "src/core/models/ReviewDeck";
 import { TFile } from "obsidian";
 import { FilterType, NoteSortType } from "src/gui/sidebar/types";
 import { NoteGroupComponent } from "src/gui/sidebar/NoteGroupComponent";

@@ -6,15 +6,15 @@ Header-based flashcards is a powerful format for creating flashcards using Markd
 
 ## Table of Contents
 
-- [Basic Usage](#basic-usage)
-- [Tag Syntax](#tag-syntax)
-- [Configuration Modes](#configuration-modes)
-- [Settings](#settings)
-- [Examples](#examples)
-- [Advanced Features](#advanced-features)
-- [Compatibility](#compatibility)
-- [Best Practices](#best-practices)
-- [Troubleshooting](#troubleshooting)
+-   [Basic Usage](#basic-usage)
+-   [Tag Syntax](#tag-syntax)
+-   [Configuration Modes](#configuration-modes)
+-   [Settings](#settings)
+-   [Examples](#examples)
+-   [Advanced Features](#advanced-features)
+-   [Compatibility](#compatibility)
+-   [Best Practices](#best-practices)
+-   [Troubleshooting](#troubleshooting)
 
 ## Basic Usage
 
@@ -30,35 +30,42 @@ To create a header-based flashcard, simply:
 #flashcard/h2
 
 ## What is React?
+
 React is a JavaScript library for building user interfaces.
 ```
 
 This creates one flashcard where:
-- **Question**: "What is React?"
-- **Answer**: "React is a JavaScript library for building user interfaces."
+
+-   **Question**: "What is React?"
+-   **Answer**: "React is a JavaScript library for building user interfaces."
 
 ### How Content Boundaries Work
 
 The answer includes all content from the heading until:
-- The next heading of the **same or higher level**
-- The end of the document
+
+-   The next heading of the **same or higher level**
+-   The end of the document
 
 ```markdown
 #flashcard/h2
 
 ## What is TypeScript?
+
 TypeScript is a superset of JavaScript with static typing.
 
 ### Key Features
-- Static type checking
-- Better IDE support
-- Early error detection
+
+-   Static type checking
+-   Better IDE support
+-   Early error detection
 
 ## What is Vue?
+
 Vue is a progressive JavaScript framework.
 ```
 
 This creates **2 flashcards**:
+
 1. "What is TypeScript?" → includes the paragraph AND the h3 section
 2. "What is Vue?" → includes only the paragraph
 
@@ -76,19 +83,21 @@ All parts are optional and can be combined in any order.
 
 Specify which heading levels to use for flashcards:
 
-| Tag | Description |
-|-----|-------------|
-| `#flashcard/h1` | Only h1 headings |
-| `#flashcard/h2` | Only h2 headings (default) |
-| `#flashcard/h3` | Only h3 headings |
-| `#flashcard/h2-h3` | Both h2 and h3 headings |
-| `#flashcard/h1-h6` | All heading levels |
+| Tag                | Description                |
+| ------------------ | -------------------------- |
+| `#flashcard/h1`    | Only h1 headings           |
+| `#flashcard/h2`    | Only h2 headings (default) |
+| `#flashcard/h3`    | Only h3 headings           |
+| `#flashcard/h2-h3` | Both h2 and h3 headings    |
+| `#flashcard/h1-h6` | All heading levels         |
 
 **Example:**
+
 ```markdown
 #flashcard/h3
 
 ### What is a variable?
+
 A variable is a named storage location.
 ```
 
@@ -96,39 +105,46 @@ A variable is a named storage location.
 
 Control how subheadings are included in answers:
 
-| Tag | Mode | Description |
-|-----|------|-------------|
+| Tag                 | Mode   | Description                       |
+| ------------------- | ------ | --------------------------------- |
 | `#flashcard/nested` | Nested | Include all subheadings (default) |
-| `#flashcard/flat` | Flat | Stop at first subheading |
+| `#flashcard/flat`   | Flat   | Stop at first subheading          |
 
 **Nested Mode Example:**
+
 ```markdown
 #flashcard/h2/nested
 
 ## What is Python?
+
 Python is a high-level programming language.
 
 ### Advantages
-- Easy to learn
-- Large ecosystem
-- Versatile
+
+-   Easy to learn
+-   Large ecosystem
+-   Versatile
 
 ### Use Cases
-- Web development
-- Data science
-- Automation
+
+-   Web development
+-   Data science
+-   Automation
 ```
 
 Answer includes everything: the paragraph, "Advantages" section, and "Use Cases" section.
 
 **Flat Mode Example:**
+
 ```markdown
 #flashcard/h2/flat
 
 ## What is Python?
+
 Python is a high-level programming language.
 
 ### Advantages
+
 (This will NOT be included)
 ```
 
@@ -138,30 +154,36 @@ Answer includes only the first paragraph.
 
 Control which headings become flashcards:
 
-| Tag | Mode | Description |
-|-----|------|-------------|
-| `#flashcard/qa` | QA Mode | Only headings ending with `?` (default) |
-| `#flashcard/all` | All Mode | All headings at specified levels |
+| Tag              | Mode     | Description                             |
+| ---------------- | -------- | --------------------------------------- |
+| `#flashcard/qa`  | QA Mode  | Only headings ending with `?` (default) |
+| `#flashcard/all` | All Mode | All headings at specified levels        |
 
 **QA Mode (default):**
+
 ```markdown
 #flashcard/h2
 
 ## What is JavaScript?
+
 A programming language.
 
 ## JavaScript Features
+
 (No flashcard created - no question mark)
 ```
 
 **All Mode:**
+
 ```markdown
 #flashcard/h2/all
 
 ## JavaScript
+
 A programming language.
 
 ## TypeScript
+
 A typed superset of JavaScript.
 ```
 
@@ -177,44 +199,46 @@ You can combine multiple configuration tags:
 # Programming Languages
 
 ## JavaScript
+
 Content here...
 
 ### Node.js
+
 More content...
 
 ## Python
+
 Content here...
 ```
 
 This configuration:
-- Uses h2 AND h3 headings
-- Flat mode (stops at subheadings)
-- All mode (no `?` required)
+
+-   Uses h2 AND h3 headings
+-   Flat mode (stops at subheadings)
+-   All mode (no `?` required)
 
 ## Configuration Modes
 
 ### Default Configuration
 
 If you only use `#flashcard` without additional tags, the default configuration is:
-- **Heading Levels**: h2 only
-- **Nesting Mode**: nested
-- **Recognition Mode**: qa (only headings with `?`)
+
+-   **Heading Levels**: h2 only
+-   **Nesting Mode**: nested
+-   **Recognition Mode**: qa (only headings with `?`)
 
 ### Configuration Priority
 
 When multiple tags are present, they are merged with these rules:
 
 1. **Heading Levels**: Combined (union)
-   - `#flashcard/h2` + `#flashcard/h3` = h2 and h3
-   
+    - `#flashcard/h2` + `#flashcard/h3` = h2 and h3
 2. **Nesting Mode**: Last tag wins
-   - `#flashcard/nested` + `#flashcard/flat` = flat
-   
+    - `#flashcard/nested` + `#flashcard/flat` = flat
 3. **Recognition Mode**: Last tag wins
-   - `#flashcard/qa` + `#flashcard/all` = all
-   
+    - `#flashcard/qa` + `#flashcard/all` = all
 4. **Enabled Status**: `true` takes priority
-   - `#flashcard/disable` + `#flashcard/h2` = enabled
+    - `#flashcard/disable` + `#flashcard/h2` = enabled
 
 ## Settings
 
@@ -227,18 +251,23 @@ When multiple tags are present, they are merged with these rules:
 ### Available Settings
 
 #### Enable Header-Based Cards
+
 Toggle to enable or disable the entire feature globally.
 
 #### Default Configuration
+
 Set the default behavior for notes with just `#flashcard` tag:
-- **Default Heading Levels**: Which levels to use (h1-h6)
-- **Default Nesting Mode**: nested or flat
-- **Default Recognition Mode**: qa or all
+
+-   **Default Heading Levels**: Which levels to use (h1-h6)
+-   **Default Nesting Mode**: nested or flat
+-   **Default Recognition Mode**: qa or all
 
 #### Show Context in Cards
+
 When enabled, displays the full heading hierarchy above the question during review.
 
 Example with context enabled:
+
 ```
 JavaScript > React > Hooks
 ━━━━━━━━━━━━━━━━━━━━━━━━
@@ -246,6 +275,7 @@ What are React Hooks?
 ```
 
 Example with context disabled:
+
 ```
 What are React Hooks?
 ```
@@ -257,19 +287,19 @@ Create your own tags with specific configurations:
 1. Click "Add Custom Tag" in settings
 2. Enter tag name (e.g., `#my-questions`)
 3. Configure:
-   - Heading levels (checkboxes for h1-h6)
-   - Nesting mode (radio buttons)
-   - Recognition mode (radio buttons)
-   - Enabled toggle
+    - Heading levels (checkboxes for h1-h6)
+    - Nesting mode (radio buttons)
+    - Recognition mode (radio buttons)
+    - Enabled toggle
 4. Save
 
 **Example Custom Tags:**
 
-| Custom Tag | Configuration | Use Case |
-|------------|---------------|----------|
-| `#quick-facts` | h3, flat, all | Short fact cards |
-| `#deep-dive` | h2-h4, nested, qa | Detailed study cards |
-| `#review` | h2, nested, all | Review all sections |
+| Custom Tag     | Configuration     | Use Case             |
+| -------------- | ----------------- | -------------------- |
+| `#quick-facts` | h3, flat, all     | Short fact cards     |
+| `#deep-dive`   | h2-h4, nested, qa | Detailed study cards |
+| `#review`      | h2, nested, all   | Review all sections  |
 
 ## Examples
 
@@ -281,12 +311,15 @@ Create your own tags with specific configurations:
 # JavaScript Basics
 
 ## What is a closure?
+
 A closure is a function that has access to variables in its outer scope.
 
 ## What is hoisting?
+
 Hoisting is JavaScript's behavior of moving declarations to the top.
 
 ## Event Loop
+
 (No flashcard - no question mark)
 ```
 
@@ -300,25 +333,30 @@ Hoisting is JavaScript's behavior of moving declarations to the top.
 # Web Development
 
 ## What is the DOM?
+
 The Document Object Model is a programming interface for HTML documents.
 
 ### DOM Methods
-- getElementById()
-- querySelector()
-- createElement()
+
+-   getElementById()
+-   querySelector()
+-   createElement()
 
 ### DOM Events
-- click
-- submit
-- load
+
+-   click
+-   submit
+-   load
 
 ## What is AJAX?
+
 AJAX allows web pages to update asynchronously.
 ```
 
 **Result**: 2 flashcards
-- Card 1: "What is the DOM?" with all nested content
-- Card 2: "What is AJAX?" with its content
+
+-   Card 1: "What is the DOM?" with all nested content
+-   Card 2: "What is AJAX?" with its content
 
 ### Example 3: Flat Mode for Concise Cards
 
@@ -326,15 +364,19 @@ AJAX allows web pages to update asynchronously.
 #flashcard/h2/flat
 
 ## What is CSS?
+
 CSS stands for Cascading Style Sheets.
 
 ### Selectors
+
 (Not included in answer)
 
 ## What is Flexbox?
+
 Flexbox is a CSS layout module.
 
 ### Properties
+
 (Not included in answer)
 ```
 
@@ -348,6 +390,7 @@ Header-based flashcards work alongside existing formats:
 #flashcard/h2
 
 ## What is Vue.js?
+
 Vue is a progressive JavaScript framework.
 
 Inline card: Creator of Vue::Evan You
@@ -357,13 +400,15 @@ How to install Vue?
 npm install vue
 
 ## Why use Vue?
+
 Vue has a gentle learning curve and excellent documentation.
 ```
 
 **Result**: 4 flashcards
-- 2 header-based cards (h2 with `?`)
-- 1 inline card (`::` format)
-- 1 multiline card (`?` separator format)
+
+-   2 header-based cards (h2 with `?`)
+-   1 inline card (`::` format)
+-   1 multiline card (`?` separator format)
 
 ### Example 5: Multiple Heading Levels
 
@@ -373,15 +418,19 @@ Vue has a gentle learning curve and excellent documentation.
 # Programming Concepts
 
 ## What is recursion?
+
 Recursion is when a function calls itself.
 
 ### What is base case?
+
 The base case stops the recursion.
 
 ### What is recursive case?
+
 The recursive case continues the recursion.
 
 ## What is iteration?
+
 Iteration is repeating a process.
 ```
 
@@ -395,12 +444,15 @@ Iteration is repeating a process.
 # Data Structures
 
 ## Arrays
+
 Ordered collections of elements.
 
 ## Linked Lists
+
 Nodes connected by pointers.
 
 ## Trees
+
 Hierarchical data structures.
 ```
 
@@ -425,22 +477,29 @@ This helps you understand the context of each question, especially in large note
 The parser automatically ignores headings inside:
 
 **Code Blocks:**
+
 ```markdown
 ## What is Markdown?
+
 Markdown is a lightweight markup language.
 
 \`\`\`markdown
+
 ## This heading is ignored
+
 It's inside a code block.
 \`\`\`
 ```
 
 **Blockquotes:**
+
 ```markdown
 ## What is a quote?
+
 A quote is cited text.
 
 > ## This heading is ignored
+>
 > It's inside a blockquote.
 ```
 
@@ -454,6 +513,7 @@ If a heading has no content before the next heading, a flashcard is still create
 ## What needs more research?
 
 ## What is completed?
+
 This has content.
 ```
 
@@ -466,10 +526,7 @@ Leading and trailing whitespace in answers is automatically trimmed:
 ```markdown
 ## What is JavaScript?
 
-
 JavaScript is a programming language.
-
-
 ```
 
 The answer will be cleanly formatted without extra blank lines.
@@ -479,21 +536,23 @@ The answer will be cleanly formatted without extra blank lines.
 ### Works With Existing Formats
 
 Header-based flashcards are fully compatible with:
-- **Inline cards**: `Question::Answer`
-- **Multiline cards**: Question, `?` on separate line, Answer
-- **Cloze deletions**: `{{c1::text}}`
+
+-   **Inline cards**: `Question::Answer`
+-   **Multiline cards**: Question, `?` on separate line, Answer
+-   **Cloze deletions**: `{{c1::text}}`
 
 All formats can coexist in the same note.
 
 ### Backward Compatibility
 
-- Existing notes without header-based tags are unaffected
-- All existing flashcard functionality remains unchanged
-- The feature is opt-in via tags or settings
+-   Existing notes without header-based tags are unaffected
+-   All existing flashcard functionality remains unchanged
+-   The feature is opt-in via tags or settings
 
 ### Migration
 
 No migration is needed. Simply:
+
 1. Enable the feature in settings (if desired)
 2. Add appropriate tags to notes where you want header-based cards
 3. Existing cards continue working as before
@@ -508,9 +567,11 @@ Choose a heading level for questions and stick to it within a note:
 #flashcard/h2
 
 ## Question 1?
+
 Answer 1
 
 ## Question 2?
+
 Answer 2
 ```
 
@@ -522,12 +583,15 @@ Use nested mode when answers have multiple parts:
 #flashcard/h2/nested
 
 ## What are the SOLID principles?
+
 SOLID is an acronym for five design principles.
 
 ### Single Responsibility
+
 Each class should have one responsibility.
 
 ### Open/Closed
+
 Open for extension, closed for modification.
 
 (etc.)
@@ -541,9 +605,11 @@ Use flat mode for simple, concise flashcards:
 #flashcard/h2/flat
 
 ## Capital of France?
+
 Paris
 
 ## Capital of Germany?
+
 Berlin
 ```
 
@@ -554,15 +620,17 @@ Enable context display for large notes with many topics to maintain orientation 
 ### 5. Create Custom Tags for Different Study Types
 
 Set up custom tags for different learning scenarios:
-- `#quick-review` for rapid recall
-- `#deep-study` for comprehensive understanding
-- `#exam-prep` for test preparation
+
+-   `#quick-review` for rapid recall
+-   `#deep-study` for comprehensive understanding
+-   `#exam-prep` for test preparation
 
 ## Troubleshooting
 
 ### Cards Not Appearing
 
 **Check:**
+
 1. Is the feature enabled in settings?
 2. Does the note have a `#flashcard` tag (or custom tag)?
 3. Do headings end with `?` (in qa mode)?
@@ -571,21 +639,24 @@ Set up custom tags for different learning scenarios:
 ### Too Many/Few Cards Created
 
 **Adjust:**
-- Use `#flashcard/qa` to only create cards from headings with `?`
-- Use `#flashcard/all` to create cards from all headings
-- Specify exact heading levels: `#flashcard/h2` instead of `#flashcard/h1-h6`
+
+-   Use `#flashcard/qa` to only create cards from headings with `?`
+-   Use `#flashcard/all` to create cards from all headings
+-   Specify exact heading levels: `#flashcard/h2` instead of `#flashcard/h1-h6`
 
 ### Answers Too Long/Short
 
 **Adjust:**
-- Use `#flashcard/flat` for shorter answers (stops at subheadings)
-- Use `#flashcard/nested` for longer answers (includes subheadings)
+
+-   Use `#flashcard/flat` for shorter answers (stops at subheadings)
+-   Use `#flashcard/nested` for longer answers (includes subheadings)
 
 ### Context Not Showing
 
 **Check:**
-- Is "Show Context" enabled in settings?
-- Context only appears for header-based cards, not inline/multiline cards
+
+-   Is "Show Context" enabled in settings?
+-   Context only appears for header-based cards, not inline/multiline cards
 
 ## FAQ
 
@@ -614,12 +685,12 @@ A: Headings that match your configuration (level + mode) will become cards. In q
 
 Header-based flashcards provide a natural, structured way to create study materials:
 
-- ✅ Use headings as questions
-- ✅ Content below becomes the answer
-- ✅ Flexible configuration via tags
-- ✅ Works with existing card formats
-- ✅ Optional context display
-- ✅ Customizable via settings
+-   ✅ Use headings as questions
+-   ✅ Content below becomes the answer
+-   ✅ Flexible configuration via tags
+-   ✅ Works with existing card formats
+-   ✅ Optional context display
+-   ✅ Customizable via settings
 
 Start simple with `#flashcard/h2` and expand as needed!
 

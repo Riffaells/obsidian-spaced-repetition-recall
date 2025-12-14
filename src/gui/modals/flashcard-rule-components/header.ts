@@ -1,202 +1,119 @@
 import { Setting } from "obsidian";
-import { FlashcardTagRule } from "src/parser/header-based/types";
-import { renderCommonSettings } from "./common";
-import { renderButtons } from "./buttons";
+import { HeaderRule } from "src/parser/rule-based/types";
 import { t } from "src/lang/helpers";
 
 export function renderHeaderTab(
     containerEl: HTMLElement,
-    rule: FlashcardTagRule,
-    onSave: () => void,
-    onCancel: () => void,
-    isEditMode: boolean
+    rule: HeaderRule,
+    onUpdate: () => void,
 ): void {
-    if (!rule.headerRules) {
-        rule.headerRules = {
-            headingLevels: [2],
-            nestingMode: "nested",
-            cardMode: "qa",
-            qaSeparator: "?",
-            selectors: [], // default value
-            includeParents: 1, // default value
+    rule.type = "header";
+    if (!rule.config) {
+        rule.config = {
+            selection: {
+                levels: [],
+                strictPriority: false,
+            },
+            content: {
+                scope: "full-section",
+                includeSubheaders: true,
+                stripTags: false,
+            },
+        };
+    }
+    if (!rule.config.selection) {
+        rule.config.selection = {
+            levels: [],
+            strictPriority: false,
+        };
+    }
+    if (!rule.config.content) {
+        rule.config.content = {
+            scope: "full-section",
+            includeSubheaders: true,
+            stripTags: false,
         };
     }
 
-    renderCommonSettings(containerEl, rule);
+    const section = containerEl.createDiv("sr-rule-section");
 
-    const section = containerEl.createDiv("rule-modal-section");
-    section.createEl("h3", { text: t("SETTINGS_MODAL_SECTION_HEADER") });
+    // --- Selection Settings ---
+    section.createEl("h3", { text: "Selection Settings" });
 
     // Heading Levels
-    const levelsSetting = new Setting(section)
+    new Setting(section)
         .setName(t("HEADING_LEVELS"))
-        .setDesc(t("HEADING_LEVELS_DESC"));
+        .setDesc(t("HEADING_LEVELS_DESC"))
+        .addText((text) => {
+            text.inputEl.style.display = "none";
+        });
 
-    const levelsContainer = levelsSetting.controlEl.createDiv();
-    levelsContainer.style.display = "flex";
-    levelsContainer.style.gap = "8px";
-    
-    for (let level = 1; level <= 6; level++) {
+    const levelsContainer = section.createDiv("sr-heading-levels");
+    [1, 2, 3, 4, 5, 6].forEach((level) => {
+        const checkbox = levelsContainer.createEl("input", {
+            type: "checkbox",
+            attr: { "data-level": level },
+        });
+        checkbox.checked = rule.config.selection.levels.includes(level);
+
         const label = levelsContainer.createEl("label");
-        label.style.display = "flex";
-        label.style.alignItems = "center";
-        label.style.gap = "4px";
+        label.textContent = `H${level}`;
+        label.prepend(checkbox);
 
-        const checkbox = label.createEl("input", { type: "checkbox" });
-        checkbox.checked = rule.headerRules.headingLevels.includes(level);
-        checkbox.setAttribute("data-level", String(level));
         checkbox.addEventListener("change", () => {
-            const levelStr = checkbox.getAttribute("data-level");
-            if (levelStr) {
-                const levelNum = parseInt(levelStr);
-                if (checkbox.checked) {
-                    if (!rule.headerRules.headingLevels.includes(levelNum)) {
-                        rule.headerRules.headingLevels.push(levelNum);
-                        rule.headerRules.headingLevels.sort();
-                    }
-                } else {
-                    rule.headerRules.headingLevels = rule.headerRules.headingLevels.filter(
-                        (l) => l !== levelNum
-                    );
+            if (checkbox.checked) {
+                if (!rule.config.selection.levels.includes(level)) {
+                    rule.config.selection.levels.push(level);
                 }
+            } else {
+                rule.config.selection.levels = rule.config.selection.levels.filter(
+                    (l) => l !== level,
+                );
             }
         });
+    });
 
-        label.createSpan({ text: `H${level}` });
-    }
-
-    // Nesting Mode
+    // Strict Priority
     new Setting(section)
-        .setName(t("NESTING_MODE"))
+        .setName("Strict Priority")
+        .setDesc("Prioritize higher heading levels (e.g. if H1 exists, ignore H2)")
+        .addToggle((toggle) => {
+            toggle.setValue(rule.config.selection.strictPriority);
+            toggle.onChange((v) => (rule.config.selection.strictPriority = v));
+        });
+
+    // --- Content Settings ---
+    section.createEl("h3", { text: "Content Settings" });
+
+    // Scope
+    new Setting(section)
+        .setName("Content Scope")
+        .setDesc("How much content to include in the flashcard answer")
         .addDropdown((dropdown) => {
             dropdown
-                .addOption("nested", t("NESTING_MODE_NESTED"))
-                .addOption("flat", t("NESTING_MODE_FLAT"))
-                .setValue(rule.headerRules.nestingMode)
-                .onChange((value) => {
-                    rule.headerRules.nestingMode = value as any;
+                .addOption("full-section", "Full Section (until next header)")
+                .addOption("first-paragraph", "First Paragraph Only")
+                .setValue(rule.config.content.scope)
+                .onChange((v: "full-section" | "first-paragraph") => {
+                    rule.config.content.scope = v;
                 });
         });
 
-    // Card Mode
+    // Include Subheaders
     new Setting(section)
-        .setName(t("CARD_MODE"))
-        .addDropdown((dropdown) => {
-            dropdown
-                .addOption("qa", t("CARD_MODE_QA"))
-                .addOption("visual", t("CARD_MODE_VISUAL"))
-                .addOption("cloze", t("CARD_MODE_CLOZE"))
-                .addOption("all", t("CARD_MODE_ALL"))
-                .setValue(rule.headerRules.cardMode)
-                .onChange((value) => {
-                    rule.headerRules.cardMode = value as any;
-                });
+        .setName("Include Subheaders")
+        .setDesc("Include content from subsections in the answer")
+        .addToggle((toggle) => {
+            toggle.setValue(rule.config.content.includeSubheaders);
+            toggle.onChange((v) => (rule.config.content.includeSubheaders = v));
         });
-        
-    // QA Separator
+
+    // Strip Tags
     new Setting(section)
-        .setName(t("QA_SEPARATOR"))
-        .addText((text) => {
-            text.setValue(rule.headerRules.qaSeparator);
-            text.onChange((value) => {
-                rule.headerRules.qaSeparator = value;
-            });
+        .setName("Strip Tags")
+        .setDesc("Remove HTML/Markdown tags from the output")
+        .addToggle((toggle) => {
+            toggle.setValue(rule.config.content.stripTags);
+            toggle.onChange((v) => (rule.config.content.stripTags = v));
         });
-
-    // Positional Selectors
-    const selectorsSetting = new Setting(section)
-        .setName(t("POSITIONAL_SELECTORS"))
-        .setDesc(t("POSITIONAL_SELECTORS_DESC"));
-
-    const selectorsContainer = selectorsSetting.controlEl.createDiv("sr-selectors-container");
-    selectorsContainer.style.display = "flex";
-    selectorsContainer.style.flexDirection = "column";
-    selectorsContainer.style.gap = "8px";
-    selectorsContainer.style.width = "100%";
-
-    const renderSelectors = () => {
-        selectorsContainer.empty();
-        
-        if (!rule.headerRules.selectors) {
-            rule.headerRules.selectors = [];
-        }
-
-        rule.headerRules.selectors.forEach((selector, index) => {
-            const row = selectorsContainer.createDiv("sr-selector-row");
-            row.style.display = "flex";
-            row.style.gap = "8px";
-            row.style.alignItems = "center";
-
-            // Type Select
-            const typeSelect = row.createEl("select");
-            typeSelect.addClass("dropdown");
-            ["first", "last", "nth", "nthFromEnd"].forEach(type => {
-                const option = typeSelect.createEl("option", { text: type, value: type });
-                option.selected = selector.type === type;
-            });
-            typeSelect.onchange = () => {
-                const newType = typeSelect.value as any;
-                if (newType === "nth" || newType === "nthFromEnd") {
-                    // preserve value as index/offset if possible, else default to 1/0
-                    const val = 'count' in selector ? selector.count : ('index' in selector ? selector.index : selector.offset);
-                    if (newType === "nth") rule.headerRules.selectors[index] = { type: "nth", index: val || 1 };
-                    else rule.headerRules.selectors[index] = { type: "nthFromEnd", offset: val || 0 };
-                } else {
-                    const val = 'index' in selector ? selector.index : ('offset' in selector ? selector.offset : selector.count);
-                    rule.headerRules.selectors[index] = { type: newType, count: val || 1 };
-                }
-                renderSelectors();
-            };
-
-            // Value Input
-            const valueInput = row.createEl("input", { type: "number" });
-            valueInput.style.width = "60px";
-            
-            let value = 0;
-            if (selector.type === "first" || selector.type === "last") value = selector.count;
-            else if (selector.type === "nth") value = selector.index;
-            else if (selector.type === "nthFromEnd") value = selector.offset;
-            
-            valueInput.value = String(value);
-            valueInput.onchange = () => {
-                const val = parseInt(valueInput.value);
-                if (selector.type === "first" || selector.type === "last") selector.count = val;
-                else if (selector.type === "nth") selector.index = val;
-                else if (selector.type === "nthFromEnd") selector.offset = val;
-            };
-
-            // Delete Button
-            const deleteBtn = row.createEl("button");
-            deleteBtn.textContent = "X";
-            deleteBtn.onclick = () => {
-                rule.headerRules.selectors.splice(index, 1);
-                renderSelectors();
-            };
-        });
-
-        // Add Button
-        const addBtn = selectorsContainer.createEl("button");
-        addBtn.textContent = "+ " + t("ADD_SELECTOR");
-        addBtn.onclick = () => {
-            rule.headerRules.selectors.push({ type: "first", count: 1 });
-            renderSelectors();
-        };
-    };
-
-    renderSelectors();
-
-    // Include Parents
-    new Setting(section)
-        .setName(t("INCLUDE_PARENTS"))
-        .setDesc(t("INCLUDE_PARENTS_DESC"))
-        .addText((text) => {
-            text.setValue(String(rule.headerRules.includeParents ?? 1));
-            text.inputEl.type = "number";
-            text.inputEl.min = "-1";
-            text.onChange((value) => {
-                rule.headerRules.includeParents = parseInt(value) || 0;
-            });
-        });
-
-    renderButtons(containerEl, onSave, onCancel, isEditMode);
 }

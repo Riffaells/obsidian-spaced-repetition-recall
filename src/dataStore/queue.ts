@@ -1,9 +1,9 @@
-import { isArray } from "src/util/utils_recall";
+import { isArray } from "src/utils/utils_recall";
 import { DataStore } from "./data";
 import { TrackedFile } from "./trackedFile";
 import { RepetitionItem } from "./repetitionItem";
-import { getKeysPreserveType } from "src/util/utils";
-import { globalDateProvider } from "src/util/DateProvider";
+import { getKeysPreserveType } from "src/utils/utils";
+import { globalDateProvider } from "src/utils/DateProvider";
 
 export interface IQueue {
     /**
@@ -189,28 +189,27 @@ export class Queue implements IQueue {
         );
         const validItems = store.items.filter((item) => item != null && item.isTracked);
 
-        for (const item1 of validItems
-            .filter((item) => !item.isCard)) {
-                // note Queue
-                if (item1.isNew) {
-                    // This is a new item.
-                    if (maxNew == -1 || newAdd < maxNew) {
-                        // data.newAdded += 1;
-                        newAdd += this.push(this.queue[KEY_ALL], item1.ID);
-                    }
-                } else {
-                    this.InitQIfMissing(item1.deckName, this.queue);
-                    if (item1.nextReview <= now.getTime()) {
-                        this.remove(item1, this.repeatQueue);
-                        oldAdd += this.push(this.queue[KEY_ALL], item1.ID);
-                    } else if (
-                        newDayFlag &&
-                        item1.nextReview <= globalDateProvider.endofToday.valueOf()
-                    ) {
-                        this.push(this.queue[item1.deckName], item1.ID);
-                    }
+        for (const item1 of validItems.filter((item) => !item.isCard)) {
+            // note Queue
+            if (item1.isNew) {
+                // This is a new item.
+                if (maxNew == -1 || newAdd < maxNew) {
+                    // data.newAdded += 1;
+                    newAdd += this.push(this.queue[KEY_ALL], item1.ID);
+                }
+            } else {
+                this.InitQIfMissing(item1.deckName, this.queue);
+                if (item1.nextReview <= now.getTime()) {
+                    this.remove(item1, this.repeatQueue);
+                    oldAdd += this.push(this.queue[KEY_ALL], item1.ID);
+                } else if (
+                    newDayFlag &&
+                    item1.nextReview <= globalDateProvider.endOfToday.valueOf()
+                ) {
+                    this.push(this.queue[item1.deckName], item1.ID);
                 }
             }
+        }
 
         this.lastQueue = now.getTime();
         // if (this.settings.shuffleQueue && oldAdd + newAdd > 0) {
@@ -326,7 +325,7 @@ export class Queue implements IQueue {
             // update this.toDayLaterQueue
             const store = DataStore.getInstance();
             delete this.toDayLaterQueue[item.ID];
-            if (item.nextReview <= globalDateProvider.endofToday.valueOf()) {
+            if (item.nextReview <= globalDateProvider.endOfToday.valueOf()) {
                 this.toDayLaterQueue[item.ID] = item.deckName;
             }
             getKeysPreserveType(this.toDayLaterQueue)

@@ -3,10 +3,10 @@
  */
 
 import { setIcon } from "obsidian";
-import { FlashcardTagRule } from "src/parser/header-based/types";
+import { FlashcardRule } from "src/parser/rule-based/types";
 
 interface RuleItemProps {
-    rule: FlashcardTagRule;
+    rule: FlashcardRule;
     onEdit: () => void;
     onDelete: () => void;
     onToggle: (enabled: boolean) => void;
@@ -34,21 +34,18 @@ export function createRuleItem(containerEl: HTMLElement, props: RuleItemProps): 
 
     // Header with name and tag
     const headerEl = infoEl.createDiv({ cls: "rule-header" });
-    
+
     const nameEl = headerEl.createSpan({ cls: "rule-name" });
     nameEl.textContent = rule.name;
 
     const tagEl = headerEl.createSpan({ cls: "rule-tag" });
-    tagEl.textContent = rule.tagExact || rule.tagPattern || "";
+    tagEl.textContent = rule.tagPattern || "";
 
     // Details
     const detailsEl = infoEl.createDiv({ cls: "rule-details" });
 
     // Source badge
-    let sourceType = "inline";
-    if (rule.headerRules) sourceType = "header";
-    else if (rule.multilineRules) sourceType = "multiline";
-    else if (rule.clozeRules) sourceType = "cloze";
+    const sourceType = rule.type;
 
     const sourceBadge = detailsEl.createSpan({ cls: `rule-badge rule-badge-${sourceType}` });
     sourceBadge.textContent = sourceType.toUpperCase();
@@ -89,35 +86,23 @@ export function createRuleItem(containerEl: HTMLElement, props: RuleItemProps): 
 /**
  * Get human-readable configuration text
  */
-function getConfigurationText(rule: FlashcardTagRule): string {
+function getConfigurationText(rule: FlashcardRule): string {
     const details: string[] = [];
 
-    if (rule.headerRules) {
-        const hr = rule.headerRules;
-        details.push(`Levels: ${hr.headingLevels.map((l) => `h${l}`).join(", ")}`);
-        details.push(`Mode: ${hr.cardMode}`);
-        details.push(`Nesting: ${hr.nestingMode}`);
-        if (hr.selectors.length > 0) {
-            const selectorText = hr.selectors.map(s => {
-                if (s.type === "first" || s.type === "last") return `${s.type}(${s.count})`;
-                if (s.type === "nth") return `nth(${s.index})`;
-                if (s.type === "nthFromEnd") return `nthFromEnd(${s.offset})`;
-                return "";
-            }).join(", ");
-            details.push(`Selectors: [${selectorText}]`);
-        }
-        if (hr.includeParents > 0) {
-            details.push(`Context: ${hr.includeParents} parent(s)`);
-        }
-    } else if (rule.inlineRules) {
-        details.push(`Separator: "${rule.inlineRules.separator}"`);
-    } else if (rule.multilineRules) {
-        details.push(`Separator: "${rule.multilineRules.separator}"`);
-        if (rule.multilineRules.endMarker) {
-            details.push(`End: "${rule.multilineRules.endMarker}"`);
-        }
-    } else if (rule.clozeRules) {
-        details.push(`Patterns: ${rule.clozeRules.patterns.length}`);
+    if (rule.type === "header") {
+        const conf = rule.config;
+        details.push(`Levels: ${conf.selection.levels.map((l) => `h${l}`).join(", ")}`);
+        details.push(`Scope: ${conf.content.scope}`);
+        if (conf.selection.strictPriority) details.push("Strict Priority");
+    } else if (rule.type === "inline") {
+        const conf = rule.config;
+        details.push(`Separator: "${conf.separator}"`);
+        if (conf.startOfLineOnly) details.push("Start of Line");
+        if (conf.cloze?.enabled) details.push(`Cloze Patterns: ${conf.cloze.patterns?.length || 0}`);
+    } else if (rule.type === "multiline") {
+        const conf = rule.config;
+        details.push(`Question: "${conf.questionLinePattern}"`);
+        details.push(`Stop: ${conf.stopCondition.type}`);
     }
 
     return details.join(" • ");

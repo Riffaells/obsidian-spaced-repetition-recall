@@ -1,8 +1,8 @@
 import type SRPlugin from "src/main";
-import { Card } from "src/Card";
-import { Deck } from "src/Deck";
-import { FlashcardReviewMode } from "src/FlashcardReviewSequencer";
-import { MarkdownFormatter } from "src/util/markdown-formatter";
+import { Card } from "src/core/models/Card";
+import { Deck } from "src/core/models/Deck";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewSequencer";
+import { MarkdownFormatter } from "src/utils/markdown-formatter";
 
 export class CardGroupComponent {
     private plugin: SRPlugin;
@@ -127,7 +127,8 @@ export class CardGroupComponent {
 
         // Card icon
         const cardIcon = cardEl.createDiv("sr-card-icon");
-        cardIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>`;
+        cardIcon.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>';
 
         // Card content
         const cardContent = cardEl.createDiv("sr-card-content-wrapper");
@@ -156,8 +157,6 @@ export class CardGroupComponent {
         return cardEl;
     }
 
-
-
     private async openCardReview(card: Card): Promise<void> {
         await this.plugin.sync();
 
@@ -169,17 +168,13 @@ export class CardGroupComponent {
             await this.plugin.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
         } else {
             // Use the plugin's method to open flashcard modal
-            (this.plugin as any).openFlashcardModal(
-                rootDeck,
-                rootDeck,
-                FlashcardReviewMode.Review,
-            );
+            (this.plugin as any).openFlashcardModal(rootDeck, rootDeck, FlashcardReviewMode.Review);
         }
     }
 
     private createSingleCardDeck(card: Card): Deck {
         const tempDeck = new Deck(this.deck.deckName, null);
-        
+
         // Add card to appropriate list based on status
         if (card.isDue || card.scheduleInfo) {
             tempDeck.dueFlashcards.push(card);

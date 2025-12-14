@@ -2,7 +2,7 @@ import { Setting } from "obsidian";
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
 import { setDebugParser } from "src/parser";
-import { buildDonation } from "src/settings/donation";
+import { buildDonation } from "../../settings-views/donation";
 
 export class HelpTab {
     static async render(containerEl: HTMLElement, plugin: SRPlugin): Promise<void> {

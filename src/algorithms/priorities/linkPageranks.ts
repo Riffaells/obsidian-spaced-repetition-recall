@@ -1,7 +1,7 @@
 import { MetadataCache, TFile } from "obsidian";
-import { NoteEaseList } from "src/NoteEaseList";
+import { NoteEaseList } from "src/core/scheduling/NoteEaseList";
 import * as graph from "pagerank.js";
-import { SRSettings } from "src/settings";
+import { SRSettings } from "src/settings/settings";
 import { IAdapter } from "src/dataStore/adapter";
 
 export interface LinkStat {

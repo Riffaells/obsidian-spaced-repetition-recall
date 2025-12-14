@@ -1,12 +1,12 @@
 import { Notice, Setting, App } from "obsidian";
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
-import { DEFAULT_SETTINGS } from "src/settings";
+import { DEFAULT_SETTINGS } from "src/settings/settings";
 import { SRSettingTab } from "src/gui/settings/SettingsTab";
-import { addmixQueueSetting } from "src/settings/mixQueueSetting";
-import { addTrackedNoteToDecksSetting, addUntrackSetting } from "src/settings/trackSetting";
-import { addResponseFloatBarSetting } from "src/settings/responseBarSetting";
-import { addReviewNoteDirectlySetting } from "src/settings/reviewNoteDirectlySetting";
+import { addmixQueueSetting } from "../../settings-views/mixQueueSetting";
+import { addTrackedNoteToDecksSetting, addUntrackSetting } from "../../settings-views/trackSetting";
+import { addResponseFloatBarSetting } from "../../settings-views/responseBarSetting";
+import { addReviewNoteDirectlySetting } from "../../settings-views/reviewNoteDirectlySetting";
 import { applySettingsUpdate } from "../utils";
 import { createFoldersToIgnoreSetting } from "../components/FoldersToIgnoreSetting";
 import { createTagsManager } from "../components/TagsManager";
@@ -70,14 +70,16 @@ export class NotesTab {
 
         new Setting(containerEl)
             .setName("Show Compact Review Buttons" as any)
-            .setDesc("Show compact fruit-themed review buttons (🍎 Hard, 🍌 Good, 🍒 Easy) in notes that are due for review" as any)
+            .setDesc(
+                "Show compact fruit-themed review buttons (🍎 Hard, 🍌 Good, 🍒 Easy) in notes that are due for review" as any,
+            )
             .addToggle((toggle) =>
                 toggle
                     .setValue(plugin.data.settings.showCompactReviewButtons)
                     .onChange(async (value) => {
                         plugin.data.settings.showCompactReviewButtons = value;
                         await plugin.savePluginData();
-                        
+
                         // Refresh buttons immediately
                         if (value) {
                             await plugin.noteReviewManager.refreshAllButtons();
@@ -90,7 +92,9 @@ export class NotesTab {
         if (plugin.data.settings.showCompactReviewButtons) {
             new Setting(containerEl)
                 .setName("Collapse Buttons by Default" as any)
-                .setDesc("Start with review buttons collapsed (can be expanded with chevron)" as any)
+                .setDesc(
+                    "Start with review buttons collapsed (can be expanded with chevron)" as any,
+                )
                 .addToggle((toggle) =>
                     toggle
                         .setValue(plugin.data.settings.compactReviewButtonsCollapsed ?? false)
@@ -111,7 +115,11 @@ export class NotesTab {
                         .addOption("bottom-left", "Bottom Left")
                         .setValue(plugin.data.settings.compactReviewButtonsPosition || "top-right")
                         .onChange(async (value) => {
-                            plugin.data.settings.compactReviewButtonsPosition = value as "top-right" | "top-left" | "bottom-right" | "bottom-left";
+                            plugin.data.settings.compactReviewButtonsPosition = value as
+                                | "top-right"
+                                | "top-left"
+                                | "bottom-right"
+                                | "bottom-left";
                             await plugin.savePluginData();
                             await plugin.noteReviewManager.refreshAllButtons();
                         }),

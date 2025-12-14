@@ -6,7 +6,7 @@ import { DataStore } from "src/dataStore/data";
 import { RepetitionItem } from "src/dataStore/repetitionItem";
 import { TrackedFile } from "src/dataStore/trackedFile";
 import SRPlugin from "src/main";
-import { SRSettings } from "src/settings";
+import { SRSettings } from "src/settings/settings";
 import { t } from "src/lang/helpers";
 
 export class ItemInfoModal extends Modal {

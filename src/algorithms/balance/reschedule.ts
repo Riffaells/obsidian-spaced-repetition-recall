@@ -1,5 +1,5 @@
 import { RepetitionItem } from "src/dataStore/repetitionItem";
-import { debug } from "src/util/utils_recall";
+import { debug } from "src/utils/utils_recall";
 import { SrsAlgorithm } from "../algorithms";
 import { FsrsAlgorithm, FsrsData } from "../fsrs";
 
@@ -40,7 +40,7 @@ function reschedule_fsrs(items: RepetitionItem[]) {
     items.map((item) => {
         if (!item.isTracked) return;
         const data = item.data as FsrsData;
-        const newitvl = fsrs.next_interval(data.stability);
+        const newitvl = fsrs.next_interval(data.stability, (SrsAlgorithm.getInstance() as FsrsAlgorithm).settings.request_retention);
         if (newitvl !== data.scheduled_days) {
             reCnt++;
             item.updateDueByInterval(newitvl);

@@ -17,14 +17,14 @@ import {
 } from "chart.js";
 
 import type SRPlugin from "src/main";
-import { getKeysPreserveType, getTypedObjectEntries } from "src/util/utils";
-import { textInterval } from "src/scheduling";
+import { getKeysPreserveType, getTypedObjectEntries } from "src/utils/utils";
+import { textInterval } from "src/core/scheduling/scheduling";
 import { t } from "src/lang/helpers";
 import { ReviewedCounts } from "src/dataStore/data";
 import { State } from "ts-fsrs";
 import { algorithmNames } from "src/algorithms/algorithms";
-import { Stats } from "src/stats";
-import { CardListType } from "src/Deck";
+import { Stats } from "src/core/services/stats";
+import { CardListType } from "src/core/models/Deck";
 import { RPITEMTYPE } from "src/dataStore/repetitionItem";
 
 Chart.register(
@@ -111,8 +111,8 @@ export class StatsModal extends Modal {
             if (chartType === RPITEMTYPE.NOTE) {
                 this.createCharts(
                     this.plugin.store.getReviewedCounts(),
-                    this.plugin.noteStats,
-                    this.plugin.noteStats.getTotalCount(CardListType.All),
+                    this.plugin.reviewManager.noteStats,
+                    this.plugin.reviewManager.noteStats.getTotalCount(CardListType.All),
                 );
                 return;
             } else {

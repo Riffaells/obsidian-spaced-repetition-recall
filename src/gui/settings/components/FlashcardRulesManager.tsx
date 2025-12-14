@@ -5,7 +5,7 @@
 
 import { ButtonComponent, Notice } from "obsidian";
 import type SRPlugin from "src/main";
-import { FlashcardTagRule } from "src/parser/header-based/types";
+import { FlashcardRule } from "src/parser/rule-based/types";
 import { FlashcardRuleModal } from "src/gui/modals/FlashcardRuleModal";
 
 import { createInfoSection } from "./InfoSection";
@@ -15,10 +15,7 @@ import { t } from "src/lang/helpers";
 /**
  * Main rules manager component
  */
-export function createFlashcardRulesManager(
-    containerEl: HTMLElement,
-    plugin: SRPlugin,
-): void {
+export function createFlashcardRulesManager(containerEl: HTMLElement, plugin: SRPlugin): void {
     // Info section at the top
     createInfoSection(containerEl, {
         title: t("FLASHCARD_RULES_MANAGER_TITLE"),
@@ -52,12 +49,18 @@ export function createFlashcardRulesManager(
         .setButtonText(t("ADD_RULE_BUTTON"))
         .setCta()
         .onClick(() => {
-            const defaultRule: FlashcardTagRule = {
+            const defaultRule: FlashcardRule = {
                 id: `rule-${Date.now()}`,
                 name: "",
                 enabled: true,
                 priority: 0,
-                tagExact: "#flashcards",
+                tagPattern: "^#flashcards$",
+                type: "inline",
+                config: {
+                    separator: "::",
+                    separatorReverse: ":::",
+                    startOfLineOnly: false,
+                },
             };
             openRuleModal(plugin, defaultRule, false, rulesListEl);
         });
@@ -73,7 +76,7 @@ export function createFlashcardRulesManager(
 function renderRulesList(containerEl: HTMLElement, plugin: SRPlugin): void {
     containerEl.empty();
 
-    const rules = plugin.data.settings.flashcardTagRules;
+    const rules = plugin.data.settings.flashcardRules;
 
     if (!rules || rules.length === 0) {
         const emptyMsg = containerEl.createDiv({ cls: "flashcard-rules-empty" });
@@ -82,7 +85,7 @@ function renderRulesList(containerEl: HTMLElement, plugin: SRPlugin): void {
     }
 
     // Group rules by source type (single pass)
-    const rulesBySource: Record<string, FlashcardTagRule[]> = {
+    const rulesBySource: Record<string, FlashcardRule[]> = {
         inline: [],
         header: [],
         multiline: [],
@@ -90,23 +93,32 @@ function renderRulesList(containerEl: HTMLElement, plugin: SRPlugin): void {
     };
 
     for (const rule of rules) {
-        if (rule.headerRules) {
+        if (rule.type === "header") {
             rulesBySource.header.push(rule);
-        } else if (rule.multilineRules) {
+        } else if (rule.type === "multiline") {
             rulesBySource.multiline.push(rule);
-        } else if (rule.clozeRules) {
-            rulesBySource.cloze.push(rule);
+        } else if (rule.type === "inline") {
+            // Heuristic: if it has cloze enabled and no separator, treat as cloze-only section
+            if (rule.config?.cloze?.enabled && !rule.config.separator) {
+                rulesBySource.cloze.push(rule);
+            } else {
+                rulesBySource.inline.push(rule);
+            }
         } else {
-            // Default to inline if no specific rules or if inlineRules are present
+            // Fallback
             rulesBySource.inline.push(rule);
         }
     }
 
     // Render sections
-    const sections: Array<{ title: string; rules: FlashcardTagRule[], id: string }> = [
+    const sections: Array<{ title: string; rules: FlashcardRule[]; id: string }> = [
         { title: t("INLINE_RULES_SECTION_TITLE"), rules: rulesBySource.inline, id: "inline" },
         { title: t("HEADER_BASED_RULES_SECTION_TITLE"), rules: rulesBySource.header, id: "header" },
-        { title: t("MULTILINE_RULES_SECTION_TITLE"), rules: rulesBySource.multiline, id: "multiline" },
+        {
+            title: t("MULTILINE_RULES_SECTION_TITLE"),
+            rules: rulesBySource.multiline,
+            id: "multiline",
+        },
         { title: t("CLOZE_RULES_SECTION_TITLE"), rules: rulesBySource.cloze, id: "cloze" },
     ];
 
@@ -130,7 +142,7 @@ function renderRulesList(containerEl: HTMLElement, plugin: SRPlugin): void {
 /**
  * Edit a rule
  */
-function editRule(plugin: SRPlugin, rule: FlashcardTagRule, containerEl: HTMLElement): void {
+function editRule(plugin: SRPlugin, rule: FlashcardRule, containerEl: HTMLElement): void {
     openRuleModal(plugin, rule, true, containerEl);
 }
 
@@ -139,25 +151,25 @@ function editRule(plugin: SRPlugin, rule: FlashcardTagRule, containerEl: HTMLEle
  */
 function openRuleModal(
     plugin: SRPlugin,
-    rule: FlashcardTagRule,
+    rule: FlashcardRule,
     isEditMode: boolean,
     containerEl: HTMLElement,
 ): void {
     const modal = new FlashcardRuleModal(
         plugin.app,
         rule,
-        async (updatedRule: FlashcardTagRule) => {
+        async (updatedRule: FlashcardRule) => {
             if (isEditMode) {
                 // Update existing rule
-                const index = plugin.data.settings.flashcardTagRules.findIndex(
+                const index = plugin.data.settings.flashcardRules.findIndex(
                     (r) => r.id === rule.id,
                 );
                 if (index !== -1) {
-                    plugin.data.settings.flashcardTagRules[index] = updatedRule;
+                    plugin.data.settings.flashcardRules[index] = updatedRule;
                 }
             } else {
                 // Add new rule
-                plugin.data.settings.flashcardTagRules.push(updatedRule);
+                plugin.data.settings.flashcardRules.push(updatedRule);
             }
 
             await plugin.savePluginData();
@@ -182,17 +194,19 @@ function openRuleModal(
  */
 async function deleteRule(
     plugin: SRPlugin,
-    rule: FlashcardTagRule,
+    rule: FlashcardRule,
     containerEl: HTMLElement,
 ): Promise<void> {
-    const confirmed = confirm(t("DELETE_RULE_CONFIRMATION_MSG", {
-        ruleName: rule.name,
-        tag: rule.tagExact || rule.tagPattern,
-    }));
+    const confirmed = confirm(
+        t("DELETE_RULE_CONFIRMATION_MSG", {
+            ruleName: rule.name,
+            tag: rule.tagPattern || "",
+        }),
+    );
 
     if (!confirmed) return;
 
-    plugin.data.settings.flashcardTagRules = plugin.data.settings.flashcardTagRules.filter(
+    plugin.data.settings.flashcardRules = plugin.data.settings.flashcardRules.filter(
         (r) => r.id !== rule.id,
     );
 
@@ -206,14 +220,14 @@ async function deleteRule(
  */
 async function toggleRule(
     plugin: SRPlugin,
-    rule: FlashcardTagRule,
+    rule: FlashcardRule,
     enabled: boolean,
     containerEl: HTMLElement,
 ): Promise<void> {
-    const ruleIndex = plugin.data.settings.flashcardTagRules.findIndex((r) => r.id === rule.id);
+    const ruleIndex = plugin.data.settings.flashcardRules.findIndex((r) => r.id === rule.id);
     if (ruleIndex === -1) return;
 
-    plugin.data.settings.flashcardTagRules[ruleIndex].enabled = enabled;
+    plugin.data.settings.flashcardRules[ruleIndex].enabled = enabled;
     await plugin.savePluginData();
     renderRulesList(containerEl, plugin);
 }

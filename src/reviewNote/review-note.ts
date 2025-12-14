@@ -4,14 +4,14 @@ import { DataStore } from "src/dataStore/data";
 import { DataLocation } from "src/dataStore/dataLocation";
 import { ItemTrans } from "src/dataStore/itemTrans";
 import { t } from "src/lang/helpers";
-import { NoteEaseList } from "src/NoteEaseList";
-import { Decks, ReviewDeck, SchedNote } from "src/ReviewDeck";
-import { ReviewResponse } from "src/scheduling";
-import { SRSettings } from "src/settings";
-import { Tags } from "src/tags";
-import { globalDateProvider } from "src/util/DateProvider";
-import { DateUtils } from "src/util/utils_recall";
-import { SettingsUtil } from "src/settings";
+import { NoteEaseList } from "src/core/scheduling/NoteEaseList";
+import { Decks, ReviewDeck, SchedNote } from "src/core/models/ReviewDeck";
+import { ReviewResponse } from "src/core/scheduling/scheduling";
+import { SRSettings } from "src/settings/settings";
+import { Tags } from "src/utils/tags";
+import { globalDateProvider } from "src/utils/DateProvider";
+import { DateUtils } from "src/utils/utils_recall";
+import { SettingsUtil } from "src/settings/settings";
 
 type Tsync = (notes: TFile[], reviewDecks?: Decks, easeByPath?: NoteEaseList) => Promise<void>;
 export type TrespResult = { sNote: SchedNote; buryList?: string[] };
@@ -149,7 +149,7 @@ export abstract class IReviewNote {
 
     static updateminNextView(mnv: number, nextReview: number): number {
         const now = Date.now();
-        const nowToday: number = globalDateProvider.endofToday.valueOf();
+        const nowToday: number = globalDateProvider.endOfToday.valueOf();
 
         if (nextReview <= nowToday) {
             if (mnv == undefined || mnv < now || mnv > nextReview) {
@@ -256,7 +256,7 @@ export class RNonTrackfiles extends IReviewNote {
 
 export function updatenDays(dueDates: Record<number, number>, dueUnix: number) {
     const nDays: number = Math.ceil(
-        (dueUnix - globalDateProvider.endofToday.valueOf()) / DateUtils.DAYS_TO_MILLIS,
+        (dueUnix - globalDateProvider.endOfToday.valueOf()) / DateUtils.DAYS_TO_MILLIS,
     );
     if (!Object.prototype.hasOwnProperty.call(dueDates, nDays)) {
         dueDates[nDays] = 0;

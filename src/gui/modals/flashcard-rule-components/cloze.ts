@@ -1,19 +1,28 @@
 import { Setting } from "obsidian";
-import { FlashcardTagRule } from "src/parser/header-based/types";
+import { InlineRule } from "src/parser/rule-based/types";
 import { renderCommonSettings } from "./common";
 import { renderButtons } from "./buttons";
 import { t } from "src/lang/helpers";
 
 export function renderClozeTab(
     containerEl: HTMLElement,
-    rule: FlashcardTagRule,
+    rule: InlineRule,
     onSave: () => void,
     onCancel: () => void,
-    isEditMode: boolean
+    isEditMode: boolean,
 ): void {
-    if (!rule.clozeRules) {
-        rule.clozeRules = {
-            patterns: ["==[123;;]answer[;;hint]=="],
+    rule.type = "inline";
+    if (!rule.config) {
+        rule.config = {
+            separator: "::",
+            separatorReverse: ":::",
+            startOfLineOnly: false,
+        };
+    }
+    if (!rule.config.cloze) {
+        rule.config.cloze = {
+            enabled: true,
+            patterns: [],
         };
     }
 
@@ -26,11 +35,17 @@ export function renderClozeTab(
         .setName(t("PATTERNS"))
         .setDesc(t("PATTERNS_DESC"))
         .addTextArea((text) => {
-            text.setValue(rule.clozeRules.patterns.join("\n"));
+            const patterns = rule.config.cloze?.patterns || [];
+            text.setValue(patterns.map((p) => p.pattern).join("\n"));
             text.inputEl.rows = 5;
             text.inputEl.style.width = "100%";
-            text.onChange(v => {
-                rule.clozeRules.patterns = v.split("\n").map(p => p.trim()).filter(p => p.length > 0);
+            text.onChange((v) => {
+                if (!rule.config.cloze) return;
+                rule.config.cloze.patterns = v
+                    .split("\n")
+                    .map((p) => p.trim())
+                    .filter((p) => p.length > 0)
+                    .map((p) => ({ pattern: p }));
             });
         });
 

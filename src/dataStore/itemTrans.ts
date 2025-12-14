@@ -1,18 +1,18 @@
 import { TFile } from "obsidian";
-import { CardScheduleInfo, NoteCardScheduleParser } from "src/CardSchedule";
-import { Note } from "src/Note";
-import { ReviewDeck, SchedNote } from "src/ReviewDeck";
-import { SrTFile } from "src/SRFile";
-import { TopicPath } from "src/TopicPath";
+import { CardScheduleInfo, NoteCardScheduleParser } from "src/core/scheduling/CardSchedule";
+import { Note } from "src/core/models/Note";
+import { ReviewDeck, SchedNote } from "src/core/models/ReviewDeck";
+import { SrTFile } from "src/core/services/SRFile";
+import { TopicPath } from "src/core/services/TopicPath";
 import { DataStore } from "src/dataStore/data";
-import { BlockUtils } from "src/util/utils_recall";
+import { BlockUtils } from "src/utils/utils_recall";
 import { CardInfo } from "./trackedFile";
-import { Card } from "src/Card";
+import { Card } from "src/core/models/Card";
 import { DataLocation } from "./dataLocation";
 import { RepetitionItem, RPITEMTYPE } from "./repetitionItem";
-import { Tags } from "src/tags";
-import { SRSettings } from "src/settings";
-import { INoteEaseList } from "src/NoteEaseList";
+import { Tags } from "src/utils/tags";
+import { SRSettings } from "src/settings/settings";
+import { INoteEaseList } from "src/core/scheduling/NoteEaseList";
 import { algorithmNames } from "src/algorithms/algorithms";
 
 export class ItemTrans {
@@ -142,7 +142,7 @@ export class ItemTrans {
             const lineNo: number = question.lineNo;
             const cardTextHash = BlockUtils.getTxtHash(cardText);
             let blockID = question.questionText.obsidianBlockId;
-            const count: number = question.cards.length;
+            const count: number = question.cards?.length ?? 0;
             const scheduling: RegExpMatchArray[] = [];
             let cardinfo = trackedFile.getSyncCardInfo(lineNo, cardTextHash, blockID);
 
@@ -173,7 +173,7 @@ export class ItemTrans {
             let deckname = dtppath?.hasPath ? dtppath.path[0] : topicPath.path[0];
             deckname = Tags.isDefaultDackName(deckname) ? deckname : "#" + deckname;
             store.updateCardItems(trackedFile, cardinfo, count, deckname, false);
-            const update = updateCardObjs(question.cards, cardinfo, scheduling);
+            const update = question.cards ? updateCardObjs(question.cards, cardinfo, scheduling) : false;
 
             // update question
             if (question.questionText.genBlockId && update) {

@@ -2,7 +2,7 @@ site_name: Obsidian Spaced Repetition Flow
 site_url: https://www.stephenmwangi.com/obsidian-spaced-repetition/
 site_author: Riffaells
 site_description: >-
-  Documentation for the Obsidian Spaced Repetition Flow plugin - A comprehensive fork with 15+ enhancements including FSRS algorithm, separate data storage, float bar, and advanced review features
+    Documentation for the Obsidian Spaced Repetition Flow plugin - A comprehensive fork with 15+ enhancements including FSRS algorithm, separate data storage, float bar, and advanced review features
 
 repo_name: Riffaells/obsidian-spaced-repetition-flow
 repo_url: https://github.com/Riffaells/obsidian-spaced-repetition-flow/
@@ -11,78 +11,78 @@ docs_dir: docs/docs
 # use_directory_urls: false
 
 theme:
-  name: material
-  language: ru
-  palette:
-    - scheme: default
-      primary: indigo
-      accent: cyan
-    - scheme: slate
-      primary: indigo
-      accent: cyan
-  features:
-    - navigation.instant
-    - navigation.tabs
-    - navigation.top
-    - navigation.sections
-    - toc.integrate
-    - search.suggest
-    - search.highlight
+    name: material
+    language: ru
+    palette:
+        - scheme: default
+          primary: indigo
+          accent: cyan
+        - scheme: slate
+          primary: indigo
+          accent: cyan
+    features:
+        - navigation.instant
+        - navigation.tabs
+        - navigation.top
+        - navigation.sections
+        - toc.integrate
+        - search.suggest
+        - search.highlight
 
 nav:
-  - Index: index.md
-  - What's New in Flow: en/flow-features.md
-  - Usage Guide: usage.md
-  - Flashcards:
-      - Flashcards Overview: flashcards/flashcards-overview.md
-      - Question & Answer Cards: flashcards/qanda-cards.md
-      - Cloze Cards: flashcards/basic-cloze-cards.md
-      - Header-Based Cards: flashcards/header-based-cards.md
-      - Cards with Blank Lines: flashcards/cards-with-blank-lines.md
-      - Organizing into Decks: flashcards/decks.md
-      - Reviewing & Cramming: flashcards/reviewing.md
-      - Statistics: flashcards/statistics.md
-  - Notes: notes.md
-  - User Options & Commands:
-      - User Options: user-options.md
-      - Commands: plugin-commands.md
-  - Algorithms & Data Storage:
-      - Repetition Algorithms: algorithms.md
-      - Data Storage: data-storage.md
-  - Additional:
-      - Spaced Repetition Guides: resources.md
-      - Contributing: contributing.md
-      - Changelog: changelog.md
-      - License: license.md
+    - Index: index.md
+    - What's New in Flow: en/flow-features.md
+    - Usage Guide: usage.md
+    - Flashcards:
+          - Flashcards Overview: flashcards/flashcards-overview.md
+          - Question & Answer Cards: flashcards/qanda-cards.md
+          - Cloze Cards: flashcards/basic-cloze-cards.md
+          - Header-Based Cards: flashcards/header-based-cards.md
+          - Cards with Blank Lines: flashcards/cards-with-blank-lines.md
+          - Organizing into Decks: flashcards/decks.md
+          - Reviewing & Cramming: flashcards/reviewing.md
+          - Statistics: flashcards/statistics.md
+    - Notes: notes.md
+    - User Options & Commands:
+          - User Options: user-options.md
+          - Commands: plugin-commands.md
+    - Algorithms & Data Storage:
+          - Repetition Algorithms: algorithms.md
+          - Data Storage: data-storage.md
+    - Additional:
+          - Spaced Repetition Guides: resources.md
+          - Contributing: contributing.md
+          - Changelog: changelog.md
+          - License: license.md
 
 plugins:
-  - search
-  - i18n:
-      docs_structure: folder
-      languages:
-        - locale: en
-          name: English
-          default: true
+    - search
+    - i18n:
+          docs_structure: folder
+          languages:
+              - locale: en
+                name: English
+                default: true
 
 markdown_extensions:
-  - toc:
-      permalink: true
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - admonition
-  - pymdownx.details
-  - pymdownx.superfences
-  - attr_list
-  - footnotes
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - md_in_html
+    - toc:
+          permalink: true
+    - pymdownx.highlight:
+          anchor_linenums: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - admonition
+    - pymdownx.details
+    - pymdownx.superfences
+    - attr_list
+    - footnotes
+    - pymdownx.emoji:
+          emoji_index: !!python/name:material.extensions.emoji.twemoji
+          emoji_generator: !!python/name:material.extensions.emoji.to_svg
+    - md_in_html
 
 extra_css:
-  - stylesheets/extra.css
+    - stylesheets/extra.css
 
 remote_branch: gh-pages
 remote_name: origin

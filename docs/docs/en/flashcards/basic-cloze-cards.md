@@ -73,9 +73,10 @@ These two cards are considered sibling cards. See [sibling cards](flashcards-ove
     Flow extends multiple cloze deletion support beyond the standard behavior described above.
 
 **Standard Behavior (as described above):**
-- Multiple cloze deletions create separate cards
-- Each card occludes one deletion while showing others
-- Cards are treated as siblings
+
+-   Multiple cloze deletions create separate cards
+-   Each card occludes one deletion while showing others
+-   Cards are treated as siblings
 
 **Flow's Enhanced Multiple Cloze Support:**
 
@@ -86,25 +87,27 @@ The {{c1::mitochondria}} is the {{c2::powerhouse}} of the {{c3::cell}}.
 ```
 
 **How it works:**
-- Creates **one card** with multiple cloze deletions reviewed together
-- Maximum of **4 clozes per card**
-- If more than 4 clozes are used, they are automatically split into groups of 3
+
+-   Creates **one card** with multiple cloze deletions reviewed together
+-   Maximum of **4 clozes per card**
+-   If more than 4 clozes are used, they are automatically split into groups of 3
 
 **Key Differences from Original Plugin:**
 
-| Aspect | Original Plugin | Flow |
-|--------|----------------|------|
-| Multiple clozes | Creates separate cards for each cloze | Can create single card with multiple clozes |
-| Anki-style syntax | Not supported | Fully supported with `{{c1::text}}` format |
+| Aspect                | Original Plugin                          | Flow                                                                     |
+| --------------------- | ---------------------------------------- | ------------------------------------------------------------------------ |
+| Multiple clozes       | Creates separate cards for each cloze    | Can create single card with multiple clozes                              |
+| Anki-style syntax     | Not supported                            | Fully supported with `{{c1::text}}` format                               |
 | Sibling card behavior | Affected by "bury sibling cards" setting | Multiple clozes in one card are **not affected** by "bury sibling cards" |
-| Maximum clozes | No specific limit | 4 clozes per card (auto-splits if more) |
+| Maximum clozes        | No specific limit                        | 4 clozes per card (auto-splits if more)                                  |
 
 **Interaction with Sibling Card Settings:**
 
 When using Flow's multiple cloze deletions in a single card:
-- The card is treated as **one unit**, not as sibling cards
-- The "Bury sibling cards until the next day" setting does **not apply**
-- All clozes in the card are reviewed together in the same session
+
+-   The card is treated as **one unit**, not as sibling cards
+-   The "Bury sibling cards until the next day" setting does **not apply**
+-   All clozes in the card are reviewed together in the same session
 
 This is different from the standard multiple cloze behavior (using `==text==` multiple times), where each cloze creates a separate card that **is** affected by the sibling card setting.
 
@@ -112,15 +115,18 @@ This is different from the standard multiple cloze behavior (using `==text==` mu
 
 ```markdown
 <!-- Standard: Creates 2 separate sibling cards -->
+
 The first female ==prime minister== of Australia was ==Julia Gillard==
 
 <!-- Flow enhanced: Creates 1 card with 2 clozes -->
+
 The first female {{c1::prime minister}} of Australia was {{c2::Julia Gillard}}
 ```
 
 **When to use each approach:**
-- **Standard multiple clozes** (`==text==`): When you want to review each piece of information separately across different sessions
-- **Flow multiple clozes** (`{{c1::text}}`): When you want to review related information together in a single card
+
+-   **Standard multiple clozes** (`==text==`): When you want to review each piece of information separately across different sessions
+-   **Flow multiple clozes** (`{{c1::text}}`): When you want to review related information together in a single card
 
 !!! tip "Recommendation"
 
@@ -177,24 +183,28 @@ and this also ==in group 1==[^1]
     Flow **fully supports** Anki-style cloze deletions with the `{{c1::text}}` syntax!
 
 **Syntax:**
+
 ```markdown
 {{c1::This text}} would {{c2::generate}} a card with {{c1::2 cloze deletions}}
 ```
 
 **Behavior:**
-- Creates **one card** with multiple cloze deletions
-- Clozes with the same number (e.g., `{{c1::...}}`) are grouped together
-- Maximum 4 clozes per card
-- More than 4 clozes: automatically split into groups of 3
+
+-   Creates **one card** with multiple cloze deletions
+-   Clozes with the same number (e.g., `{{c1::...}}`) are grouped together
+-   Maximum 4 clozes per card
+-   More than 4 clozes: automatically split into groups of 3
 
 **Example:**
+
 ```markdown
 {{c1::Mitochondria}} are the {{c2::powerhouses}} of the {{c3::cell}}, producing {{c2::ATP}}.
 ```
 
 This creates one card where:
-- `c1` (Mitochondria) is one cloze deletion
-- `c2` (powerhouses and ATP) are grouped as one cloze deletion
-- `c3` (cell) is one cloze deletion
+
+-   `c1` (Mitochondria) is one cloze deletion
+-   `c2` (powerhouses and ATP) are grouped as one cloze deletion
+-   `c3` (cell) is one cloze deletion
 
 **Note:** This feature was not available in the original Obsidian Spaced Repetition plugin but is fully implemented in Flow. See the [Flow Enhancement section](#flow-enhancement-multiple-cloze-deletions-in-single-cards) above for more details on how this differs from standard multiple cloze behavior.

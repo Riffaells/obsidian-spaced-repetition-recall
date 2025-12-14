@@ -1,7 +1,7 @@
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
-import { Card } from "src/Card";
-import { SchedNote } from "src/ReviewDeck";
+import { Card } from "src/core/models/Card";
+import { SchedNote } from "src/core/models/ReviewDeck";
 import { calculateDaysUntilDue, getGroupTitle } from "./utils";
 import { FilterType } from "./types";
 

@@ -74,11 +74,11 @@ Context is only shown if enabled in [UI Preferences](../user-options.md#ui-prefe
 
 To review faster, use the following keyboard shortcuts:
 
-- `Space/Enter` => Show answer
-- `0` => Reset card's progress (Sorta like `Again` in Anki)
-- `1` => Review as `Hard`
-- `2` => Review as `Good`
-- `3` => Review as `Easy`
+-   `Space/Enter` => Show answer
+-   `0` => Reset card's progress (Sorta like `Again` in Anki)
+-   `1` => Review as `Hard`
+-   `2` => Review as `Good`
+-   `3` => Review as `Easy`
 
 ---
 
@@ -111,6 +111,6 @@ You are shown every single card, even those that have recently been reviewed.
 By using the appropriate [command](../plugin-commands.md) have the choice of cramming cards:
 
 | Cards                                  | Command                                           |
-|----------------------------------------|---------------------------------------------------|
+| -------------------------------------- | ------------------------------------------------- |
 | Within a single note                   | `Spaced Repetition: Cram flashcards in this note` |
 | Within a deck (including all subdecks) | `Spaced Repetition: Select a deck to cram note`   |

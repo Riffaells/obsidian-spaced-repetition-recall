@@ -2,8 +2,8 @@ import { PaneType, TFile, ViewCreator, WorkspaceLeaf } from "obsidian";
 
 import { SR_TAB_VIEW } from "src/constants";
 import SRPlugin from "src/main";
-import { FlashcardReviewMode } from "src/FlashcardReviewSequencer";
-import { Deck } from "src/Deck";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewSequencer";
+import { Deck } from "src/core/models/Deck";
 import { TabView } from "./TabView";
 
 export type TabViewType = { type: string; viewCreator: ViewCreator };
@@ -94,7 +94,7 @@ export default class TabViewManager {
         this.forEachTabViewType((viewType) => {
             this.plugin.app.workspace.detachLeavesOfType(viewType.type);
         });
-        
+
         this.isRegistered = false;
     }
 
