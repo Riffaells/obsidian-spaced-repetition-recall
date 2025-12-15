@@ -74,4 +74,7 @@ export interface ExtractionContext {
 
     /** Whether to skip content inside HTML comments */
     skipHtmlComments: boolean;
+
+    /** Variables extracted from tag pattern (e.g., level from #flashcards/h3) */
+    vars?: Record<string, string | number | boolean>;
 }

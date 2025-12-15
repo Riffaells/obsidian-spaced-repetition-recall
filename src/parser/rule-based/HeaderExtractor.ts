@@ -27,20 +27,37 @@ export class HeaderExtractor {
         config: HeaderConfig,
         context: ExtractionContext,
     ): ExtractedCard[] {
-        // Step 1: Filter headings by level
-        let filteredHeadings = this.filterByLevel(headings, config.selection.levels);
+        // Step 1: Determine which levels to use
+        // If 'level' variable is extracted from tag (e.g., #flashcards/h3), use only that level
+        let levelsToUse = config.selection.levels;
+        if (context.vars?.level !== undefined) {
+            const levelFromTag = Number(context.vars.level);
+            if (!isNaN(levelFromTag) && levelFromTag >= 1 && levelFromTag <= 6) {
+                levelsToUse = [levelFromTag];
+                console.log(
+                    `[HeaderExtractor] Using level ${levelFromTag} from tag variable`,
+                );
+            }
+        } else {
+            console.log(
+                `[HeaderExtractor] Using configured levels: ${levelsToUse.join(", ")}`,
+            );
+        }
 
-        // Step 2: Apply strict priority if enabled
+        // Step 2: Filter headings by level
+        let filteredHeadings = this.filterByLevel(headings, levelsToUse);
+
+        // Step 3: Apply strict priority if enabled
         if (config.selection.strictPriority) {
             filteredHeadings = this.applyStrictPriority(filteredHeadings);
         }
 
-        // Step 3: Apply limit strategy if specified
+        // Step 4: Apply limit strategy if specified
         if (config.selection.limit) {
             filteredHeadings = this.applyLimit(filteredHeadings, config.selection.limit);
         }
 
-        // Step 4: Extract cards from selected headings
+        // Step 5: Extract cards from selected headings
         const cards: ExtractedCard[] = [];
         for (const heading of filteredHeadings) {
             const card = this.extractCardFromHeading(heading, config, context);

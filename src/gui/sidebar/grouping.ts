@@ -49,18 +49,17 @@ export function groupNotes(
     const groupedNotes: Record<string, SchedNote[]> = {};
     const maxDaysToRender = plugin.data.settings.maxNDaysNotesReviewQueue;
 
-    const sortedNotes =
-        filter === FilterType.REVIEWED
-            ? [...notes].sort((a, b) => b.dueUnix - a.dueUnix)
-            : [...notes].sort((a, b) => a.dueUnix - b.dueUnix);
+    // Pre-filter and group in one pass
+    const filteredNotes: Array<{ note: SchedNote; nDays: number; groupTitle: string }> = [];
 
-    for (const sNote of sortedNotes) {
+    for (const sNote of notes) {
         const nDays = calculateDaysUntilDue(sNote.dueUnix, plugin);
-        const isDue = nDays <= 0;
 
         if (nDays > maxDaysToRender) {
             continue;
         }
+
+        const isDue = nDays <= 0;
         if (filter === FilterType.ACTIVE && !isDue) {
             continue;
         }
@@ -69,10 +68,21 @@ export function groupNotes(
         }
 
         const groupTitle = getGroupTitle(nDays, sNote.dueUnix, plugin);
-        if (!groupedNotes[groupTitle]) {
-            groupedNotes[groupTitle] = [];
-        }
-        groupedNotes[groupTitle].push(sNote);
+        filteredNotes.push({ note: sNote, nDays, groupTitle });
     }
+
+    // Sort only filtered notes
+    filteredNotes.sort((a, b) =>
+        filter === FilterType.REVIEWED ? b.note.dueUnix - a.note.dueUnix : a.note.dueUnix - b.note.dueUnix
+    );
+
+    // Group sorted notes
+    for (const item of filteredNotes) {
+        if (!groupedNotes[item.groupTitle]) {
+            groupedNotes[item.groupTitle] = [];
+        }
+        groupedNotes[item.groupTitle].push(item.note);
+    }
+
     return groupedNotes;
 }

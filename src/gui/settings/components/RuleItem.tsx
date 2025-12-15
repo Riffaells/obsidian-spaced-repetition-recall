@@ -1,9 +1,10 @@
 /**
- * Reusable rule item component
+ * Rule Item Component
+ * Displays a single flashcard rule in the rules list
  */
 
-import { setIcon } from "obsidian";
 import { FlashcardRule } from "src/parser/rule-based/types";
+import { setIcon } from "obsidian";
 
 interface RuleItemProps {
     rule: FlashcardRule;
@@ -15,95 +16,54 @@ interface RuleItemProps {
 /**
  * Create a rule item element
  */
-export function createRuleItem(containerEl: HTMLElement, props: RuleItemProps): HTMLElement {
+export function createRuleItem(containerEl: HTMLElement, props: RuleItemProps): void {
     const { rule, onEdit, onDelete, onToggle } = props;
 
     const itemEl = containerEl.createDiv("flashcard-rule-item");
-    if (!rule.enabled) {
-        itemEl.setAttribute("data-enabled", "false");
-    }
 
-    // Toggle checkbox
-    const toggleEl = itemEl.createDiv({ cls: "rule-toggle" });
-    const checkbox = toggleEl.createEl("input", { type: "checkbox" });
-    checkbox.checked = rule.enabled;
-    checkbox.addEventListener("change", () => onToggle(checkbox.checked));
+    // Left section: Toggle and info
+    const leftSection = itemEl.createDiv("flashcard-rule-left");
+
+    // Toggle switch
+    const toggleContainer = leftSection.createDiv("flashcard-rule-toggle");
+    const toggleInput = toggleContainer.createEl("input", { type: "checkbox" });
+    toggleInput.checked = rule.enabled;
+    toggleInput.addEventListener("change", () => {
+        onToggle(toggleInput.checked);
+    });
 
     // Rule info
-    const infoEl = itemEl.createDiv({ cls: "rule-info" });
+    const infoContainer = leftSection.createDiv("flashcard-rule-info");
+    
+    const nameEl = infoContainer.createDiv("flashcard-rule-name");
+    nameEl.textContent = rule.name || "(Unnamed Rule)";
+    
+    const metaEl = infoContainer.createDiv("flashcard-rule-meta");
+    
+    // Type badge
+    const typeBadge = metaEl.createSpan("flashcard-rule-badge");
+    typeBadge.textContent = rule.type;
+    
+    // Priority
+    const prioritySpan = metaEl.createSpan("flashcard-rule-priority");
+    prioritySpan.textContent = `Priority: ${rule.priority}`;
+    
+    // Tag pattern
+    const tagSpan = metaEl.createSpan("flashcard-rule-tag");
+    tagSpan.textContent = rule.tagPattern;
 
-    // Header with name and tag
-    const headerEl = infoEl.createDiv({ cls: "rule-header" });
+    // Right section: Actions
+    const rightSection = itemEl.createDiv("flashcard-rule-actions");
 
-    const nameEl = headerEl.createSpan({ cls: "rule-name" });
-    nameEl.textContent = rule.name;
-
-    const tagEl = headerEl.createSpan({ cls: "rule-tag" });
-    tagEl.textContent = rule.tagPattern || "";
-
-    // Details
-    const detailsEl = infoEl.createDiv({ cls: "rule-details" });
-
-    // Source badge
-    const sourceType = rule.type;
-
-    const sourceBadge = detailsEl.createSpan({ cls: `rule-badge rule-badge-${sourceType}` });
-    sourceBadge.textContent = sourceType.toUpperCase();
-
-    // Priority badge (if > 0)
-    if (rule.priority > 0) {
-        const priorityBadge = detailsEl.createSpan({ cls: "rule-badge rule-badge-priority" });
-        priorityBadge.textContent = `Priority: ${rule.priority}`;
-    }
-
-    // Configuration details
-    const configText = getConfigurationText(rule);
-    if (configText) {
-        const configEl = detailsEl.createSpan({ cls: "rule-config" });
-        configEl.textContent = configText;
-    }
-
-    // Actions
-    const actionsEl = itemEl.createDiv({ cls: "rule-actions" });
-
-    const editBtn = actionsEl.createEl("button", {
-        cls: "clickable-icon",
-        attr: { "aria-label": `Edit ${rule.name}` },
-    });
+    // Edit button
+    const editBtn = rightSection.createEl("button", { cls: "flashcard-rule-action-btn" });
     setIcon(editBtn, "pencil");
+    editBtn.setAttribute("aria-label", "Edit rule");
     editBtn.addEventListener("click", onEdit);
 
-    const deleteBtn = actionsEl.createEl("button", {
-        cls: "clickable-icon",
-        attr: { "aria-label": `Delete ${rule.name}` },
-    });
+    // Delete button
+    const deleteBtn = rightSection.createEl("button", { cls: "flashcard-rule-action-btn" });
     setIcon(deleteBtn, "trash");
+    deleteBtn.setAttribute("aria-label", "Delete rule");
     deleteBtn.addEventListener("click", onDelete);
-
-    return itemEl;
-}
-
-/**
- * Get human-readable configuration text
- */
-function getConfigurationText(rule: FlashcardRule): string {
-    const details: string[] = [];
-
-    if (rule.type === "header") {
-        const conf = rule.config;
-        details.push(`Levels: ${conf.selection.levels.map((l) => `h${l}`).join(", ")}`);
-        details.push(`Scope: ${conf.content.scope}`);
-        if (conf.selection.strictPriority) details.push("Strict Priority");
-    } else if (rule.type === "inline") {
-        const conf = rule.config;
-        details.push(`Separator: "${conf.separator}"`);
-        if (conf.startOfLineOnly) details.push("Start of Line");
-        if (conf.cloze?.enabled) details.push(`Cloze Patterns: ${conf.cloze.patterns?.length || 0}`);
-    } else if (rule.type === "multiline") {
-        const conf = rule.config;
-        details.push(`Question: "${conf.questionLinePattern}"`);
-        details.push(`Stop: ${conf.stopCondition.type}`);
-    }
-
-    return details.join(" • ");
 }

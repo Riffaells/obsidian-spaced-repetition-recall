@@ -133,7 +133,7 @@ function renderRulesList(containerEl: HTMLElement, plugin: SRPlugin): void {
                 rule,
                 onEdit: () => editRule(plugin, rule, containerEl),
                 onDelete: () => deleteRule(plugin, rule, containerEl),
-                onToggle: (enabled) => toggleRule(plugin, rule, enabled, containerEl),
+                onToggle: (enabled: boolean) => toggleRule(plugin, rule, enabled, containerEl),
             });
         }
     }

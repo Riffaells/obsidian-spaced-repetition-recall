@@ -395,9 +395,12 @@ export class CardUI {
             }
         } else {
             // No more cards - close modal if handler provided, otherwise show deck list
+            console.log("[CardUI] No more cards in deck");
             if (this.closeModalHandler) {
+                console.log("[CardUI] Closing modal via closeModalHandler");
                 this.closeModalHandler();
             } else {
+                console.log("[CardUI] Showing deck list via backClickHandler");
                 this.backClickHandler();
             }
         }

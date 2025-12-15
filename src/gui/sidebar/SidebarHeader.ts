@@ -323,8 +323,14 @@ export class SidebarHeader {
                 ? this.activeCardsCount
                 : this.activeNotesCount;
 
-        this.activeCountChip.setText(count.toString());
-        this.activeCountChip.style.display = "inline-block";
+        const countStr = count.toString();
+        if (this.activeCountChip.textContent !== countStr) {
+            this.activeCountChip.setText(countStr);
+        }
+        
+        if (count > 0 && this.activeCountChip.style.display !== "inline-block") {
+            this.activeCountChip.style.display = "inline-block";
+        }
     }
 
     public setFilter(filter: FilterType): void {
@@ -351,19 +357,17 @@ export class SidebarHeader {
     }
 
     public setActiveCount(notesCount: number, cardsCount: number = 0): void {
-        let needsUpdate = false;
+        const relevantCount = this.currentViewMode === SidebarViewMode.FlashCards 
+            ? cardsCount 
+            : notesCount;
+        const currentRelevantCount = this.currentViewMode === SidebarViewMode.FlashCards
+            ? this.activeCardsCount
+            : this.activeNotesCount;
 
-        if (this.activeNotesCount !== notesCount) {
-            this.activeNotesCount = notesCount;
-            needsUpdate = true;
-        }
+        this.activeNotesCount = notesCount;
+        this.activeCardsCount = cardsCount;
 
-        if (this.activeCardsCount !== cardsCount) {
-            this.activeCardsCount = cardsCount;
-            needsUpdate = true;
-        }
-
-        if (needsUpdate) {
+        if (relevantCount !== currentRelevantCount) {
             this.updateActiveCount();
         }
     }

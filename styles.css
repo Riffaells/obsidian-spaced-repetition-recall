@@ -1822,3 +1822,955 @@ button.sr-tab-header-button:hover {
     width: 24px;
     height: 24px;
 }
+
+/* === Flashcard Rules Manager === */
+.flashcard-rules-main-container {
+    margin: 20px 0;
+}
+
+.flashcard-rules-header {
+    margin-bottom: 16px;
+}
+
+.sr-section-title {
+    margin: 0 0 8px 0;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.sr-section-description {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    margin-bottom: 12px;
+}
+
+.flashcard-rules-manager {
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.flashcard-rules-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.flashcard-rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.flashcard-rules-empty {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.flashcard-rules-section-title {
+    margin: 20px 0 12px 0;
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--text-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sr-modal h2 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+.sr-modal-tabs {
+    margin-bottom: 20px;
+}
+
+.rule-modal-section {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: var(--background-secondary);
+    border-radius: 6px;
+}
+
+.rule-modal-section h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: var(--text-normal);
+}
+
+.rule-modal-section h4 {
+    margin: 16px 0 12px 0;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.sr-meta-settings {
+    padding-top: 8px;
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+.sr-subsection {
+    padding: 16px;
+    background-color: var(--background-primary);
+    border-radius: 6px;
+    margin-top: 16px;
+    border: 1px solid var(--background-modifier-border);
+}
+
+.sr-heading-levels {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.sr-heading-level-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    background-color: var(--background-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sr-heading-level-checkbox:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.sr-heading-level-checkbox input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.sr-info-box {
+    padding: 12px;
+    margin-bottom: 16px;
+    background-color: var(--background-secondary);
+    border-radius: 6px;
+    border-left: 3px solid var(--interactive-accent);
+}
+
+.modal-button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 2px solid var(--background-modifier-border);
+}
+
+/* === Info Section === */
+.sr-info-section {
+    margin: 16px 0;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid var(--interactive-accent);
+}
+
+.sr-info-section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.sr-info-section-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--interactive-accent);
+}
+
+.sr-info-section-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin: 0;
+}
+
+.sr-info-section-description {
+    margin-bottom: 12px;
+    color: var(--text-muted);
+}
+
+.sr-info-section-items {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px 0;
+}
+
+.sr-info-section-items li {
+    padding: 6px 0;
+    padding-left: 20px;
+    position: relative;
+}
+
+.sr-info-section-items li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--interactive-accent);
+    font-weight: bold;
+}
+
+.sr-info-section-tip {
+    padding: 8px 12px;
+    background-color: var(--background-primary);
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+/* === Rule Item === */
+.sr-rule-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background-color: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.sr-rule-item:hover {
+    background-color: var(--background-modifier-hover);
+    border-color: var(--interactive-accent);
+}
+
+.sr-rule-item-toggle {
+    flex-shrink: 0;
+}
+
+.sr-rule-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.sr-rule-item-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.sr-rule-item-name {
+    font-weight: 600;
+    font-size: 1em;
+}
+
+.sr-rule-item-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 0.75em;
+    font-weight: 600;
+    border-radius: 12px;
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.sr-rule-item-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 0.85em;
+    color: var(--text-muted);
+}
+
+.sr-rule-item-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.sr-rule-item.disabled {
+    opacity: 0.5;
+}
+
+.sr-rule-item.disabled .sr-rule-item-name {
+    text-decoration: line-through;
+}
+
+
+/* === Flashcard Rule Modal === */
+.sr-modal {
+    max-width: 800px;
+    width: 90%;
+}
+
+.sr-modal-header {
+    padding: 16px 20px;
+    border-bottom: 2px solid var(--background-modifier-border);
+}
+
+.sr-modal-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.3em;
+    color: var(--text-normal);
+}
+
+.sr-modal-description {
+    font-size: 0.9em;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.sr-modal-tabs {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* === Rule Modal Sections === */
+.rule-modal-section {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.rule-modal-section:last-child {
+    border-bottom: none;
+}
+
+.sr-section-header {
+    margin-bottom: 16px;
+}
+
+.sr-section-header h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.1em;
+    color: var(--text-normal);
+}
+
+.sr-section-desc {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.sr-subsection {
+    margin-top: 16px;
+}
+
+.sr-subsection h4 {
+    margin: 0 0 12px 0;
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* === Common Settings === */
+.sr-common-settings {
+    background-color: var(--background-secondary);
+}
+
+.sr-meta-settings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+/* === Scope Settings (Collapsible) === */
+.sr-scope-section {
+    margin-top: 24px;
+}
+
+.sr-collapsible-header {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: var(--background-secondary);
+    transition: background-color 0.15s;
+}
+
+.sr-collapsible-header:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.sr-collapsible-header span {
+    transition: transform 0.2s;
+    display: inline-block;
+    font-size: 0.8em;
+}
+
+.sr-scope-content {
+    display: none;
+    margin-top: 12px;
+    padding-left: 16px;
+}
+
+/* === Heading Levels === */
+.sr-heading-levels {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.sr-heading-level-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 6px 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    background-color: var(--background-secondary);
+    transition: all 0.2s ease;
+}
+
+.sr-heading-level-checkbox:hover {
+    border-color: var(--interactive-accent);
+}
+
+.sr-heading-level-checkbox input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* === Limit Strategy === */
+.sr-limit-section {
+    margin-top: 16px;
+}
+
+.sr-limit-input {
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 2px solid var(--background-modifier-border);
+}
+
+/* === Modal Buttons === */
+.modal-button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 16px 20px;
+    border-top: 2px solid var(--background-modifier-border);
+}
+
+/* === Monospace Inputs === */
+input[style*="monospace"],
+textarea[style*="monospace"] {
+    font-family: var(--font-monospace);
+    font-size: 0.9em;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .sr-modal {
+        width: 95%;
+        max-width: none;
+    }
+
+    .sr-meta-settings {
+        grid-template-columns: 1fr;
+    }
+
+    .sr-heading-levels {
+        gap: 8px;
+    }
+
+    .sr-heading-level-checkbox {
+        padding: 4px 8px;
+        font-size: 0.9em;
+    }
+}
+/**
+ * Flashcard Rule Modal Styles
+ */
+
+/* Modal container */
+.sr-flashcard-rule-modal {
+    padding: 20px;
+    max-width: 700px;
+}
+
+/* Tabs */
+.sr-rule-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--background-modifier-border);
+}
+
+.sr-rule-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    color: var(--text-muted);
+}
+
+.sr-rule-tab:hover {
+    color: var(--text-normal);
+    background-color: var(--background-modifier-hover);
+}
+
+.sr-rule-tab-active {
+    color: var(--text-accent);
+    border-bottom-color: var(--text-accent);
+    font-weight: 600;
+}
+
+/* Sections */
+.sr-common-section,
+.sr-type-specific-container,
+.sr-cloze-container {
+    margin-bottom: 24px;
+}
+
+.sr-section {
+    margin-bottom: 20px;
+}
+
+.sr-section h4 {
+    margin-bottom: 12px;
+    color: var(--text-normal);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Monospace inputs */
+.sr-monospace {
+    font-family: var(--font-monospace);
+}
+
+/* Scope settings */
+.sr-scope-settings {
+    margin-top: 16px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.sr-scope-header {
+    padding: 10px 12px;
+    background-color: var(--background-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+}
+
+.sr-scope-header:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.sr-scope-arrow {
+    transition: transform 0.2s;
+    font-size: 12px;
+}
+
+.sr-scope-content {
+    padding: 12px;
+}
+
+/* Header levels */
+.sr-header-levels {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.sr-header-level-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sr-header-level-checkbox:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.sr-header-level-checkbox input[type="checkbox"] {
+    margin: 0;
+}
+
+.sr-header-level-checkbox input[type="checkbox"]:checked + span {
+    color: var(--text-accent);
+    font-weight: 600;
+}
+
+/* Limit strategy */
+.sr-limit-strategy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sr-limit-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.sr-limit-inputs input[type="number"] {
+    width: 80px;
+}
+
+.sr-limit-inputs select {
+    min-width: 100px;
+}
+
+/* Stop condition */
+.sr-stop-condition {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sr-stop-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Cloze section */
+.sr-cloze-section {
+    border-top: 1px solid var(--background-modifier-border);
+    padding-top: 16px;
+}
+
+.sr-cloze-patterns textarea {
+    font-family: var(--font-monospace);
+    min-height: 100px;
+}
+
+/* Buttons */
+.sr-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+.sr-button-primary,
+.sr-button-secondary {
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.sr-button-primary {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border: none;
+}
+
+.sr-button-primary:hover {
+    background-color: var(--interactive-accent-hover);
+}
+
+.sr-button-secondary {
+    background-color: transparent;
+    color: var(--text-normal);
+    border: 1px solid var(--background-modifier-border);
+}
+
+.sr-button-secondary:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+/* ============================================
+   Flashcard Rule Components Styles
+   ============================================ */
+
+/* Modal container */
+.sr-flashcard-rule-modal {
+    padding: 20px;
+    max-width: 700px;
+}
+
+/* Tabs */
+.sr-rule-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--background-modifier-border);
+}
+
+.sr-rule-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    color: var(--text-muted);
+}
+
+.sr-rule-tab:hover {
+    color: var(--text-normal);
+    background-color: var(--background-modifier-hover);
+}
+
+.sr-rule-tab-active {
+    color: var(--text-accent);
+    border-bottom-color: var(--text-accent);
+    font-weight: 600;
+}
+
+/* Sections */
+.sr-common-section,
+.sr-type-specific-container,
+.sr-cloze-container {
+    margin-bottom: 24px;
+}
+
+.sr-section {
+    margin-bottom: 20px;
+}
+
+.sr-section h4 {
+    margin-bottom: 12px;
+    color: var(--text-normal);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Monospace inputs */
+.sr-monospace {
+    font-family: var(--font-monospace);
+}
+
+/* Scope settings */
+.sr-scope-settings {
+    margin-top: 16px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.sr-scope-header {
+    padding: 10px 12px;
+    background-color: var(--background-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+}
+
+.sr-scope-header:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.sr-scope-arrow {
+    transition: transform 0.2s;
+    font-size: 12px;
+}
+
+.sr-scope-content {
+    padding: 12px;
+}
+
+/* Header levels */
+.sr-header-levels {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.sr-header-level-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sr-header-level-checkbox:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.sr-header-level-checkbox input[type="checkbox"] {
+    margin: 0;
+}
+
+.sr-header-level-checkbox input[type="checkbox"]:checked + span {
+    color: var(--text-accent);
+    font-weight: 600;
+}
+
+/* Limit strategy */
+.sr-limit-strategy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sr-limit-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.sr-limit-inputs input[type="number"] {
+    width: 80px;
+}
+
+.sr-limit-inputs select {
+    min-width: 100px;
+}
+
+/* Stop condition */
+.sr-stop-condition {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sr-stop-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Cloze section */
+.sr-cloze-section {
+    border-top: 1px solid var(--background-modifier-border);
+    padding-top: 16px;
+}
+
+.sr-cloze-patterns textarea {
+    font-family: var(--font-monospace);
+    min-height: 100px;
+}
+
+/* Modal buttons */
+.sr-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+.sr-button-primary,
+.sr-button-secondary {
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.sr-button-primary {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border: none;
+}
+
+.sr-button-primary:hover {
+    background-color: var(--interactive-accent-hover);
+}
+
+.sr-button-secondary {
+    background-color: transparent;
+    color: var(--text-normal);
+    border: 1px solid var(--background-modifier-border);
+}
+
+.sr-button-secondary:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+/* Rule Item in List */
+.flashcard-rule-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+}
+
+.flashcard-rule-item:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.flashcard-rule-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.flashcard-rule-toggle input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.flashcard-rule-info {
+    flex: 1;
+}
+
+.flashcard-rule-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.flashcard-rule-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.flashcard-rule-badge {
+    padding: 2px 8px;
+    background-color: var(--background-modifier-border);
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.flashcard-rule-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.flashcard-rule-action-btn {
+    padding: 6px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+
+.flashcard-rule-action-btn:hover {
+    background-color: var(--background-modifier-hover);
+    color: var(--text-normal);
+}

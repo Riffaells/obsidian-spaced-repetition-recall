@@ -390,31 +390,35 @@ export class Question {
             settings,
         );
 
-        // Extract topic path from flashcard tags
-        // Filter out #flashcards tag and empty tags
-        const topicTags = flashcard.tags
-            .filter((tag) => tag && tag !== "#flashcards")
-            .map((tag) => TopicPath.getTopicPathFromTag(tag))
-            .filter((path) => path && path.hasPath);
+        let finalTopicPath: TopicPath = null;
 
-        // Use a Map to deduplicate paths based on their tag string representation
-        const uniquePaths = new Map<string, TopicPath>();
-
-        // Add tags
-        topicTags.forEach((p) => uniquePaths.set(p.formatAsTag(), p));
-
-        // Add topic path from text if present
-        if (questionText.topicPathWithWs) {
-            const p = questionText.topicPathWithWs.topicPath;
-            uniquePaths.set(p.formatAsTag(), p);
+        // Priority 1: Folder path if convertFoldersToDecks is ON.
+        if (settings.convertFoldersToDecks && folderTopicPath && folderTopicPath.hasPath) {
+            finalTopicPath = folderTopicPath;
         }
 
-        // Add folder path if present
-        if (folderTopicPath && folderTopicPath.hasPath) {
-            uniquePaths.set(folderTopicPath.formatAsTag(), folderTopicPath);
+        // Priority 2: Topic path on the card's line
+        if (!finalTopicPath && questionText.topicPathWithWs) {
+            finalTopicPath = questionText.topicPathWithWs.topicPath;
         }
 
-        const topicPathList = new TopicPathList(Array.from(uniquePaths.values()));
+        // Priority 3: Tags within the note
+        if (!finalTopicPath) {
+            const topicTags = flashcard.tags
+                .filter((tag) => tag && tag !== "#flashcards")
+                .map((tag) => TopicPath.getTopicPathFromTag(tag))
+                .filter((path) => path && path.hasPath);
+
+            if (topicTags.length > 0) {
+                // If multiple tags are present, use the first one.
+                finalTopicPath = topicTags[0];
+            }
+        }
+
+        // Create a list containing only the single, highest-priority path, or an empty list.
+        const topicPathList = finalTopicPath
+            ? new TopicPathList([finalTopicPath])
+            : TopicPathList.empty();
 
         const result: Question = new Question({
             parsedFlashcard: flashcard,

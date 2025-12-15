@@ -205,28 +205,20 @@ export class DeckComponent {
         this.reconcileGroups(content);
     }
     private checkIfDeckHasActiveNotes(): boolean {
-        if (this.deck.newNotes && this.deck.newNotes.length > 0) {
+        if (this.deck.newNotes?.length > 0) {
             return true;
         }
 
-        if (this.deck.scheduledNotes && this.deck.scheduledNotes.length > 0) {
-            for (const sNote of this.deck.scheduledNotes) {
-                if (isNoteActive(sNote, this.plugin)) {
-                    return true;
-                }
-            }
+        if (this.deck.scheduledNotes?.length > 0) {
+            return this.deck.scheduledNotes.some((sNote) => isNoteActive(sNote, this.plugin));
         }
 
         return false;
     }
 
     private checkIfDeckHasReviewedNotes(): boolean {
-        if (this.deck.scheduledNotes && this.deck.scheduledNotes.length > 0) {
-            for (const sNote of this.deck.scheduledNotes) {
-                if (!isNoteActive(sNote, this.plugin)) {
-                    return true;
-                }
-            }
+        if (this.deck.scheduledNotes?.length > 0) {
+            return this.deck.scheduledNotes.some((sNote) => !isNoteActive(sNote, this.plugin));
         }
 
         return false;
@@ -235,20 +227,14 @@ export class DeckComponent {
     private checkIfDeckContainsActiveFile(): boolean {
         if (!this.activeFile) return false;
 
-        if (this.deck.newNotes) {
-            for (const note of this.deck.newNotes) {
-                if (note.note.path === this.activeFile.path) {
-                    return true;
-                }
-            }
+        const activePath = this.activeFile.path;
+
+        if (this.deck.newNotes?.some((note) => note.note.path === activePath)) {
+            return true;
         }
 
-        if (this.deck.scheduledNotes) {
-            for (const note of this.deck.scheduledNotes) {
-                if (note.note.path === this.activeFile.path) {
-                    return true;
-                }
-            }
+        if (this.deck.scheduledNotes?.some((note) => note.note.path === activePath)) {
+            return true;
         }
 
         return false;
@@ -287,7 +273,7 @@ export class DeckComponent {
         let dueCount = 0;
         let reviewedCount = 0;
 
-        if (this.deck.scheduledNotes) {
+        if (this.deck.scheduledNotes?.length > 0) {
             for (const sNote of this.deck.scheduledNotes) {
                 if (isNoteActive(sNote, this.plugin)) {
                     dueCount++;
@@ -381,13 +367,8 @@ export class DeckComponent {
     private checkIfGroupContainsActiveFile(notes: SchedNote[]): boolean {
         if (!this.activeFile || !notes) return false;
 
-        for (const note of notes) {
-            if (note.note && note.note.path === this.activeFile.path) {
-                return true;
-            }
-        }
-
-        return false;
+        const activePath = this.activeFile.path;
+        return notes.some((note) => note.note?.path === activePath);
     }
 
     public destroy(): void {

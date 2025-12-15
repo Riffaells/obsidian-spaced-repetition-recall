@@ -1,11 +1,10 @@
 import { debounce, ItemView, Menu, Notice, setIcon, TFile, WorkspaceLeaf } from "obsidian";
-
 import type SRPlugin from "src/main";
 import { t } from "src/lang/helpers";
 import { DeckComponent } from "./DeckComponent";
 import { SidebarHeader } from "./SidebarHeader";
 import { SidebarStats } from "./SidebarStats";
-import { ReviewDeck, SchedNote } from "src/core/models/ReviewDeck";
+import { ReviewDeck } from "src/core/models/ReviewDeck";
 import {
     FilterType,
     NoteSortType,
@@ -16,21 +15,27 @@ import {
 import {
     calculateActiveNotesCount,
     calculateActiveFlashcardsCount,
-    calculateDaysUntilDue,
     calculateSidebarStats,
     createGroupKey,
     getGroupTitle,
+    calculateDaysUntilDue,
 } from "./utils";
 import { FlashcardDeckComponent } from "./FlashcardDeckComponent";
 import { Deck } from "src/core/models/Deck";
-import { Card } from "src/core/models/Card";
-import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewSequencer";
+import { DeckReconciler } from "./services/DeckReconciler";
+import { DeckSorter } from "./services/DeckSorter";
+import { RandomReviewService } from "./services/RandomReviewService";
 
 export const REVIEW_QUEUE_VIEW_TYPE = "review-queue-list-view";
 
 export class ReviewQueueListView extends ItemView {
     private readonly plugin: SRPlugin;
     private readonly debouncedRedraw: () => void;
+
+    // Services
+    private deckReconciler: DeckReconciler | null = null;
+    private deckSorter: DeckSorter;
+    private randomReviewService: RandomReviewService;
 
     // Sidebar state
     private currentFilter: FilterType = FilterType.ALL;
@@ -48,17 +53,16 @@ export class ReviewQueueListView extends ItemView {
     private mainContainer: HTMLElement | null = null;
     private decksContainer: HTMLElement | null = null;
 
-    // Cache and state tracking
+    // State tracking
     private cachedStats: Stats | null = null;
     private lastActiveFilePath: string | null = null;
     private sortedDecks: ReviewDeck[] = [];
     private justRecalculated = false;
     private scrollFrameId: number | null = null;
     private scrollTimeout: number | null = null;
-    private deckStatsCache = new Map<
-        string,
-        { minDate: number; maxDate: number; count: number; timestamp: number }
-    >();
+    private cachedActiveNotesCount: number = 0;
+    private cachedActiveCardsCount: number = 0;
+    private needsCountRecalculation = true;
 
     constructor(leaf: WorkspaceLeaf, plugin: SRPlugin) {
         super(leaf);
@@ -68,22 +72,27 @@ export class ReviewQueueListView extends ItemView {
         this.currentNoteSort = this.plugin.data.settings.sidebarNoteSortOrder;
         this.currentViewMode = this.plugin.data.settings.sidebarViewMode || SidebarViewMode.Notes;
 
-        // debounce to prevent frequent repaints
+        // Initialize services
+        this.deckSorter = new DeckSorter(plugin);
+        this.randomReviewService = new RandomReviewService(plugin);
+
         this.debouncedRedraw = debounce(() => this.redraw(), 150, true);
 
         this.registerEvent(this.app.workspace.on("file-open", () => this.debouncedRedraw()));
         this.registerEvent(this.app.vault.on("rename", () => this.debouncedRedraw()));
-
-        // Listen for note review events (from compact buttons)
-        // Listen for note review events (from compact buttons)
         this.registerEvent(
-            this.app.workspace.on("sr:note-reviewed" as any, () => this.debouncedRedraw()),
+            this.app.workspace.on("sr:note-reviewed" as any, () => {
+                this.needsCountRecalculation = true;
+                this.debouncedRedraw();
+            }),
         );
         this.registerEvent(
-            this.app.workspace.on("sr:stats-updated" as any, () => this.debouncedRedraw()),
+            this.app.workspace.on("sr:stats-updated" as any, () => {
+                this.needsCountRecalculation = true;
+                this.debouncedRedraw();
+            }),
         );
 
-        // Register scroll listener for scroll-to-top button
         this.registerDomEvent(this.contentEl, "scroll", this.handleScroll);
     }
 
@@ -110,9 +119,7 @@ export class ReviewQueueListView extends ItemView {
     }
 
     public redraw(): void {
-        if (!this.plugin?.data) {
-            return;
-        }
+        if (!this.plugin?.data) return;
 
         const activeFile: TFile | null = this.app.workspace.getActiveFile();
 
@@ -132,29 +139,21 @@ export class ReviewQueueListView extends ItemView {
 
         this.mainContainer = this.contentEl.createDiv("sr-new-sidebar-container");
 
+        // Header
         const headerContainer = this.mainContainer.createDiv();
         this.header = new SidebarHeader(
             headerContainer,
-            (filter) => {
-                this.currentFilter = filter;
-                const currentFile = this.plugin.app.workspace.getActiveFile();
-                this.update(currentFile, true, false);
-            },
+            (filter) => this.handleFilterChange(filter),
             () => this.collapseAll(),
             () => this.expandAll(),
-            (sort) => {
-                this.currentSort = sort;
-                this.plugin.data.settings.sidebarSortOrder = sort;
-                this.saveSettingsDebounced();
-                const currentFile = this.plugin.app.workspace.getActiveFile();
-                this.update(currentFile, true, false);
-            },
-            this.handleNoteSortChange,
+            (sort) => this.handleSortChange(sort),
+            (sort) => this.handleNoteSortChange(sort),
             () => this.handleRecalculate(),
             (mode) => this.handleViewModeChange(mode),
         );
         this.header.render();
 
+        // Stats
         const statsContainer = this.mainContainer.createDiv();
         this.cachedStats = calculateSidebarStats(this.plugin);
         this.stats = new SidebarStats(
@@ -165,13 +164,23 @@ export class ReviewQueueListView extends ItemView {
         );
         this.stats.render();
 
+        // Decks container
         this.decksContainer = this.mainContainer.createDiv("sr-new-sidebar-decks");
+
+        // Initialize reconciler
+        this.deckReconciler = new DeckReconciler(
+            this.plugin,
+            this.decksContainer,
+            this.expandedDecks,
+            this.expandedGroups,
+            this.deckComponents,
+            this.flashcardDeckComponents,
+        );
 
         // Scroll to top button
         const scrollToTopBtn = this.contentEl.createDiv("sr-scroll-to-top");
         setIcon(scrollToTopBtn, "arrow-up");
         scrollToTopBtn.ariaLabel = "Scroll to Top";
-
         scrollToTopBtn.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -190,35 +199,20 @@ export class ReviewQueueListView extends ItemView {
         }
     };
 
-    private handleRecalculate = async () => {
-        new Notice(t("RECALCULATING_NOTES_NOTICE_START"));
-
-        const decksBefore = Object.values(this.plugin.reviewDecks);
-        let notesBefore = 0;
-        for (const deck of decksBefore) {
-            notesBefore += (deck.newNotes?.length || 0) + (deck.scheduledNotes?.length || 0);
-        }
-
-        this.justRecalculated = true;
-        await this.plugin.sync();
-
-        const decksAfter = Object.values(this.plugin.reviewDecks);
-        let notesAfter = 0;
-        for (const deck of decksAfter) {
-            notesAfter += (deck.newNotes?.length || 0) + (deck.scheduledNotes?.length || 0);
-        }
-
-        const notesAdded = notesAfter - notesBefore;
-
-        if (notesAdded > 0) {
-            new Notice(t("RECALCULATING_NOTES_NOTICE_DONE_ADDED", { count: notesAdded }));
-        } else {
-            new Notice(t("RECALCULATING_NOTES_NOTICE_DONE_NONE"));
-        }
-
+    private handleFilterChange(filter: FilterType): void {
+        this.currentFilter = filter;
+        this.deckSorter.setFilter(filter);
         const currentFile = this.plugin.app.workspace.getActiveFile();
-        this.update(currentFile);
-    };
+        this.update(currentFile, true, false);
+    }
+
+    private handleSortChange(sort: SortType): void {
+        this.currentSort = sort;
+        this.plugin.data.settings.sidebarSortOrder = sort;
+        this.saveSettingsDebounced();
+        const currentFile = this.plugin.app.workspace.getActiveFile();
+        this.update(currentFile, true, false);
+    }
 
     private handleNoteSortChange = async (sort: NoteSortType) => {
         this.currentNoteSort = sort;
@@ -232,12 +226,41 @@ export class ReviewQueueListView extends ItemView {
             this.currentViewMode = mode;
             this.plugin.data.settings.sidebarViewMode = mode;
             this.saveSettingsDebounced();
+            this.needsCountRecalculation = true;
             const currentFile = this.plugin.app.workspace.getActiveFile();
             this.update(currentFile);
         },
         150,
         true,
     );
+
+    private handleRecalculate = async () => {
+        new Notice(t("RECALCULATING_NOTES_NOTICE_START"));
+
+        const notesBefore = this.countAllNotes();
+        this.justRecalculated = true;
+        this.needsCountRecalculation = true;
+        await this.plugin.sync();
+        const notesAfter = this.countAllNotes();
+        const notesAdded = notesAfter - notesBefore;
+
+        if (notesAdded > 0) {
+            new Notice(t("RECALCULATING_NOTES_NOTICE_DONE_ADDED", { count: notesAdded }));
+        } else {
+            new Notice(t("RECALCULATING_NOTES_NOTICE_DONE_NONE"));
+        }
+
+        const currentFile = this.plugin.app.workspace.getActiveFile();
+        this.update(currentFile);
+    };
+
+    private countAllNotes(): number {
+        let count = 0;
+        for (const deck of Object.values(this.plugin.reviewDecks)) {
+            count += (deck.newNotes?.length || 0) + (deck.scheduledNotes?.length || 0);
+        }
+        return count;
+    }
 
     private saveSettingsDebounced = debounce(
         async () => {
@@ -248,41 +271,52 @@ export class ReviewQueueListView extends ItemView {
     );
 
     private update(activeFile: TFile | null, resort = true, shouldScroll = true): void {
-        if (!this.decksContainer) return;
+        if (!this.decksContainer || !this.deckReconciler) return;
 
-        if (this.scrollTimeout) {
-            window.clearTimeout(this.scrollTimeout);
-            this.scrollTimeout = null;
-        }
-
-        if (this.currentViewMode === SidebarViewMode.FlashCards) {
-            this.cachedStats = this.calculateFlashcardStats();
-        } else {
-            this.cachedStats = calculateSidebarStats(this.plugin);
-        }
-
-        if (this.stats && this.cachedStats) {
-            this.stats.updateStats(this.cachedStats);
-        }
-
-        if (this.header) {
-            this.header.setFilter(this.currentFilter);
-            this.header.setSort(this.currentSort);
-            this.header.setNoteSort(this.currentNoteSort);
-            this.header.setViewMode(this.currentViewMode);
-            const activeNotesCount = calculateActiveNotesCount(this.plugin);
-            const activeCardsCount = calculateActiveFlashcardsCount(this.plugin);
-            this.header.setActiveCount(activeNotesCount, activeCardsCount);
-            this.header.render();
-        }
-
-        // Determine if we should auto-expand based on file change
-        const shouldAutoExpand = shouldScroll;
-        this.reconcileDecks(activeFile, resort, shouldAutoExpand);
+        this.clearScrollTimeout();
+        this.updateStats();
+        this.updateHeader();
+        this.reconcileDecks(activeFile, resort, shouldScroll);
 
         if (shouldScroll) {
             this.scrollToActiveItem();
         }
+    }
+
+    private clearScrollTimeout(): void {
+        if (this.scrollTimeout) {
+            window.clearTimeout(this.scrollTimeout);
+            this.scrollTimeout = null;
+        }
+    }
+
+    private updateStats(): void {
+        if (this.needsCountRecalculation || !this.cachedStats) {
+            this.cachedStats =
+                this.currentViewMode === SidebarViewMode.FlashCards
+                    ? this.calculateFlashcardStats()
+                    : calculateSidebarStats(this.plugin);
+        }
+
+        this.stats?.updateStats(this.cachedStats);
+    }
+
+    private updateHeader(): void {
+        if (!this.header) return;
+
+        this.header.setFilter(this.currentFilter);
+        this.header.setSort(this.currentSort);
+        this.header.setNoteSort(this.currentNoteSort);
+        this.header.setViewMode(this.currentViewMode);
+
+        if (this.needsCountRecalculation) {
+            this.cachedActiveNotesCount = calculateActiveNotesCount(this.plugin);
+            this.cachedActiveCardsCount = calculateActiveFlashcardsCount(this.plugin);
+            this.needsCountRecalculation = false;
+        }
+
+        this.header.setActiveCount(this.cachedActiveNotesCount, this.cachedActiveCardsCount);
+        this.header.render();
     }
 
     private reconcileDecks(
@@ -290,91 +324,55 @@ export class ReviewQueueListView extends ItemView {
         resort = true,
         shouldAutoExpand = false,
     ): void {
-        if (!this.decksContainer) return;
+        if (!this.deckReconciler) return;
 
-        const currentPath = activeFile?.path || null;
-        if (this.justRecalculated) {
-            shouldAutoExpand = true;
-            this.justRecalculated = false;
-        }
-        this.lastActiveFilePath = currentPath;
+        this.lastActiveFilePath = activeFile?.path || null;
+        shouldAutoExpand = this.shouldAutoExpandDecks(shouldAutoExpand);
 
         if (this.currentViewMode === SidebarViewMode.FlashCards) {
-            this.reconcileFlashcardDecks(activeFile);
-            for (const component of this.deckComponents.values()) {
-                component.destroy();
+            const sortedFlashcardDecks = this.getFlashcardDecks();
+            const activeDeckName = this.deckReconciler.reconcileFlashcardDecks(
+                activeFile,
+                sortedFlashcardDecks,
+                this.currentFilter,
+                (deckName) => this.toggleDeck(deckName),
+                (groupKey) => this.toggleGroup(groupKey),
+            );
+
+            if (activeDeckName) {
+                this.scrollToActiveDeck(activeDeckName);
             }
-            this.deckComponents.clear();
         } else {
             if (resort) {
-                const decks = Object.values(this.plugin.reviewDecks);
-                this.sortedDecks = this.sortDecks(decks);
+                this.deckSorter.setFilter(this.currentFilter);
+                this.sortedDecks = this.deckSorter.sortNoteDecks(
+                    Object.values(this.plugin.reviewDecks),
+                    this.currentSort,
+                );
             }
 
-            const newDeckNames = new Set(this.sortedDecks.map((d) => d.deckName));
-
-            for (const [name, component] of this.deckComponents) {
-                if (!newDeckNames.has(name)) {
-                    component.destroy();
-                    this.deckComponents.delete(name);
-                }
-            }
-
-            for (let i = 0; i < this.sortedDecks.length; i++) {
-                const deck = this.sortedDecks[i];
-                let component = this.deckComponents.get(deck.deckName);
-
-                if (component) {
-                    component.update(
-                        activeFile,
-                        this.currentFilter,
-                        shouldAutoExpand,
-                        this.currentNoteSort,
-                        deck,
-                    );
-                } else {
-                    component = new DeckComponent(
-                        this.plugin,
-                        deck,
-                        this.decksContainer,
-                        activeFile,
-                        this.currentFilter,
-                        this.expandedDecks,
-                        this.expandedGroups,
-                        shouldAutoExpand,
-                        (deckName) => this.toggleDeck(deckName),
-                        (groupKey) => this.toggleGroup(groupKey),
-                        this.currentNoteSort,
-                    );
-                    this.deckComponents.set(deck.deckName, component);
-                    const el = component.render();
-                    if (el) {
-                        this.decksContainer.appendChild(el);
-                    }
-                }
-            }
-
-            for (const component of this.flashcardDeckComponents.values()) {
-                component.destroy();
-            }
-            this.flashcardDeckComponents.clear();
+            this.deckReconciler.reconcileNoteDecks(
+                activeFile,
+                this.sortedDecks,
+                this.currentFilter,
+                this.currentNoteSort,
+                shouldAutoExpand,
+                (deckName) => this.toggleDeck(deckName),
+                (groupKey) => this.toggleGroup(groupKey),
+            );
         }
     }
 
-    private reconcileFlashcardDecks(activeFile: TFile | null): void {
-        if (!this.decksContainer) return;
-
-        if (!this.plugin.deckTree) {
-            for (const component of this.flashcardDeckComponents.values()) {
-                component.destroy();
-            }
-            this.flashcardDeckComponents.clear();
-
-            this.decksContainer.empty();
-            const emptyMessage = this.decksContainer.createDiv("sr-empty-message");
-            emptyMessage.setText(t("NO_FLASHCARD_DECKS_FOUND"));
-            return;
+    private shouldAutoExpandDecks(shouldAutoExpand: boolean): boolean {
+        if (this.justRecalculated) {
+            this.justRecalculated = false;
+            return true;
         }
+        return shouldAutoExpand;
+    }
+
+    private getFlashcardDecks(): Deck[] {
+        if (!this.plugin.deckTree) return [];
 
         const allDecks = this.plugin.deckTree.toDeckArray();
         const flashcardDecks = allDecks.filter(
@@ -383,184 +381,7 @@ export class ReviewQueueListView extends ItemView {
                 (deck.newFlashcards.length > 0 || deck.dueFlashcards.length > 0),
         );
 
-        const sortedFlashcardDecks = this.sortFlashcardDecks(flashcardDecks);
-
-        if (sortedFlashcardDecks.length === 0) {
-            for (const component of this.flashcardDeckComponents.values()) {
-                component.destroy();
-            }
-            this.flashcardDeckComponents.clear();
-
-            this.decksContainer.empty();
-            const emptyMessage = this.decksContainer.createDiv("sr-empty-message");
-            emptyMessage.setText(t("NO_FLASHCARD_DECKS_FOUND"));
-            return;
-        }
-
-        const activeDeckName = this.findDeckContainingFile(activeFile, sortedFlashcardDecks);
-
-        if (activeDeckName && !this.expandedDecks.has(activeDeckName)) {
-            this.expandedDecks.add(activeDeckName);
-        }
-
-        const newDeckNames = new Set(sortedFlashcardDecks.map((d) => d.deckName));
-
-        for (const [name, component] of this.flashcardDeckComponents) {
-            if (!newDeckNames.has(name)) {
-                component.destroy();
-                this.flashcardDeckComponents.delete(name);
-            }
-        }
-
-        for (let i = 0; i < sortedFlashcardDecks.length; i++) {
-            const deck = sortedFlashcardDecks[i];
-            let component = this.flashcardDeckComponents.get(deck.deckName);
-
-            if (component) {
-                component.update(this.currentFilter, deck);
-            } else {
-                component = new FlashcardDeckComponent(
-                    this.plugin,
-                    deck,
-                    this.decksContainer,
-                    this.currentFilter,
-                    this.expandedDecks,
-                    this.expandedGroups,
-                    (deckName) => this.toggleDeck(deckName),
-                    (groupKey) => this.toggleGroup(groupKey),
-                );
-                this.flashcardDeckComponents.set(deck.deckName, component);
-                const el = component.render();
-                if (el) {
-                    this.decksContainer.appendChild(el);
-                }
-            }
-
-            const el = this.flashcardDeckComponents.get(deck.deckName)?.render();
-            if (el) {
-                if (deck.deckName === activeDeckName) {
-                    el.addClass("sr-deck-active");
-                } else {
-                    el.removeClass("sr-deck-active");
-                }
-            }
-        }
-
-        if (activeDeckName) {
-            this.scrollToActiveDeck(activeDeckName);
-        }
-    }
-
-    private findDeckContainingFile(activeFile: TFile | null, decks: Deck[]): string | null {
-        if (!activeFile) return null;
-
-        for (const deck of decks) {
-            for (const card of deck.newFlashcards) {
-                if (card.question?.note?.filePath === activeFile.path) {
-                    return deck.deckName;
-                }
-            }
-
-            for (const card of deck.dueFlashcards) {
-                if (card.question?.note?.filePath === activeFile.path) {
-                    return deck.deckName;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private scrollToActiveDeck(deckName: string): void {
-        if (this.scrollFrameId) {
-            window.cancelAnimationFrame(this.scrollFrameId);
-            this.scrollFrameId = null;
-        }
-
-        this.scrollFrameId = window.requestAnimationFrame(() => {
-            const activeDeck = this.contentEl.querySelector(".sr-flashcard-deck.sr-deck-active");
-            if (activeDeck) {
-                activeDeck.scrollIntoView({ behavior: "smooth", block: "center" });
-            }
-            this.scrollFrameId = null;
-        });
-    }
-
-    private scrollToActiveItem(): void {
-        if (this.scrollFrameId) {
-            window.cancelAnimationFrame(this.scrollFrameId);
-            this.scrollFrameId = null;
-        }
-
-        this.scrollFrameId = window.requestAnimationFrame(() => {
-            const activeItem = this.contentEl.querySelector(".sr-new-note-item.is-active");
-            if (activeItem) {
-                activeItem.scrollIntoView({ behavior: "smooth", block: "center" });
-            }
-            this.scrollFrameId = null;
-        });
-    }
-
-    private getDeckStats(deck: ReviewDeck): { minDate: number; maxDate: number; count: number } {
-        const cached = this.deckStatsCache.get(deck.deckName);
-        if (cached) {
-            return cached;
-        }
-
-        const minDate = this.calculateMinDueDate(deck);
-        const maxDate = this.calculateMaxDueDate(deck);
-        const count = this.calculateDeckNotesCount(deck);
-
-        const stats = { minDate, maxDate, count, timestamp: Date.now() };
-        this.deckStatsCache.set(deck.deckName, stats);
-        return stats;
-    }
-
-    private calculateMinDueDate(deck: ReviewDeck): number {
-        let minDate = Infinity;
-        if (deck.dueNotesCount > 0 && deck.scheduledNotes.length > 0) {
-            for (const note of deck.scheduledNotes) {
-                if (note.dueUnix && note.dueUnix < minDate) {
-                    minDate = note.dueUnix;
-                }
-            }
-        }
-        return minDate === Infinity ? Date.now() : minDate;
-    }
-
-    private calculateMaxDueDate(deck: ReviewDeck): number {
-        let maxDate = 0;
-        if (deck.dueNotesCount > 0 && deck.scheduledNotes.length > 0) {
-            for (const note of deck.scheduledNotes) {
-                if (note.dueUnix && note.dueUnix > maxDate) {
-                    maxDate = note.dueUnix;
-                }
-            }
-        }
-        return maxDate === 0 ? Date.now() : maxDate;
-    }
-
-    private calculateDeckNotesCount(deck: ReviewDeck): number {
-        const newNotesCount = deck.newNotes?.length || 0;
-        if (!deck.scheduledNotes) {
-            return this.currentFilter === FilterType.REVIEWED ? 0 : newNotesCount;
-        }
-        switch (this.currentFilter) {
-            case FilterType.ALL:
-                return newNotesCount + (deck.scheduledNotes?.length || 0);
-            case FilterType.ACTIVE: {
-                const dueCount = deck.scheduledNotes.filter(
-                    (note: SchedNote) => calculateDaysUntilDue(note.dueUnix, this.plugin) <= 0,
-                ).length;
-                return newNotesCount + dueCount;
-            }
-            case FilterType.REVIEWED: {
-                return deck.scheduledNotes.filter(
-                    (note: SchedNote) => calculateDaysUntilDue(note.dueUnix, this.plugin) > 0,
-                ).length;
-            }
-        }
-        return 0;
+        return this.deckSorter.sortFlashcardDecks(flashcardDecks, this.currentSort);
     }
 
     private calculateFlashcardStats(): Stats {
@@ -588,110 +409,35 @@ export class ReviewQueueListView extends ItemView {
         return { totalDue, totalNew };
     }
 
-    private sortDecks(decks: ReviewDeck[]): ReviewDeck[] {
-        this.deckStatsCache.clear();
+    private scrollToActiveDeck(deckName: string): void {
+        this.cancelPendingScroll();
 
-        const sorted = [...decks];
-
-        switch (this.currentSort) {
-            case SortType.DATE_ASC:
-                sorted.sort((a, b) => this.getDeckStats(a).minDate - this.getDeckStats(b).minDate);
-                break;
-            case SortType.DATE_DESC:
-                sorted.sort((a, b) => this.getDeckStats(b).maxDate - this.getDeckStats(a).maxDate);
-                break;
-            case SortType.COUNT_DESC:
-                sorted.sort((a, b) => this.getDeckStats(b).count - this.getDeckStats(a).count);
-                break;
-            case SortType.COUNT_ASC:
-                sorted.sort((a, b) => this.getDeckStats(a).count - this.getDeckStats(b).count);
-                break;
-            case SortType.NAME_ASC:
-                sorted.sort((a, b) => a.deckName.localeCompare(b.deckName));
-                break;
-            case SortType.NAME_DESC:
-                sorted.sort((a, b) => b.deckName.localeCompare(a.deckName));
-                break;
-        }
-
-        return sorted;
-    }
-
-    private sortFlashcardDecks(decks: Deck[]): Deck[] {
-        const sorted = [...decks];
-
-        switch (this.currentSort) {
-            case SortType.DATE_ASC:
-                sorted.sort((a, b) => {
-                    const aMinDate = this.getFlashcardDeckMinDueDate(a);
-                    const bMinDate = this.getFlashcardDeckMinDueDate(b);
-                    return aMinDate - bMinDate;
-                });
-                break;
-            case SortType.DATE_DESC:
-                sorted.sort((a, b) => {
-                    const aMaxDate = this.getFlashcardDeckMaxDueDate(a);
-                    const bMaxDate = this.getFlashcardDeckMaxDueDate(b);
-                    return bMaxDate - aMaxDate;
-                });
-                break;
-            case SortType.COUNT_DESC:
-                sorted.sort((a, b) => {
-                    const aCount = (a.newFlashcards?.length || 0) + (a.dueFlashcards?.length || 0);
-                    const bCount = (b.newFlashcards?.length || 0) + (b.dueFlashcards?.length || 0);
-                    return bCount - aCount;
-                });
-                break;
-            case SortType.COUNT_ASC:
-                sorted.sort((a, b) => {
-                    const aCount = (a.newFlashcards?.length || 0) + (a.dueFlashcards?.length || 0);
-                    const bCount = (b.newFlashcards?.length || 0) + (b.dueFlashcards?.length || 0);
-                    return aCount - bCount;
-                });
-                break;
-            case SortType.NAME_ASC:
-                sorted.sort((a, b) => a.deckName.localeCompare(b.deckName));
-                break;
-            case SortType.NAME_DESC:
-                sorted.sort((a, b) => b.deckName.localeCompare(a.deckName));
-                break;
-        }
-
-        return sorted;
-    }
-
-    private getFlashcardDeckMinDueDate(deck: Deck): number {
-        let minDate = Infinity;
-
-        if (deck.dueFlashcards && deck.dueFlashcards.length > 0) {
-            for (const card of deck.dueFlashcards) {
-                if (card.isDue && card.scheduleInfo?.dueDate) {
-                    const dueUnix = card.scheduleInfo.dueDate.valueOf();
-                    if (dueUnix < minDate) {
-                        minDate = dueUnix;
-                    }
-                }
+        this.scrollFrameId = window.requestAnimationFrame(() => {
+            const activeDeck = this.contentEl.querySelector(".sr-flashcard-deck.sr-deck-active");
+            if (activeDeck) {
+                activeDeck.scrollIntoView({ behavior: "smooth", block: "center" });
             }
-        }
-
-        return minDate === Infinity ? Date.now() : minDate;
+            this.scrollFrameId = null;
+        });
     }
 
-    private getFlashcardDeckMaxDueDate(deck: Deck): number {
-        let maxDate = 0;
+    private scrollToActiveItem(): void {
+        this.cancelPendingScroll();
 
-        if (deck.dueFlashcards && deck.dueFlashcards.length > 0) {
-            for (const card of deck.dueFlashcards) {
-                if (card.scheduleInfo?.dueDate) {
-                    const dueUnix = card.scheduleInfo.dueDate.valueOf();
-                    if (dueUnix > maxDate) {
-                        maxDate = dueUnix;
-                    }
-                }
+        this.scrollFrameId = window.requestAnimationFrame(() => {
+            const activeItem = this.contentEl.querySelector(".sr-new-note-item.is-active");
+            if (activeItem) {
+                activeItem.scrollIntoView({ behavior: "smooth", block: "center" });
             }
-        }
+            this.scrollFrameId = null;
+        });
+    }
 
-        return maxDate === 0 ? Date.now() : maxDate;
+    private cancelPendingScroll(): void {
+        if (this.scrollFrameId) {
+            window.cancelAnimationFrame(this.scrollFrameId);
+            this.scrollFrameId = null;
+        }
     }
 
     private toggleDeck(deckName: string): void {
@@ -723,234 +469,85 @@ export class ReviewQueueListView extends ItemView {
 
     private expandAll(): void {
         if (this.currentViewMode === SidebarViewMode.FlashCards) {
-            if (this.plugin.deckTree) {
-                const allDecks = this.plugin.deckTree.toDeckArray();
-                allDecks.forEach((deck) => {
-                    if (!deck.isRootDeck) {
-                        this.expandedDecks.add(deck.deckName);
-                    }
-                });
-            }
-
-            const allGroupKeys = new Set<string>();
-            if (this.plugin.deckTree) {
-                const allDecks = this.plugin.deckTree.toDeckArray();
-                for (const deck of allDecks) {
-                    if (deck.isRootDeck) continue;
-
-                    if (deck.newFlashcards?.length > 0) {
-                        allGroupKeys.add(`${deck.deckName}::${t("NEW_CARDS")}`);
-                    }
-                    if (deck.dueFlashcards?.length > 0) {
-                        allGroupKeys.add(`${deck.deckName}::${t("DUE_CARDS")}`);
-                        allGroupKeys.add(`${deck.deckName}::Reviewed`);
-                    }
-                }
-            }
-            this.expandedGroups = allGroupKeys;
+            this.expandAllFlashcardDecks();
         } else {
-            Object.values(this.plugin.reviewDecks).forEach((deck) => {
-                this.expandedDecks.add(deck.deckName);
-            });
-
-            const allGroupKeys = new Set<string>();
-            for (const deck of Object.values(this.plugin.reviewDecks)) {
-                if (deck.newNotes?.length > 0) {
-                    allGroupKeys.add(createGroupKey(deck.deckName, t("NEW")));
-                }
-                if (deck.scheduledNotes) {
-                    const uniqueGroupTitles = new Set<string>();
-                    for (const sNote of deck.scheduledNotes) {
-                        const nDays = calculateDaysUntilDue(sNote.dueUnix, this.plugin);
-                        const groupTitle = getGroupTitle(nDays, sNote.dueUnix, this.plugin);
-                        uniqueGroupTitles.add(groupTitle);
-                    }
-                    uniqueGroupTitles.forEach((title) => {
-                        allGroupKeys.add(createGroupKey(deck.deckName, title));
-                    });
-                }
-            }
-            this.expandedGroups = allGroupKeys;
+            this.expandAllNoteDecks();
         }
 
         const currentFile = this.plugin.app.workspace.getActiveFile();
         this.update(currentFile, false, false);
     }
 
+    private expandAllFlashcardDecks(): void {
+        if (!this.plugin.deckTree) return;
+
+        const allDecks = this.plugin.deckTree.toDeckArray();
+        allDecks.forEach((deck) => {
+            if (!deck.isRootDeck) {
+                this.expandedDecks.add(deck.deckName);
+            }
+        });
+
+        const allGroupKeys = new Set<string>();
+        for (const deck of allDecks) {
+            if (deck.isRootDeck) continue;
+
+            if (deck.newFlashcards?.length > 0) {
+                allGroupKeys.add(`${deck.deckName}::${t("NEW_CARDS")}`);
+            }
+            if (deck.dueFlashcards?.length > 0) {
+                allGroupKeys.add(`${deck.deckName}::${t("DUE_CARDS")}`);
+                allGroupKeys.add(`${deck.deckName}::Reviewed`);
+            }
+        }
+        this.expandedGroups = allGroupKeys;
+    }
+
+    private expandAllNoteDecks(): void {
+        Object.values(this.plugin.reviewDecks).forEach((deck) => {
+            this.expandedDecks.add(deck.deckName);
+        });
+
+        const allGroupKeys = new Set<string>();
+        for (const deck of Object.values(this.plugin.reviewDecks)) {
+            if (deck.newNotes?.length > 0) {
+                allGroupKeys.add(createGroupKey(deck.deckName, t("NEW")));
+            }
+            if (deck.scheduledNotes) {
+                const uniqueGroupTitles = new Set<string>();
+                for (const sNote of deck.scheduledNotes) {
+                    const nDays = calculateDaysUntilDue(sNote.dueUnix, this.plugin);
+                    const groupTitle = getGroupTitle(nDays, sNote.dueUnix, this.plugin);
+                    uniqueGroupTitles.add(groupTitle);
+                }
+                uniqueGroupTitles.forEach((title) => {
+                    allGroupKeys.add(createGroupKey(deck.deckName, title));
+                });
+            }
+        }
+        this.expandedGroups = allGroupKeys;
+    }
+
     private openRandomNew = async (): Promise<void> => {
         if (this.currentViewMode === SidebarViewMode.FlashCards) {
-            await this.openRandomNewCard();
+            await this.randomReviewService.openRandomNewCard();
         } else {
-            await this.openRandomNewNote();
+            await this.randomReviewService.openRandomNewNote();
         }
     };
 
     private openRandomDue = async (): Promise<void> => {
         if (this.currentViewMode === SidebarViewMode.FlashCards) {
-            await this.openRandomDueCard();
+            await this.randomReviewService.openRandomDueCard();
         } else {
-            await this.openRandomDueNote();
+            await this.randomReviewService.openRandomDueNote();
         }
     };
 
-    private async openRandomNewCard(): Promise<void> {
-        if (!this.plugin.deckTree) {
-            return;
-        }
-
-        const allDecks = this.plugin.deckTree.toDeckArray();
-        const allNewCards: Array<{ card: Card; deck: Deck }> = [];
-
-        for (const deck of allDecks) {
-            if (deck.newFlashcards && deck.newFlashcards.length > 0) {
-                for (const card of deck.newFlashcards) {
-                    allNewCards.push({ card, deck });
-                }
-            }
-        }
-
-        if (allNewCards.length === 0) {
-            return;
-        }
-
-        const randomIndex = Math.floor(Math.random() * allNewCards.length);
-        const { card, deck } = allNewCards[randomIndex];
-
-        await this.plugin.sync();
-
-        const tempDeck = new Deck(deck.deckName, null);
-        tempDeck.newFlashcards.push(card);
-
-        const rootDeck = new Deck(deck.deckName, null);
-        rootDeck.subdecks.push(tempDeck);
-
-        if (this.plugin.data.settings.openViewInNewTab) {
-            await this.plugin.tabViewManager.openSRTabView(
-                await import("src/core/scheduling/FlashcardReviewSequencer").then(
-                    (m) => m.FlashcardReviewMode.Review,
-                ),
-            );
-        } else {
-            this.plugin.openFlashcardModal(rootDeck, rootDeck, FlashcardReviewMode.Review);
-        }
-    }
-
-    private async openRandomDueCard(): Promise<void> {
-        if (!this.plugin.deckTree) {
-            return;
-        }
-
-        const allDecks = this.plugin.deckTree.toDeckArray();
-        const allDueCards: Array<{ card: any; deck: Deck }> = [];
-
-        for (const deck of allDecks) {
-            if (deck.dueFlashcards && deck.dueFlashcards.length > 0) {
-                for (const card of deck.dueFlashcards) {
-                    if (card.isDue) {
-                        allDueCards.push({ card, deck });
-                    }
-                }
-            }
-        }
-
-        if (allDueCards.length === 0) {
-            return;
-        }
-
-        const randomIndex = Math.floor(Math.random() * allDueCards.length);
-        const { card, deck } = allDueCards[randomIndex];
-
-        await this.plugin.sync();
-
-        const tempDeck = new Deck(deck.deckName, null);
-        tempDeck.dueFlashcards.push(card);
-
-        const rootDeck = new Deck(deck.deckName, null);
-        rootDeck.subdecks.push(tempDeck);
-
-        if (this.plugin.data.settings.openViewInNewTab) {
-            await this.plugin.tabViewManager.openSRTabView(
-                (await import("src/core/scheduling/FlashcardReviewSequencer")).FlashcardReviewMode
-                    .Review,
-            );
-        } else {
-            (this.plugin as any).openFlashcardModal(
-                rootDeck,
-                rootDeck,
-                (await import("src/core/scheduling/FlashcardReviewSequencer")).FlashcardReviewMode
-                    .Review,
-            );
-        }
-    }
-
-    private async openRandomNewNote(): Promise<void> {
-        const allNewNotes: SchedNote[] = [];
-
-        for (const deck of Object.values(this.plugin.reviewDecks)) {
-            if (deck.newNotes && deck.newNotes.length > 0) {
-                allNewNotes.push(...deck.newNotes);
-            }
-        }
-
-        if (allNewNotes.length === 0) {
-            return;
-        }
-
-        const randomIndex = Math.floor(Math.random() * allNewNotes.length);
-        const randomNote = allNewNotes[randomIndex];
-
-        this.plugin.lastSelectedReviewDeck = randomNote.note.path;
-        await this.plugin.app.workspace.getLeaf().openFile(randomNote.note);
-
-        const { DataLocation } = await import("src/dataStore/dataLocation");
-        if (this.plugin.data.settings.dataLocation !== DataLocation.SaveOnNoteFile) {
-            this.plugin.reviewFloatBar.display(randomNote.item);
-        }
-    }
-
-    private async openRandomDueNote(): Promise<void> {
-        const allDueNotes: SchedNote[] = [];
-
-        for (const deck of Object.values(this.plugin.reviewDecks)) {
-            if (deck.scheduledNotes && deck.scheduledNotes.length > 0) {
-                for (const note of deck.scheduledNotes) {
-                    if (note.dueUnix <= Date.now()) {
-                        allDueNotes.push(note);
-                    }
-                }
-            }
-        }
-
-        if (allDueNotes.length === 0) {
-            return;
-        }
-
-        const randomIndex = Math.floor(Math.random() * allDueNotes.length);
-        const randomNote = allDueNotes[randomIndex];
-
-        this.plugin.lastSelectedReviewDeck = randomNote.note.path;
-        await this.plugin.app.workspace.getLeaf().openFile(randomNote.note);
-
-        const { DataLocation } = await import("src/dataStore/dataLocation");
-        if (this.plugin.data.settings.dataLocation !== DataLocation.SaveOnNoteFile) {
-            this.plugin.reviewFloatBar.display(randomNote.item);
-        }
-    }
-
     public onunload(): void {
-        for (const component of this.deckComponents.values()) {
-            component.destroy();
-        }
-        this.deckComponents.clear();
-
-        for (const component of this.flashcardDeckComponents.values()) {
-            component.destroy();
-        }
-        this.flashcardDeckComponents.clear();
-
-        if (this.stats) {
-            this.stats.destroy();
-        }
+        this.deckReconciler?.cleanupNoteComponents();
+        this.deckReconciler?.cleanupFlashcardComponents();
+        this.stats?.destroy();
 
         this.header = null;
         this.stats = null;
@@ -958,6 +555,7 @@ export class ReviewQueueListView extends ItemView {
         this.decksContainer = null;
         this.cachedStats = null;
         this.lastActiveFilePath = null;
+        this.deckReconciler = null;
 
         if (this.scrollTimeout) {
             window.clearTimeout(this.scrollTimeout);

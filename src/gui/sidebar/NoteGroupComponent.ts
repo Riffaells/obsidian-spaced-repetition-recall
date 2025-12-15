@@ -123,7 +123,10 @@ export class NoteGroupComponent {
         // Update header
         const header = this.groupEl.querySelector(".sr-new-note-group-header");
         if (header) {
-            header.setText(`${this.title} (${this.notes.length})`);
+            const newText = `${this.title} (${this.notes.length})`;
+            if (header.textContent !== newText) {
+                header.setText(newText);
+            }
             if (this.expandedGroups.has(this.groupKey)) {
                 header.addClass("sr-group-expanded");
             } else {
@@ -133,20 +136,58 @@ export class NoteGroupComponent {
 
         const notesList = this.groupEl.querySelector(".sr-new-notes-list") as HTMLElement;
         if (notesList) {
-            if (this.expandedGroups.has(this.groupKey)) {
-                notesList.style.display = "block";
-            } else {
-                notesList.style.display = "none";
+            const isExpanded = this.expandedGroups.has(this.groupKey);
+            const shouldDisplay = isExpanded ? "block" : "none";
+            
+            if (notesList.style.display !== shouldDisplay) {
+                notesList.style.display = shouldDisplay;
             }
 
-            notesList.empty();
-
-            // Abort previous notes listeners
-            this.notesAbortController.abort();
-            this.notesAbortController = new AbortController();
-
-            this.renderNotes(notesList);
+            // Only re-render if expanded
+            if (isExpanded) {
+                this.updateNotesList(notesList);
+            }
         }
+    }
+
+    private updateNotesList(container: HTMLElement): void {
+        const sortedNotes = this.sortNotes(this.notes);
+        const existingItems = Array.from(container.querySelectorAll(".sr-new-note-item"));
+        
+        // Quick check: if only active state changed, just update classes
+        if (existingItems.length === sortedNotes.length) {
+            let onlyActiveChanged = true;
+            for (let i = 0; i < sortedNotes.length; i++) {
+                const noteEl = existingItems[i] as HTMLElement;
+                const note = sortedNotes[i];
+                const titleEl = noteEl.querySelector(".sr-new-note-title");
+                if (!titleEl || titleEl.textContent !== note.note.basename) {
+                    onlyActiveChanged = false;
+                    break;
+                }
+            }
+            
+            if (onlyActiveChanged) {
+                // Just update active states
+                for (let i = 0; i < sortedNotes.length; i++) {
+                    const noteEl = existingItems[i] as HTMLElement;
+                    const note = sortedNotes[i];
+                    const fileIsOpen = this.activeFile && note.note.path === this.activeFile.path;
+                    if (fileIsOpen) {
+                        noteEl.addClass("is-active");
+                    } else {
+                        noteEl.removeClass("is-active");
+                    }
+                }
+                return;
+            }
+        }
+
+        // Full re-render needed
+        container.empty();
+        this.notesAbortController.abort();
+        this.notesAbortController = new AbortController();
+        this.renderNotes(container);
     }
 
     private renderNotes(container: HTMLElement): void {

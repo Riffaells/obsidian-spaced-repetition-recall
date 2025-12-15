@@ -18,36 +18,33 @@ interface InfoSectionProps {
 export function createInfoSection(containerEl: HTMLElement, props: InfoSectionProps): HTMLElement {
     const section = containerEl.createDiv("sr-info-section");
 
-    // Title with icon
-    const titleContainer = section.createDiv({ cls: "sr-info-title-container" });
+    // Header with icon and title
+    const headerContainer = section.createDiv({ cls: "sr-info-section-header" });
 
     if (props.icon) {
-        const iconEl = titleContainer.createSpan({ cls: "sr-info-icon" });
+        const iconEl = headerContainer.createSpan({ cls: "sr-info-section-icon" });
         setIcon(iconEl, props.icon);
     }
 
-    const title = titleContainer.createEl("h3", { cls: "sr-info-title" });
+    const title = headerContainer.createEl("h3", { cls: "sr-info-section-title" });
     title.textContent = props.title;
 
     // Description
-    const desc = section.createDiv({ cls: "sr-info-description" });
-    desc.innerHTML = `<p>${props.description}</p>`;
+    const desc = section.createDiv({ cls: "sr-info-section-description" });
+    desc.innerHTML = props.description;
 
     // Items list
     if (props.items && props.items.length > 0) {
-        const list = desc.createEl("ul");
+        const list = section.createEl("ul", { cls: "sr-info-section-items" });
         for (const item of props.items) {
             list.createEl("li").innerHTML = item;
         }
     }
 
-    // Tip with lightbulb icon
+    // Tip
     if (props.tip) {
-        const tipContainer = desc.createDiv({ cls: "sr-info-tip" });
-        const tipIcon = tipContainer.createSpan({ cls: "sr-info-tip-icon" });
-        setIcon(tipIcon, "lightbulb");
-        const tipText = tipContainer.createSpan();
-        tipText.textContent = props.tip;
+        const tipContainer = section.createDiv({ cls: "sr-info-section-tip" });
+        tipContainer.textContent = `💡 ${props.tip}`;
     }
 
     return section;

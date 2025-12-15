@@ -7,7 +7,7 @@
  * @module parser/rule-based/RuleBasedParser
  */
 
-import { FlashcardRule, ParsedFlashcard, ExtractedCard } from "./types";
+import { FlashcardRule, ParsedFlashcard, ExtractedCard, ExtractionContext } from "./types";
 import { DocumentStructureParser } from "./DocumentStructureParser";
 import { RuleMatcher, MatchContext, RuleMatch } from "./RuleMatcher";
 import { HeaderExtractor } from "./HeaderExtractor";
@@ -81,17 +81,21 @@ export class RuleBasedParser {
             // Delegate to type-specific extractor based on rule type
             let extractedCards: ExtractedCard[] = [];
 
+            // Create extraction context with vars from tag pattern
+            const extractionContext: ExtractionContext = {
+                lineOffset: 0,
+                headersPath: [],
+                skipCodeBlocks: true,
+                skipHtmlComments: true,
+                vars: ruleMatch.vars,
+            };
+
             switch (rule.type) {
                 case "header":
                     extractedCards = this.headerExtractor.extract(
                         docStructure.flatHeadings,
                         rule.config,
-                        {
-                            lineOffset: 0,
-                            headersPath: [],
-                            skipCodeBlocks: true,
-                            skipHtmlComments: true,
-                        },
+                        extractionContext,
                     );
                     break;
 
@@ -99,12 +103,7 @@ export class RuleBasedParser {
                     extractedCards = this.inlineExtractor.extract(
                         noteContext.text,
                         rule.config,
-                        {
-                            lineOffset: 0,
-                            headersPath: [],
-                            skipCodeBlocks: true,
-                            skipHtmlComments: true,
-                        },
+                        extractionContext,
                         docStructure.codeBlocks,
                     );
                     break;
@@ -113,12 +112,7 @@ export class RuleBasedParser {
                     extractedCards = this.multilineExtractor.extract(
                         noteContext.text,
                         rule.config,
-                        {
-                            lineOffset: 0,
-                            headersPath: [],
-                            skipCodeBlocks: true,
-                            skipHtmlComments: true,
-                        },
+                        extractionContext,
                         docStructure.codeBlocks,
                         docStructure.htmlComments,
                     );
