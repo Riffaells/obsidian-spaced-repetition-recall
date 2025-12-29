@@ -266,6 +266,12 @@ export default {
     REVIEWED: "Изученные",
     COLLAPSE_ALL: "Свернуть все",
     EXPAND_ALL: "Развернуть все",
+    SHOW_MORE_GROUPS: "Показать еще группы",
+    SHOW_MORE_GROUPS_BATCH: "Показать еще ${count}",
+    SHOW_ALL_GROUPS: "Показать все ${count}",
+    SHOW_MORE_NOTES: "Показать еще заметки",
+    SHOW_MORE_NOTES_BATCH: "Показать еще ${count}",
+    SHOW_ALL_NOTES: "Показать все ${count}",
     SORT: "Сортировка",
     SORT_DATE_ASC: "По дате: Скоро → Позже",
     SORT_DATE_DESC: "По дате: Позже → Скоро",
@@ -286,6 +292,13 @@ export default {
     SIDEBAR_SHOW_RELATIVE_DAYS: "Показывать относительные дни",
     SIDEBAR_SHOW_RELATIVE_DAYS_DESC:
         "Показывать 'Через 2 дн.', 'Просрочено на 3 дн.' вместо дат для групп",
+    SIDEBAR_INITIAL_GROUPS_LIMIT: "Начальный лимит групп",
+    SIDEBAR_INITIAL_GROUPS_LIMIT_DESC:
+        "Количество групп для отображения при раскрытии колоды. Нажмите 'Показать еще' чтобы увидеть дополнительные группы.",
+    SIDEBAR_INITIAL_NOTES_LIMIT: "Начальный лимит заметок в группе",
+    SIDEBAR_INITIAL_NOTES_LIMIT_DESC:
+        "Количество заметок для отображения в каждой группе. Нажмите 'Показать еще' чтобы увидеть дополнительные заметки.",
+    EXPAND_FULL_BRANCH: "Развернуть всю ветку",
     NOTES_REVIEW_QUEUE: "Очередь заметок на повторение",
     CLOSE: "Закрыть",
     NEW: "Новые",
@@ -434,6 +447,7 @@ export default {
     // data.ts
     DATA_UNTRACKED_ITEMS: "Отменено отслеживание ${numItems} элементов${nulrstr}",
     DATA_UNABLE_TO_SAVE: "Не удалось сохранить файл данных!",
+    DATA_CORRUPTION_FIXED: "Исправлено ${count} проблем с повреждением данных. Создана резервная копия.",
     DATA_FOLDER_UNTRACKED:
         "В папке ${folderPath} ${totalRemoved} файлов больше не отслеживаются для повторения",
     DATA_ADDED_REMOVED_ITEMS:

@@ -46,7 +46,6 @@ export function groupNotes(
     plugin: SRPlugin,
     filter: FilterType,
 ): Record<string, SchedNote[]> {
-    const groupedNotes: Record<string, SchedNote[]> = {};
     const maxDaysToRender = plugin.data.settings.maxNDaysNotesReviewQueue;
 
     // Pre-filter and group in one pass
@@ -71,17 +70,33 @@ export function groupNotes(
         filteredNotes.push({ note: sNote, nDays, groupTitle });
     }
 
-    // Sort only filtered notes
+    // Sort filtered notes by due date
     filteredNotes.sort((a, b) =>
         filter === FilterType.REVIEWED ? b.note.dueUnix - a.note.dueUnix : a.note.dueUnix - b.note.dueUnix
     );
 
-    // Group sorted notes
+    // Group sorted notes with nDays for later sorting
+    const groupsWithDays: Map<string, { notes: SchedNote[]; minDays: number }> = new Map();
+    
     for (const item of filteredNotes) {
-        if (!groupedNotes[item.groupTitle]) {
-            groupedNotes[item.groupTitle] = [];
+        const existing = groupsWithDays.get(item.groupTitle);
+        if (existing) {
+            existing.notes.push(item.note);
+            existing.minDays = Math.min(existing.minDays, item.nDays);
+        } else {
+            groupsWithDays.set(item.groupTitle, { notes: [item.note], minDays: item.nDays });
         }
-        groupedNotes[item.groupTitle].push(item.note);
+    }
+
+    // Sort groups by minDays (overdue first, then today, then future)
+    const sortedGroups = Array.from(groupsWithDays.entries()).sort((a, b) => {
+        return a[1].minDays - b[1].minDays;
+    });
+
+    // Convert back to Record
+    const groupedNotes: Record<string, SchedNote[]> = {};
+    for (const [title, data] of sortedGroups) {
+        groupedNotes[title] = data.notes;
     }
 
     return groupedNotes;

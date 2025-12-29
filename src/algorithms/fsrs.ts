@@ -10,13 +10,7 @@ import deepcopy from "deepcopy";
 import { AnkiData } from "./anki";
 import { RepetitionItem, ReviewResult } from "src/dataStore/repetitionItem";
 import { IAdapter } from "src/dataStore/adapter";
-
-// https://github.com/mgmeyers/obsidian-kanban/blob/main/src/Settings.ts
-let applyDebounceTimer = 0;
-function applySettingsUpdate(callback: () => void): void {
-    clearTimeout(applyDebounceTimer);
-    applyDebounceTimer = window.setTimeout(callback, 512);
-}
+import { applySettingsUpdate } from "src/gui/settings/utils";
 
 export type FsrsData = tsfsrs.Card;
 

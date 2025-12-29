@@ -11,7 +11,7 @@ import { SRSettings } from "src/settings/settings";
 import { Tags } from "src/utils/tags";
 import { globalDateProvider } from "src/utils/DateProvider";
 import { DateUtils } from "src/utils/utils_recall";
-import { SettingsUtil } from "src/settings/settings";
+import { TagService } from "src/core/services/TagService";
 
 type Tsync = (notes: TFile[], reviewDecks?: Decks, easeByPath?: NoteEaseList) => Promise<void>;
 export type TrespResult = { sNote: SchedNote; buryList?: string[] };
@@ -68,7 +68,7 @@ export abstract class IReviewNote {
         const store = DataStore.getInstance();
         // const settings = plugin.data.settings;
 
-        if (SettingsUtil.isPathInNoteIgnoreFolder(settings, note.path)) {
+        if (TagService.isPathInNoteIgnoreFolder(settings, note.path)) {
             new Notice(t("NOTE_IN_IGNORED_FOLDER"));
             return;
         }
@@ -187,7 +187,7 @@ export class RNonTrackfiles extends IReviewNote {
     // @logExecutionTime()
     async sync(notes: TFile[], reviewDecks: Decks, easeByPath: NoteEaseList): Promise<void> {
         // const settings = this.data.settings;
-        this.store.data.queues.buildQueue();
+        this.store.data.queues.buildQueue(this.store);
 
         // check trackfile
         await this.store.reLoad();

@@ -24,6 +24,10 @@ export interface ITrackedFile {
      * @type {string[]} only save reviewnote tags, exclude flashcards tags.
      */
     tags: string[];
+    /**
+     * @type {number} transient index for repository lookups
+     */
+    index?: number;
 }
 
 /**
@@ -74,6 +78,10 @@ export class TrackedFile implements ITrackedFile {
      * @type {string[]}
      */
     tags: string[];
+    /**
+     * @type {number} transient index for repository lookups
+     */
+    index: number;
     // private _isTracked?: boolean;
 
     static create(trackedfile: ITrackedFile): TrackedFile {
@@ -90,6 +98,7 @@ export class TrackedFile implements ITrackedFile {
     constructor(path: string = "", type: RPITEMTYPE = RPITEMTYPE.NOTE, dname?: string) {
         this.path = path;
         this.items = {};
+        this.index = -1;
         if (type === RPITEMTYPE.CARD) {
             this.cardItems = [];
         }

@@ -1,6 +1,6 @@
 import { Platform } from "obsidian";
 import { t } from "src/lang/helpers";
-import { NoteSortType, SidebarViewMode, SortType } from "src/gui/sidebar/types";
+import { CardSortType, NoteSortType, SidebarViewMode, SortType } from "src/gui/sidebar/types";
 import { algorithms } from "src/algorithms/algorithms_switch";
 import { DataLocation } from "src/dataStore/dataLocation";
 import { DEFAULT_responseOptionBtnsText } from "src/gui/settings-views/algorithmSetting";
@@ -165,7 +165,10 @@ export const DEFAULT_SETTINGS: SRSettings = {
     sidebarShowRelativeDays: true,
     sidebarSortOrder: SortType.DATE_ASC,
     sidebarNoteSortOrder: NoteSortType.DEFAULT,
+    sidebarCardSortOrder: CardSortType.DEFAULT,
     sidebarViewMode: SidebarViewMode.Notes,
+    sidebarInitialGroupsLimit: 20,
+    sidebarInitialNotesLimit: 10,
 
     // algorithm
     baseEase: 250,

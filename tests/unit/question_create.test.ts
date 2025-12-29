@@ -65,7 +65,7 @@ describe("Question.Create", () => {
         expect(question.topicPathList.list[0].formatAsTag()).toBe("#Folder");
     });
 
-    test("should include BOTH folder deck and tag deck", () => {
+    test("should prioritize folder deck over tag", () => {
         const settings = { convertFoldersToDecks: true, editLaterTag: "#edit-later" } as SRSettings;
         const flashcard: ParsedFlashcard = {
             id: "1",
@@ -81,9 +81,8 @@ describe("Question.Create", () => {
 
         const question = Question.Create(settings, flashcard, CardType.SingleLineBasic, rule, noteFile, TextDirection.Ltr, folderTopicPath);
 
-        expect(question.topicPathList.list.length).toBe(2);
-        const paths = question.topicPathList.list.map(p => p.formatAsTag());
-        expect(paths).toContain("#mytag");
-        expect(paths).toContain("#Folder");
+        // Should have only 1 topic path: folder path takes priority over tags
+        expect(question.topicPathList.list.length).toBe(1);
+        expect(question.topicPathList.list[0].formatAsTag()).toBe("#Folder");
     });
 });

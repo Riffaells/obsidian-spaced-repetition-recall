@@ -4,7 +4,7 @@ import { DeckComponent } from "../DeckComponent";
 import { FlashcardDeckComponent } from "../FlashcardDeckComponent";
 import { ReviewDeck } from "src/core/models/ReviewDeck";
 import { Deck } from "src/core/models/Deck";
-import { FilterType, NoteSortType } from "../types";
+import { CardSortType, FilterType, NoteSortType } from "../types";
 import { t } from "src/lang/helpers";
 
 /**
@@ -17,6 +17,7 @@ export class DeckReconciler {
     private readonly expandedGroups: Set<string>;
     private readonly deckComponents: Map<string, DeckComponent>;
     private readonly flashcardDeckComponents: Map<string, FlashcardDeckComponent>;
+    private cardSort: CardSortType = CardSortType.DEFAULT;
 
     constructor(
         plugin: SRPlugin,
@@ -25,6 +26,7 @@ export class DeckReconciler {
         expandedGroups: Set<string>,
         deckComponents: Map<string, DeckComponent>,
         flashcardDeckComponents: Map<string, FlashcardDeckComponent>,
+        cardSort: CardSortType = CardSortType.DEFAULT,
     ) {
         this.plugin = plugin;
         this.decksContainer = decksContainer;
@@ -32,6 +34,7 @@ export class DeckReconciler {
         this.expandedGroups = expandedGroups;
         this.deckComponents = deckComponents;
         this.flashcardDeckComponents = flashcardDeckComponents;
+        this.cardSort = cardSort;
     }
 
     public reconcileNoteDecks(
@@ -172,6 +175,7 @@ export class DeckReconciler {
             this.expandedGroups,
             onToggleDeck,
             onToggleGroup,
+            this.cardSort,
         );
 
         this.flashcardDeckComponents.set(deck.deckName, component);
@@ -231,5 +235,14 @@ export class DeckReconciler {
         this.decksContainer.empty();
         const emptyMessage = this.decksContainer.createDiv("sr-empty-message");
         emptyMessage.setText(t("NO_FLASHCARD_DECKS_FOUND"));
+    }
+
+    public setCardSort(sort: CardSortType): void {
+        this.cardSort = sort;
+        
+        // Update all flashcard deck components with new sort
+        for (const component of this.flashcardDeckComponents.values()) {
+            component.setCardSort(sort);
+        }
     }
 }

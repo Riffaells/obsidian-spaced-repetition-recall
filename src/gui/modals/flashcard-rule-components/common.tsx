@@ -127,13 +127,12 @@ function renderScopeSettings(
     arrow.textContent = "▶";
     header.createSpan({ text: t("SCOPE_SETTINGS") });
 
-    const content = scopeContainer.createDiv("sr-scope-content");
-    content.style.display = "none";
+    const content = scopeContainer.createDiv("sr-scope-content sr-hidden");
 
     let isExpanded = false;
     header.addEventListener("click", () => {
         isExpanded = !isExpanded;
-        content.style.display = isExpanded ? "block" : "none";
+        content.toggleClass("sr-hidden", !isExpanded);
         arrow.textContent = isExpanded ? "▼" : "▶";
     });
 

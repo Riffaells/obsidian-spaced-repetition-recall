@@ -7,6 +7,8 @@ import { reschedule } from "../algorithms/balance/reschedule";
 import { GetInputModal } from "../gui/modals/getInputModal";
 import { ReviewView } from "../gui/views/reviewView";
 import { t } from "src/lang/helpers";
+import { FileTrackService } from "../core/services/FileTrackService";
+import { RPITEMTYPE } from "../dataStore/repetitionItem";
 
 export default class CommandManager {
     plugin: ObsidianSrsPlugin;
@@ -40,8 +42,28 @@ export default class CommandManager {
                 const file = plugin.app.workspace.getActiveFile();
                 if (file && !plugin.store.getTrackedFile(file.path)?.isTrackedNote) {
                     if (!checking) {
-                        plugin.store.trackFile(file.path, undefined, true);
-                        plugin.store.save().then(() => plugin.sync());
+                        // Use new architecture if available
+                        if (plugin.serviceContainer) {
+                            const fileTrackService = plugin.serviceContainer.get("fileTrackService") as FileTrackService;
+                            fileTrackService.trackFile(file.path, RPITEMTYPE.NOTE, "default")
+                                .then(result => {
+                                    if (result.isOk) {
+                                        new Notice(t("CMD_NOTE_TRACKED"));
+                                        plugin.sync();
+                                    } else {
+                                        console.error("Failed to track file:", (result as any).error);
+                                        new Notice(t("CMD_TRACK_FAILED"));
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error tracking file:", error);
+                                    new Notice(t("CMD_TRACK_FAILED"));
+                                });
+                        } else {
+                            // Fallback to old implementation
+                            plugin.store.trackFile(file.path, undefined, true);
+                            plugin.store.save().then(() => plugin.sync());
+                        }
                     }
                     return true;
                 }
@@ -56,8 +78,28 @@ export default class CommandManager {
                 const file = plugin.app.workspace.getActiveFile();
                 if (file && plugin.store.getTrackedFile(file.path)?.isTrackedNote) {
                     if (!checking) {
-                        plugin.store.untrackFile(file.path, true);
-                        plugin.store.save().then(() => plugin.sync());
+                        // Use new architecture if available
+                        if (plugin.serviceContainer) {
+                            const fileTrackService = plugin.serviceContainer.get("fileTrackService") as FileTrackService;
+                            fileTrackService.untrackFile(file.path)
+                                .then(result => {
+                                    if (result.isOk) {
+                                        new Notice(t("CMD_NOTE_UNTRACKED"));
+                                        plugin.sync();
+                                    } else {
+                                        console.error("Failed to untrack file:", (result as any).error);
+                                        new Notice(t("CMD_UNTRACK_FAILED"));
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error untracking file:", error);
+                                    new Notice(t("CMD_UNTRACK_FAILED"));
+                                });
+                        } else {
+                            // Fallback to old implementation
+                            plugin.store.untrackFile(file.path, true);
+                            plugin.store.save().then(() => plugin.sync());
+                        }
                     }
                     return true;
                 }
@@ -157,7 +199,7 @@ export default class CommandManager {
             id: "build-queue",
             name: t("CMD_BUILD_QUEUE"),
             callback: () => {
-                Queue.getInstance().buildQueue();
+                Queue.getInstance().buildQueue(plugin.store);
             },
         });
 
@@ -166,7 +208,7 @@ export default class CommandManager {
             name: t("CMD_REVIEW"),
             callback: () => {
                 Queue.getInstance()
-                    .buildQueue()
+                    .buildQueue(plugin.store)
                     .then(() => {
                         ReviewView.getInstance().recallReviewNote(this.plugin.data.settings);
                     });
@@ -203,7 +245,7 @@ export default class CommandManager {
             name: t("CMD_QUEUE_ALL"),
             callback: () => {
                 const que = Queue.getInstance();
-                que.buildQueueAll();
+                que.buildQueueAll(plugin.store);
                 console.log("Queue Size: " + que.queueSize());
             },
         });

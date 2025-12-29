@@ -132,9 +132,15 @@ export abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
 
         if (suggestions.length > 0) {
             this.suggest.setSuggestions(suggestions);
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            this.open(IAdapter.instance.app.dom.appContainerEl, this.inputEl);
+            /**
+             * Access Obsidian's private API to get the app container element.
+             * 
+             * @warning This uses a private API (app.dom.appContainerEl) that may break in future Obsidian versions.
+             */
+            const app = IAdapter.instance.app as any;
+            if (app.dom?.appContainerEl) {
+                this.open(app.dom.appContainerEl, this.inputEl);
+            }
         } else {
             this.close();
         }

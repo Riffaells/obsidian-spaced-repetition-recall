@@ -7,7 +7,7 @@ import { SRSettings } from "../../settings/settings";
 import { TextDirection } from "../../utils/TextDirection";
 import { RuleBasedParser, NoteContext } from "../../parser/rule-based/RuleBasedParser";
 import { ParsedFlashcard, FlashcardRule, RuleId } from "../../parser/rule-based/types";
-import { deriveCardType, extractTagsFromNote } from "../../parser/ParserUtils";
+import { deriveCardType } from "../../parser/ParserUtils";
 
 export class NoteFileLoader {
     fileText: string;

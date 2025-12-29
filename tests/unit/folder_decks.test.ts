@@ -129,7 +129,7 @@ describe("NoteFileLoader - Convert Folders to Decks", () => {
         expect(note!.questionList.length).toBe(0); 
     });
 
-    test("should include BOTH folder deck and tag deck when convertFoldersToDecks is enabled and tag is present", async () => {
+    test("should prioritize folder deck over tag when convertFoldersToDecks is enabled", async () => {
         const settings = { ...MOCK_SETTINGS } as SRSettings;
         settings.convertFoldersToDecks = true;
         
@@ -149,7 +149,7 @@ describe("NoteFileLoader - Convert Folders to Decks", () => {
         settings.flashcardRules = [defaultRule];
 
         const loader = new NoteFileLoader(settings);
-        // Card has a tag #mytag
+        // Card has a tag #mytag, but folder path should take priority
         const noteContent = "#flashcards Question::Answer #mytag";
         const noteFile = new MockSRFile("Folder/Subfolder/Note.md", noteContent);
         
@@ -161,11 +161,8 @@ describe("NoteFileLoader - Convert Folders to Decks", () => {
         expect(note!.questionList.length).toBe(1);
         
         const question = note!.questionList[0];
-        // Should have 2 topic paths: #mytag and #Folder/Subfolder
-        expect(question.topicPathList.list.length).toBe(2);
-        
-        const paths = question.topicPathList.list.map(p => p.formatAsTag());
-        expect(paths).toContain("#mytag");
-        expect(paths).toContain("#Folder/Subfolder");
+        // Should have only 1 topic path: folder path takes priority over tags
+        expect(question.topicPathList.list.length).toBe(1);
+        expect(question.topicPathList.list[0].formatAsTag()).toBe("#Folder/Subfolder");
     });
 });

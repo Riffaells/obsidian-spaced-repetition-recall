@@ -11,57 +11,27 @@ import { Tags } from "src/utils/tags";
 import { algorithmNames, SrsAlgorithm } from "src/algorithms/algorithms";
 import { CardInfo, TrackedFile } from "./trackedFile";
 import { RepetitionItem, ReviewResult, RPITEMTYPE } from "./repetitionItem";
-import { DEFAULT_QUEUE_DATA, Queue } from "./queue";
+import { Queue } from "./queue";
 import { IAdapter } from "./adapter";
 import { t } from "src/lang/helpers";
+import { DataValidator } from "./DataValidator";
+import { BackupManager } from "./BackupManager";
 
-/**
- * SrsData.
- */
-export interface SrsData {
-    /**
-     * @type {Queue}
-     */
-    queues: Queue;
+import { 
+    IDataStore, 
+    SrsData, 
+    ReviewedCounts, 
+    DEFAULT_SRS_DATA, 
+    DEFAULT_QUEUE_DATA,
+    IQueue
+} from "./interfaces";
 
-    /**
-     * @type {ReviewedCounts}
-     */
-    reviewedCounts: ReviewedCounts;
-    /**
-     * @type {ReviewedCounts}
-     */
-    reviewedCardCounts: ReviewedCounts;
-    /**
-     * @type {RepetitionItem[]}
-     */
-    items: RepetitionItem[];
-    /**
-     * @type {TrackedFile[]}
-     */
-    trackedFiles: TrackedFile[];
-
-    /**
-     * @type {number}
-     */
-    mtime: number;
-}
-
-export type ReviewedCounts = Record<string, { new: number; due: number }>;
-
-export const DEFAULT_SRS_DATA: SrsData = {
-    queues: Object.assign({}, DEFAULT_QUEUE_DATA) as Queue,
-    reviewedCounts: {},
-    reviewedCardCounts: {},
-    items: [],
-    trackedFiles: [],
-    mtime: 0,
-};
+export { SrsData, ReviewedCounts, DEFAULT_SRS_DATA, DEFAULT_QUEUE_DATA, IQueue };
 
 /**
  * DataStore.
  */
-export class DataStore {
+export class DataStore implements IDataStore {
     static instance: DataStore;
 
     /**
@@ -119,12 +89,15 @@ export class DataStore {
                     console.log("Unable to read SRS data!");
                     this.data = Object.assign({}, DEFAULT_SRS_DATA);
                 } else {
-                    console.log("Reading tracked files...");
+                    // console.log("Reading tracked files...");
                     this.data = Object.assign(
                         Object.assign({}, DEFAULT_SRS_DATA),
                         JSON.parse(data),
                     );
                     this.data.mtime = await this.getmtime();
+
+                    // Validate data integrity
+                    await this.validateAndFixData(path);
                 }
             } else {
                 console.log("Tracked files not found! Creating new file...");
@@ -137,6 +110,37 @@ export class DataStore {
             await this.save();
         }
         this.toInstances();
+    }
+
+    /**
+     * Validate data and automatically fix corruption issues
+     */
+    private async validateAndFixData(path: string): Promise<void> {
+        const validator = new DataValidator();
+        const validation = validator.validateSrsData(this.data);
+
+        if (!validation.valid) {
+            console.error(`[DataStore] Data validation failed with ${validation.errors.length} error(s):`);
+            validation.errors.forEach((error) => {
+                console.error(`  - ${error.message}`);
+            });
+
+            // Create backup of corrupted data
+            const backupManager = new BackupManager(path);
+            await backupManager.createCorruptedBackup(path);
+
+            // Auto-fix the data
+            this.data = validator.autoFix(this.data, validation.errors);
+
+            // Save fixed data
+            await this.save();
+
+            MiscUtils.notice(
+                t("DATA_CORRUPTION_FIXED", {
+                    count: validation.errors.length,
+                }) || `Fixed ${validation.errors.length} data corruption issue(s)`,
+            );
+        }
     }
 
     /**
@@ -158,6 +162,12 @@ export class DataStore {
      */
     async save(path = this.dataPath) {
         try {
+            // Create backup before saving
+            const backupManager = new BackupManager(path);
+            if (await IAdapter.instance.adapter.exists(path)) {
+                await backupManager.createBackup(path);
+            }
+
             await IAdapter.instance.adapter.write(path, JSON.stringify(this.data));
             this.data.mtime = await this.getmtime();
         } catch (error) {
@@ -348,7 +358,7 @@ export class DataStore {
             result = algorithm.onSelection(item, option, false);
             item.reviewUpdate(result);
         }
-        this.data.queues.updateWhenReview(item, result.correct, this.settings.repeatItems);
+        this.data.queues.updateWhenReview(item, result.correct, this.settings.repeatItems, this);
         if (item.timesReviewed < 1) {
             debug("save review data error when reviewId");
         }

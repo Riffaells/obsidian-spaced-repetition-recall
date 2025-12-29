@@ -248,6 +248,10 @@ body:not(.native-scrollbars) #sr-modal .modal-close-button {
     gap: 4px;
 }
 
+.collapse-icon.sr-collapsed svg {
+    transform: rotate(-90deg);
+}
+
 .sr-deck-list .sr-tree-stats-count {
     min-width: 3ch;
     padding: 4px;
@@ -662,6 +666,80 @@ button.sr-tab-header-button:hover {
     padding: 6px;
 }
 
+/* Show More Buttons Container */
+.sr-show-more-buttons {
+    display: flex;
+    gap: 6px;
+    margin: 4px 0;
+}
+
+/* Single button takes full width */
+.sr-show-more-buttons .sr-single-button {
+    flex: 1 1 100%;
+}
+
+/* Show More Groups Buttons */
+.sr-show-more-groups {
+    flex: 1;
+    padding: 6px 10px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-accent);
+    background: var(--background-primary);
+    border: 2px dashed var(--background-modifier-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+}
+
+.sr-show-more-groups:hover {
+    background: var(--background-modifier-hover);
+    border-color: var(--text-accent);
+    color: var(--text-accent-hover);
+}
+
+.sr-show-more-groups.sr-show-batch {
+    border-style: solid;
+}
+
+.sr-show-more-groups.sr-show-all {
+    border-style: dashed;
+    opacity: 0.85;
+}
+
+/* Show More Notes Buttons */
+.sr-show-more-notes {
+    flex: 1;
+    padding: 5px 8px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--background-secondary);
+    border: 1px dashed var(--background-modifier-border);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+}
+
+.sr-show-more-notes:hover {
+    background: var(--background-modifier-hover);
+    border-color: var(--text-muted);
+    color: var(--text-normal);
+}
+
+.sr-show-more-notes.sr-show-batch {
+    border-style: solid;
+}
+
+.sr-show-more-notes.sr-show-all {
+    border-style: dashed;
+    opacity: 0.85;
+}
+
 /* Note & Card Groups */
 .sr-new-note-group-header,
 .sr-card-group-header {
@@ -682,6 +760,9 @@ button.sr-tab-header-button:hover {
 .sr-new-note-group-header.sr-group-expanded,
 .sr-card-group-header.sr-group-expanded {
     color: var(--text-accent);
+}
+.sr-hidden {
+    display: none !important;
 }
 .sr-new-notes-list,
 .sr-cards-list,
@@ -1788,6 +1869,30 @@ button.sr-tab-header-button:hover {
     text-align: center;
     background: var(--interactive-accent);
     color: var(--text-on-accent);
+}
+
+/* === Sticky Group Header === */
+.sr-sticky-group-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 12px;
+    background: var(--background-primary);
+    border-bottom: 2px solid var(--background-modifier-border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-accent);
+    z-index: 50;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.sr-sticky-group-header.sr-hidden {
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
 }
 
 /* === Scroll To Top Button === */

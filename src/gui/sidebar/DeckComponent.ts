@@ -23,6 +23,9 @@ export class DeckComponent {
     private headerClickHandler: (() => void) | null = null;
     private noteSort: NoteSortType;
     private abortController = new AbortController();
+    private showAllGroups: boolean = false;
+    private showMoreButton: HTMLElement | null = null;
+    private currentGroupsLimit: number = 0;
 
     constructor(
         plugin: SRPlugin,
@@ -79,7 +82,7 @@ export class DeckComponent {
         const content = this.deckEl.createDiv("sr-new-deck-content");
 
         if (!isExpanded) {
-            content.style.display = "none";
+            content.addClass("sr-hidden");
         }
 
         this.attachEventListeners(header);
@@ -98,16 +101,10 @@ export class DeckComponent {
 
     private removeElement(): void {
         if (this.deckEl) {
-            if (this.headerClickHandler) {
-                const header = this.deckEl.querySelector(".sr-new-deck-header");
-                if (header) {
-                    header.removeEventListener("click", this.headerClickHandler);
-                }
-                this.headerClickHandler = null;
-            }
             this.deckEl.remove();
             this.deckEl = null;
         }
+        this.headerClickHandler = null;
     }
 
     public update(
@@ -200,7 +197,7 @@ export class DeckComponent {
         if (!content) return;
 
         const isExpanded = this.expandedDecks.has(this.deck.deckName);
-        content.style.display = isExpanded ? "block" : "none";
+        content.toggleClass("sr-hidden", !isExpanded);
 
         this.reconcileGroups(content);
     }
@@ -322,8 +319,21 @@ export class DeckComponent {
             }
         }
 
+        // Determine how many groups to show
+        const groupsLimit = this.plugin.data.settings.sidebarInitialGroupsLimit;
+        
+        // Calculate current limit based on state
+        if (this.showAllGroups) {
+            this.currentGroupsLimit = groupsData.length;
+        } else if (this.currentGroupsLimit === 0) {
+            this.currentGroupsLimit = groupsLimit;
+        }
+        
+        const shouldLimitGroups = !this.showAllGroups && groupsData.length > this.currentGroupsLimit;
+        const groupsToShow = shouldLimitGroups ? groupsData.slice(0, this.currentGroupsLimit) : groupsData;
+
         // 3. Reconcile
-        const newGroupKeys = new Set(groupsData.map((g) => g.key));
+        const newGroupKeys = new Set(groupsToShow.map((g) => g.key));
 
         // Remove groups that dont exist anymore or became empty
         for (const [key, component] of this.groupComponents) {
@@ -333,12 +343,40 @@ export class DeckComponent {
             }
         }
 
-        // Create or Update groups
-        for (const data of groupsData) {
+        // Reset showAllNotes for collapsed groups
+        for (const [key, component] of this.groupComponents) {
+            if (!this.expandedGroups.has(key)) {
+                component.resetShowAllNotes();
+            }
+        }
+
+        // Create or Update groups in correct order
+        for (let i = 0; i < groupsToShow.length; i++) {
+            const data = groupsToShow[i];
             let component = this.groupComponents.get(data.key);
+            
             if (component) {
                 // Update existing component
                 component.update(this.activeFile, data.notes, this.shouldAutoExpand);
+                
+                // Ensure component is in correct position
+                const componentEl = component.getElement();
+                if (componentEl) {
+                    const currentIndex = Array.from(content.children).indexOf(componentEl);
+                    if (currentIndex !== i) {
+                        // Move to correct position
+                        if (i === 0) {
+                            content.prepend(componentEl);
+                        } else {
+                            const previousGroup = groupsToShow[i - 1];
+                            const previousComponent = this.groupComponents.get(previousGroup.key);
+                            const previousEl = previousComponent?.getElement();
+                            if (previousEl) {
+                                previousEl.after(componentEl);
+                            }
+                        }
+                    }
+                }
             } else {
                 // Only create new groups if they have notes
                 if (data.notes && data.notes.length > 0) {
@@ -358,8 +396,107 @@ export class DeckComponent {
                     const rendered = component.render();
                     if (rendered) {
                         this.groupComponents.set(data.key, component);
+                        
+                        // Insert in correct position
+                        if (i === 0) {
+                            content.prepend(rendered);
+                        } else {
+                            const previousGroup = groupsToShow[i - 1];
+                            const previousComponent = this.groupComponents.get(previousGroup.key);
+                            const previousEl = previousComponent?.getElement();
+                            if (previousEl) {
+                                previousEl.after(rendered);
+                            } else {
+                                content.appendChild(rendered);
+                            }
+                        }
                     }
                 }
+            }
+        }
+
+        // Show/hide "Show more" buttons
+        this.updateShowMoreButtons(content, shouldLimitGroups, groupsData.length, this.currentGroupsLimit);
+    }
+
+    private updateShowMoreButtons(
+        content: HTMLElement,
+        shouldShow: boolean,
+        totalCount: number,
+        currentLimit: number,
+    ): void {
+        if (shouldShow) {
+            const remainingCount = totalCount - currentLimit;
+            const batchSize = this.plugin.data.settings.sidebarInitialGroupsLimit;
+            
+            if (!this.showMoreButton) {
+                const buttonsContainer = content.createDiv("sr-show-more-buttons");
+                
+                // If remaining is less than or equal to batch size, show only "Show all" button
+                if (remainingCount <= batchSize) {
+                    const showAllButton = buttonsContainer.createDiv("sr-show-more-groups sr-show-all sr-single-button");
+                    showAllButton.setText(t("SHOW_ALL_GROUPS", { count: remainingCount }));
+                    showAllButton.addEventListener("click", () => {
+                        this.showAllGroups = true;
+                        const currentFile = this.plugin.app.workspace.getActiveFile();
+                        this.update(currentFile, this.filter, false, this.noteSort);
+                    });
+                } else {
+                    // Show both buttons
+                    // Button 1: Show next batch
+                    const showBatchButton = buttonsContainer.createDiv("sr-show-more-groups sr-show-batch");
+                    const nextBatchCount = Math.min(batchSize, remainingCount);
+                    showBatchButton.setText(t("SHOW_MORE_GROUPS_BATCH", { count: nextBatchCount }));
+                    showBatchButton.addEventListener("click", () => {
+                        // Increase limit by batch size
+                        this.currentGroupsLimit += batchSize;
+                        const currentFile = this.plugin.app.workspace.getActiveFile();
+                        this.update(currentFile, this.filter, false, this.noteSort);
+                    });
+                    
+                    // Button 2: Show all remaining
+                    const showAllButton = buttonsContainer.createDiv("sr-show-more-groups sr-show-all");
+                    showAllButton.setText(t("SHOW_ALL_GROUPS", { count: remainingCount }));
+                    showAllButton.addEventListener("click", () => {
+                        this.showAllGroups = true;
+                        const currentFile = this.plugin.app.workspace.getActiveFile();
+                        this.update(currentFile, this.filter, false, this.noteSort);
+                    });
+                }
+                
+                this.showMoreButton = buttonsContainer;
+            } else {
+                // Update button texts and visibility
+                const batchButton = this.showMoreButton.querySelector(".sr-show-batch");
+                const allButton = this.showMoreButton.querySelector(".sr-show-all");
+                
+                if (remainingCount <= batchSize) {
+                    // Hide batch button, show only all button
+                    if (batchButton) batchButton.addClass("sr-hidden");
+                    if (allButton) {
+                        allButton.removeClass("sr-hidden");
+                        allButton.addClass("sr-single-button");
+                        allButton.setText(t("SHOW_ALL_GROUPS", { count: remainingCount }));
+                    }
+                } else {
+                    // Show both buttons
+                    if (batchButton) {
+                        batchButton.removeClass("sr-hidden");
+                        const nextBatchCount = Math.min(batchSize, remainingCount);
+                        batchButton.setText(t("SHOW_MORE_GROUPS_BATCH", { count: nextBatchCount }));
+                    }
+                    if (allButton) {
+                        allButton.removeClass("sr-hidden");
+                        allButton.removeClass("sr-single-button");
+                        allButton.setText(t("SHOW_ALL_GROUPS", { count: remainingCount }));
+                    }
+                }
+                
+                this.showMoreButton.removeClass("sr-hidden");
+            }
+        } else {
+            if (this.showMoreButton) {
+                this.showMoreButton.addClass("sr-hidden");
             }
         }
     }
@@ -380,9 +517,26 @@ export class DeckComponent {
         this.abortController.abort();
         this.headerClickHandler = null;
 
+        if (this.showMoreButton) {
+            this.showMoreButton.remove();
+            this.showMoreButton = null;
+        }
+
         if (this.deckEl) {
             this.deckEl.remove();
             this.deckEl = null;
+        }
+    }
+
+    public resetShowAllGroups(): void {
+        this.showAllGroups = false;
+        this.currentGroupsLimit = 0;
+    }
+
+    public expandAllGroups(): void {
+        this.showAllGroups = true;
+        for (const component of this.groupComponents.values()) {
+            component.showAll();
         }
     }
 }

@@ -141,11 +141,9 @@ export class CardUI {
         // Setup context
         if (this.context) {
             const contextText = this._getContextText();
+            this.context.toggleClass("sr-hidden", !contextText);
             if (contextText) {
                 this.context.setText(contextText);
-                this.context.style.display = "";
-            } else {
-                this.context.style.display = "none";
             }
         }
 

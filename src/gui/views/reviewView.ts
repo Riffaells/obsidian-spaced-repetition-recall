@@ -40,7 +40,7 @@ export class ReviewView {
         const reviewFloatBar = reviewResponseModal.getInstance();
         // const settings = plugin.data.settings;
         const que = store.data.queues;
-        que.buildQueue();
+        que.buildQueue(store);
         const item = store.getNext();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const state: any = { mode: "empty" };

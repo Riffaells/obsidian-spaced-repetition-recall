@@ -4,6 +4,8 @@ import { Deck } from "src/core/models/Deck";
 import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewSequencer";
 import { MarkdownFormatter } from "src/utils/markdown-formatter";
 
+import { CardSortType } from "./types";
+
 export class CardGroupComponent {
     private plugin: SRPlugin;
     private title: string;
@@ -17,6 +19,7 @@ export class CardGroupComponent {
     private groupHeader: HTMLElement | null = null;
     private cardsList: HTMLElement | null = null;
     private abortController = new AbortController();
+    private cardSort: CardSortType = CardSortType.DEFAULT;
 
     constructor(
         plugin: SRPlugin,
@@ -27,6 +30,7 @@ export class CardGroupComponent {
         groupKey: string,
         expandedGroups: Set<string>,
         onToggleGroup: (groupKey: string) => void,
+        cardSort: CardSortType = CardSortType.DEFAULT,
     ) {
         this.plugin = plugin;
         this.title = title;
@@ -36,6 +40,7 @@ export class CardGroupComponent {
         this.groupKey = groupKey;
         this.expandedGroups = expandedGroups;
         this.onToggleGroup = onToggleGroup;
+        this.cardSort = cardSort;
     }
 
     public render(): HTMLElement | null {
@@ -57,7 +62,7 @@ export class CardGroupComponent {
 
             this.cardsList = this.groupEl.createDiv("sr-cards-list");
             if (!isExpanded) {
-                this.cardsList.style.display = "none";
+                this.cardsList.addClass("sr-hidden");
             }
 
             const headerClickHandler = () => {
@@ -103,23 +108,74 @@ export class CardGroupComponent {
         }
 
         // Update cards list visibility and content
-        if (this.expandedGroups.has(this.groupKey)) {
-            this.cardsList.style.display = "block";
-        } else {
-            this.cardsList.style.display = "none";
-        }
+        this.cardsList.toggleClass("sr-hidden", !this.expandedGroups.has(this.groupKey));
 
         this.cardsList.empty();
         this.renderCards(this.cardsList);
     }
 
     private renderCards(container: HTMLElement): void {
+        // Sort cards before rendering
+        const sortedCards = this.sortCards(this.cards);
+
         // Render all cards
-        for (const card of this.cards) {
+        for (const card of sortedCards) {
             if (card) {
                 this.renderCard(container, card);
             }
         }
+    }
+
+    private sortCards(cards: Card[]): Card[] {
+        if (this.cardSort === CardSortType.DEFAULT) {
+            return cards;
+        }
+
+        const sorted = [...cards];
+
+        switch (this.cardSort) {
+            case CardSortType.FRONT_ASC:
+                sorted.sort((a, b) => a.front.localeCompare(b.front));
+                break;
+
+            case CardSortType.FRONT_DESC:
+                sorted.sort((a, b) => b.front.localeCompare(a.front));
+                break;
+
+            case CardSortType.PATH_ASC:
+                sorted.sort((a, b) => {
+                    const pathA = a.question?.note?.file?.path || "";
+                    const pathB = b.question?.note?.file?.path || "";
+                    return pathA.localeCompare(pathB);
+                });
+                break;
+
+            case CardSortType.PATH_DESC:
+                sorted.sort((a, b) => {
+                    const pathA = a.question?.note?.file?.path || "";
+                    const pathB = b.question?.note?.file?.path || "";
+                    return pathB.localeCompare(pathA);
+                });
+                break;
+
+            case CardSortType.DUE_DATE_ASC:
+                sorted.sort((a, b) => {
+                    const dateA = a.scheduleInfo?.dueDate?.valueOf() || 0;
+                    const dateB = b.scheduleInfo?.dueDate?.valueOf() || 0;
+                    return dateA - dateB;
+                });
+                break;
+
+            case CardSortType.DUE_DATE_DESC:
+                sorted.sort((a, b) => {
+                    const dateA = a.scheduleInfo?.dueDate?.valueOf() || 0;
+                    const dateB = b.scheduleInfo?.dueDate?.valueOf() || 0;
+                    return dateB - dateA;
+                });
+                break;
+        }
+
+        return sorted;
     }
 
     private renderCard(container: HTMLElement, card: Card): HTMLElement {
@@ -183,6 +239,16 @@ export class CardGroupComponent {
         }
 
         return tempDeck;
+    }
+
+    public setCardSort(sort: CardSortType): void {
+        this.cardSort = sort;
+        
+        // Re-render cards with new sort
+        if (this.cardsList) {
+            this.cardsList.empty();
+            this.renderCards(this.cardsList);
+        }
     }
 
     public destroy(): void {

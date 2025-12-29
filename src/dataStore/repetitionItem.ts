@@ -345,9 +345,9 @@ export class RepetitionItem {
             if (value == null) {
                 throw new Error("updateAlgorithmData get null value: " + value);
             }
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            this.data[key] = value;
+            // Dynamically update the data object (algorithm-specific structure)
+            // Using Record type assertion for dynamic property access
+            (this.data as Record<string, unknown>)[key] = value;
         } catch (error) {
             console.log(error);
         }

@@ -6,7 +6,7 @@ import { SchedNote, ReviewDeck } from "../core/models/ReviewDeck";
 import { Stats } from "../core/services/stats";
 import { setDueDates } from "../algorithms/balance/balance";
 import { t } from "../lang/helpers";
-import { SettingsUtil } from "../settings/settings";
+import { TagService } from "../core/services/TagService";
 import { IReviewNote } from "../reviewNote/review-note";
 import { ReviewDeckSelectionModal } from "../gui/modals/reviewDeckSelectionModal";
 import { MixQueSet } from "../dataStore/mixQueSet";
@@ -27,7 +27,7 @@ export class ReviewManager {
 
     async saveReviewResponse(note: TFile, response: ReviewResponse): Promise<void> {
         const settings = this.plugin.data.settings;
-        if (SettingsUtil.isPathInNoteIgnoreFolder(settings, note.path)) {
+        if (TagService.isPathInNoteIgnoreFolder(settings, note.path)) {
             new Notice(t("NOTE_IN_IGNORED_FOLDER"));
             return;
         }
@@ -190,9 +190,15 @@ export class ReviewManager {
                         console.debug("schedNotes:", deck.scheduledNotes);
                     }
                     const id = "obsidian-spaced-repetition-recall:view-item-info";
-                    // eslint-disable-next-line
-                    // @ts-ignore
-                    this.plugin.app.commands.executeCommandById(id);
+                    /**
+                     * Execute command using Obsidian's internal command API.
+                     * 
+                     * @warning This uses a private API (app.commands.executeCommandById) that may break in future Obsidian versions.
+                     */
+                    const app = this.plugin.app as any;
+                    if (app.commands?.executeCommandById) {
+                        app.commands.executeCommandById(id);
+                    }
                 }
             }
         };

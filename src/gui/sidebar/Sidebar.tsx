@@ -6,6 +6,7 @@ import { SidebarHeader } from "./SidebarHeader";
 import { SidebarStats } from "./SidebarStats";
 import { ReviewDeck } from "src/core/models/ReviewDeck";
 import {
+    CardSortType,
     FilterType,
     NoteSortType,
     SidebarStats as Stats,
@@ -41,6 +42,7 @@ export class ReviewQueueListView extends ItemView {
     private currentFilter: FilterType = FilterType.ALL;
     private currentSort: SortType = SortType.DATE_ASC;
     private currentNoteSort: NoteSortType = NoteSortType.DEFAULT;
+    private currentCardSort: CardSortType = CardSortType.DEFAULT;
     private currentViewMode: SidebarViewMode = SidebarViewMode.Notes;
     private expandedDecks: Set<string> = new Set();
     private expandedGroups: Set<string> = new Set();
@@ -63,6 +65,8 @@ export class ReviewQueueListView extends ItemView {
     private cachedActiveNotesCount: number = 0;
     private cachedActiveCardsCount: number = 0;
     private needsCountRecalculation = true;
+    private needsGroupRecalculation = true;
+    private lastGroupRecalculationDate: number = 0;
 
     constructor(leaf: WorkspaceLeaf, plugin: SRPlugin) {
         super(leaf);
@@ -83,12 +87,14 @@ export class ReviewQueueListView extends ItemView {
         this.registerEvent(
             this.app.workspace.on("sr:note-reviewed" as any, () => {
                 this.needsCountRecalculation = true;
+                this.needsGroupRecalculation = true;
                 this.debouncedRedraw();
             }),
         );
         this.registerEvent(
             this.app.workspace.on("sr:stats-updated" as any, () => {
                 this.needsCountRecalculation = true;
+                this.needsGroupRecalculation = true;
                 this.debouncedRedraw();
             }),
         );
@@ -146,10 +152,12 @@ export class ReviewQueueListView extends ItemView {
             (filter) => this.handleFilterChange(filter),
             () => this.collapseAll(),
             () => this.expandAll(),
+            () => this.expandFullBranch(),
             (sort) => this.handleSortChange(sort),
             (sort) => this.handleNoteSortChange(sort),
+            (sort) => this.handleCardSortChange(sort),
             () => this.handleRecalculate(),
-            (mode) => this.handleViewModeChange(mode),
+            (mode: SidebarViewMode) => this.handleViewModeChange(mode),
         );
         this.header.render();
 
@@ -175,6 +183,7 @@ export class ReviewQueueListView extends ItemView {
             this.expandedGroups,
             this.deckComponents,
             this.flashcardDeckComponents,
+            this.currentCardSort,
         );
 
         // Scroll to top button
@@ -221,12 +230,24 @@ export class ReviewQueueListView extends ItemView {
         this.update(this.plugin.app.workspace.getActiveFile(), false, false);
     };
 
+    private handleCardSortChange = async (sort: CardSortType) => {
+        this.currentCardSort = sort;
+        this.plugin.data.settings.sidebarCardSortOrder = sort;
+        this.saveSettingsDebounced();
+        
+        // Update card sort in reconciler
+        if (this.deckReconciler) {
+            this.deckReconciler.setCardSort(sort);
+        }
+    };
+
     private handleViewModeChange = debounce(
         (mode: SidebarViewMode) => {
             this.currentViewMode = mode;
             this.plugin.data.settings.sidebarViewMode = mode;
             this.saveSettingsDebounced();
             this.needsCountRecalculation = true;
+            this.needsGroupRecalculation = true;
             const currentFile = this.plugin.app.workspace.getActiveFile();
             this.update(currentFile);
         },
@@ -240,6 +261,7 @@ export class ReviewQueueListView extends ItemView {
         const notesBefore = this.countAllNotes();
         this.justRecalculated = true;
         this.needsCountRecalculation = true;
+        this.needsGroupRecalculation = true;
         await this.plugin.sync();
         const notesAfter = this.countAllNotes();
         const notesAdded = notesAfter - notesBefore;
@@ -274,12 +296,28 @@ export class ReviewQueueListView extends ItemView {
         if (!this.decksContainer || !this.deckReconciler) return;
 
         this.clearScrollTimeout();
+        
+        // Check if we need to recalculate groups due to date change
+        this.checkDateChange();
+        
         this.updateStats();
         this.updateHeader();
         this.reconcileDecks(activeFile, resort, shouldScroll);
 
         if (shouldScroll) {
             this.scrollToActiveItem();
+        }
+    }
+
+    private checkDateChange(): void {
+        const now = Date.now();
+        const currentDay = Math.floor(now / (24 * 3600 * 1000));
+        const lastDay = Math.floor(this.lastGroupRecalculationDate / (24 * 3600 * 1000));
+        
+        // If day has changed since last recalculation, mark groups for recalculation
+        if (currentDay !== lastDay) {
+            this.needsGroupRecalculation = true;
+            this.lastGroupRecalculationDate = now;
         }
     }
 
@@ -322,12 +360,12 @@ export class ReviewQueueListView extends ItemView {
     private reconcileDecks(
         activeFile: TFile | null,
         resort = true,
-        shouldAutoExpand = false,
+        shouldScroll = false,
     ): void {
         if (!this.deckReconciler) return;
 
         this.lastActiveFilePath = activeFile?.path || null;
-        shouldAutoExpand = this.shouldAutoExpandDecks(shouldAutoExpand);
+        const shouldAutoExpand = this.shouldAutoExpandDecks(shouldScroll);
 
         if (this.currentViewMode === SidebarViewMode.FlashCards) {
             const sortedFlashcardDecks = this.getFlashcardDecks();
@@ -339,16 +377,17 @@ export class ReviewQueueListView extends ItemView {
                 (groupKey) => this.toggleGroup(groupKey),
             );
 
-            if (activeDeckName) {
+            if (activeDeckName && shouldScroll) {
                 this.scrollToActiveDeck(activeDeckName);
             }
         } else {
-            if (resort) {
+            if (resort || this.needsGroupRecalculation) {
                 this.deckSorter.setFilter(this.currentFilter);
                 this.sortedDecks = this.deckSorter.sortNoteDecks(
                     Object.values(this.plugin.reviewDecks),
                     this.currentSort,
                 );
+                this.needsGroupRecalculation = false;
             }
 
             this.deckReconciler.reconcileNoteDecks(
@@ -443,6 +482,11 @@ export class ReviewQueueListView extends ItemView {
     private toggleDeck(deckName: string): void {
         if (this.expandedDecks.has(deckName)) {
             this.expandedDecks.delete(deckName);
+            // Reset showAllGroups when collapsing deck
+            const deckComponent = this.deckComponents.get(deckName);
+            if (deckComponent) {
+                deckComponent.resetShowAllGroups();
+            }
         } else {
             this.expandedDecks.add(deckName);
         }
@@ -472,6 +516,21 @@ export class ReviewQueueListView extends ItemView {
             this.expandAllFlashcardDecks();
         } else {
             this.expandAllNoteDecks();
+        }
+
+        const currentFile = this.plugin.app.workspace.getActiveFile();
+        this.update(currentFile, false, false);
+    }
+
+    private expandFullBranch(): void {
+        if (this.currentViewMode === SidebarViewMode.FlashCards) {
+            this.expandAllFlashcardDecks();
+        } else {
+            this.expandAllNoteDecks();
+            // Also expand all notes in all groups
+            for (const component of this.deckComponents.values()) {
+                component.expandAllGroups();
+            }
         }
 
         const currentFile = this.plugin.app.workspace.getActiveFile();

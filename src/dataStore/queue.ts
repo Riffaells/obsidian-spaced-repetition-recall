@@ -1,54 +1,12 @@
 import { isArray } from "src/utils/utils_recall";
-import { DataStore } from "./data";
+import type { IDataStore, IQueue, IQueueData } from "./interfaces";
+import { DEFAULT_QUEUE_DATA } from "./interfaces";
 import { TrackedFile } from "./trackedFile";
 import { RepetitionItem } from "./repetitionItem";
 import { getKeysPreserveType } from "src/utils/utils";
 import { globalDateProvider } from "src/utils/DateProvider";
 
-export interface IQueue {
-    /**
-     * @type {number[]}
-     */
-    queue: Record<string, number[]>;
-    /**
-     * @type {number[]}
-     */
-    repeatQueue: number[];
-
-    toDayAllQueue: Record<number, string>;
-    toDayLaterQueue: Record<number, string>;
-
-    /**
-     * @type {number}
-     */
-    lastQueue: number;
-    /**
-     * @type {0}
-     */
-    newAdded: 0;
-}
-
-export const DEFAULT_QUEUE_DATA: IQueue = {
-    /**
-     * @type {number[]}
-     */
-    queue: {},
-    /**
-     * @type {number[]}
-     */
-    repeatQueue: [],
-
-    toDayAllQueue: {},
-    toDayLaterQueue: {},
-    /**
-     * @type {number}
-     */
-    lastQueue: 0,
-    /**
-     * @type {0}
-     */
-    newAdded: 0,
-};
+// IQueue and DEFAULT_QUEUE_DATA moved to interfaces.ts
 
 const KEY_ALL = "ALL";
 
@@ -82,9 +40,10 @@ export class Queue implements IQueue {
         return Queue.instance;
     }
 
-    static create(que: Queue) {
-        que = Object.assign(new Queue(), que);
-        return que;
+    static create(que: IQueueData) {
+        const instance = new Queue();
+        Object.assign(instance, que);
+        return instance;
     }
     constructor() {
         this.queue = {};
@@ -119,6 +78,9 @@ export class Queue implements IQueue {
             .map((key: string) => this.queueSize(key))
             .reduce((a: number, b: number) => a + b, 0);
     }
+    get totalSize(): number {
+        return this.queueSize(KEY_ALL) + this.repeatQueueSize();
+    }
 
     /**
      * repeatQueueSize.
@@ -148,9 +110,9 @@ export class Queue implements IQueue {
      * buildQueue. indexlist of items
      */
     // @logExecutionTime()
-    async buildQueue() {
+    async buildQueue(store: IDataStore) {
         // console.log("Building queue...");
-        const store = DataStore.getInstance();
+        // const store = DataStore.getInstance();
         const maxNew = store.settings.maxNewPerDay;
         const now: Date = new Date();
         let newDayFlag = false;
@@ -239,8 +201,8 @@ export class Queue implements IQueue {
         }
     }
 
-    buildQueueAll() {
-        const store = DataStore.getInstance();
+    buildQueueAll(store: IDataStore) {
+        // const store = DataStore.getInstance();
         this.queue[KEY_ALL] = [];
         const items = store.data.items;
         for (let i = 0; i < items.length; i++) {
@@ -285,8 +247,9 @@ export class Queue implements IQueue {
      * @param {number} id
      * @returns {boolean}
      */
-    isQueued(queue: number[], id: number): boolean {
-        return queue?.includes(id) ?? false;
+    isQueued(id: number, queue?: number[]): boolean {
+        const q = queue || this.queue[KEY_ALL];
+        return q?.includes(id) ?? false;
     }
 
     isInLaterQueue(id: number): boolean {
@@ -313,7 +276,7 @@ export class Queue implements IQueue {
         return this.repeatQueue.includes(item);
     }
 
-    updateWhenReview(item: RepetitionItem, correct: boolean, repeatItems: boolean) {
+    updateWhenReview(item: RepetitionItem, correct: boolean, repeatItems: boolean, store: IDataStore) {
         if (this.isInRepeatQueue(item.ID)) {
             this.remove(item, this.repeatQueue);
         }
@@ -323,7 +286,7 @@ export class Queue implements IQueue {
             this.push(this.repeatQueue, item.ID); // Re-add until correct.
         } else {
             // update this.toDayLaterQueue
-            const store = DataStore.getInstance();
+            // const store = DataStore.getInstance();
             delete this.toDayLaterQueue[item.ID];
             if (item.nextReview <= globalDateProvider.endOfToday.valueOf()) {
                 this.toDayLaterQueue[item.ID] = item.deckName;
@@ -343,11 +306,11 @@ export class Queue implements IQueue {
 
     remove(item: RepetitionItem, queue?: number[]) {
         if (queue == undefined) {
-            if (this.isQueued(this.queue[item.deckName], item.ID)) {
+            if (this.isQueued(item.ID, this.queue[item.deckName])) {
                 this.remove(item, this.queue[item.deckName]);
                 this.remove(item, this.repeatQueue);
             }
-            if (this.isQueued(this.queue[KEY_ALL], item.ID)) {
+            if (this.isQueued(item.ID, this.queue[KEY_ALL])) {
                 this.remove(item, this.queue[KEY_ALL]);
             }
 
@@ -355,14 +318,14 @@ export class Queue implements IQueue {
                 delete this.toDayLaterQueue[item.ID];
             }
         } else {
-            if (this.isQueued(queue, item.ID)) {
+            if (this.isQueued(item.ID, queue)) {
                 queue.remove(item.ID);
             }
         }
     }
     push(queue: number[], id: number) {
         let cnt = 0;
-        if (this.isQueued(queue, id)) {
+        if (this.isQueued(id, queue)) {
             return cnt;
         }
         queue.push(id);

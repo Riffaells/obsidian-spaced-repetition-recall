@@ -149,9 +149,9 @@ export class DeckUI {
         if (deck.subdecks.length > 0) {
             collapseIconEl = deckTreeSelf.createDiv("tree-item-icon collapse-icon");
             collapseIconEl.innerHTML = COLLAPSE_ICON;
-            (collapseIconEl.childNodes[0] as HTMLElement).style.transform = collapsed
-                ? "rotate(-90deg)"
-                : "";
+            if (collapsed) {
+                collapseIconEl.addClass("sr-collapsed");
+            }
         }
 
         const deckTreeInner: HTMLElement = deckTreeSelf.createDiv("tree-item-inner");
@@ -165,22 +165,18 @@ export class DeckUI {
         this._createStats(deckStats, deckTreeOuter);
 
         const deckTreeChildren: HTMLElement = deckTree.createDiv("tree-item-children");
-        deckTreeChildren.style.display = collapsed ? "none" : "block";
+        if (collapsed) {
+            deckTreeChildren.addClass("sr-hidden");
+        }
         if (deck.subdecks.length > 0) {
             collapseIconEl.addEventListener("click", (e) => {
-                if (collapsed) {
-                    (collapseIconEl.childNodes[0] as HTMLElement).style.transform = "";
-                    deckTreeChildren.style.display = "block";
-                } else {
-                    (collapseIconEl.childNodes[0] as HTMLElement).style.transform =
-                        "rotate(-90deg)";
-                    deckTreeChildren.style.display = "none";
-                }
+                collapsed = !collapsed;
+                collapseIconEl.toggleClass("sr-collapsed", collapsed);
+                deckTreeChildren.toggleClass("sr-hidden", collapsed);
 
                 // We stop the propagation of the event so that the click event for deckTreeSelf doesn't get called
                 // if the user clicks on the collapse icon
                 e.stopPropagation();
-                collapsed = !collapsed;
             });
         }
 

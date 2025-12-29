@@ -1,6 +1,6 @@
 import type SRPlugin from "src/main";
 import { Deck } from "src/core/models/Deck";
-import { FilterType } from "./types";
+import { CardSortType, FilterType } from "./types";
 import { groupFlashcards } from "./grouping";
 import { CardGroupComponent } from "src/gui/sidebar/CardGroupComponent";
 import { t } from "src/lang/helpers";
@@ -26,6 +26,7 @@ export class FlashcardDeckComponent {
     private deckEl: HTMLElement | null = null;
     private abortController: AbortController | null = null;
     private cachedStats: FlashcardDeckStats | null = null;
+    private cardSort: CardSortType = CardSortType.DEFAULT;
 
     constructor(
         plugin: SRPlugin,
@@ -36,6 +37,7 @@ export class FlashcardDeckComponent {
         expandedGroups: Set<string>,
         onToggleDeck: (deckName: string) => void,
         onToggleGroup: (groupKey: string) => void,
+        cardSort: CardSortType = CardSortType.DEFAULT,
     ) {
         this.plugin = plugin;
         this.deck = deck;
@@ -45,6 +47,7 @@ export class FlashcardDeckComponent {
         this.expandedGroups = expandedGroups;
         this.onToggleDeck = onToggleDeck;
         this.onToggleGroup = onToggleGroup;
+        this.cardSort = cardSort;
     }
 
     public render(): HTMLElement | null {
@@ -88,7 +91,7 @@ export class FlashcardDeckComponent {
         const content = this.deckEl.createDiv("sr-flashcard-deck-content");
 
         if (!isExpanded) {
-            content.style.display = "none";
+            content.addClass("sr-hidden");
         }
 
         this.attachEventListeners(header);
@@ -157,9 +160,18 @@ export class FlashcardDeckComponent {
         if (!content) return;
 
         const isExpanded = this.expandedDecks.has(this.deck.deckName);
-        content.style.display = isExpanded ? "block" : "none";
+        content.toggleClass("sr-hidden", !isExpanded);
 
         this.reconcileGroups(content);
+    }
+
+    public setCardSort(sort: CardSortType): void {
+        this.cardSort = sort;
+        
+        // Update all group components with new sort
+        for (const group of this.groupComponents.values()) {
+            group.setCardSort(sort);
+        }
     }
 
     public destroy(): void {
@@ -278,6 +290,7 @@ export class FlashcardDeckComponent {
                         data.key,
                         this.expandedGroups,
                         this.onToggleGroup,
+                        this.cardSort,
                     );
                     this.groupComponents.set(data.key, component);
                     component.render();

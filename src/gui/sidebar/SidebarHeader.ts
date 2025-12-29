@@ -1,5 +1,5 @@
 import { t } from "src/lang/helpers";
-import { FilterType, NoteSortType, SidebarViewMode, SortType } from "./types";
+import { CardSortType, FilterType, NoteSortType, SidebarViewMode, SortType } from "./types";
 import { Menu, setIcon } from "obsidian";
 
 export class SidebarHeader {
@@ -7,14 +7,17 @@ export class SidebarHeader {
     private readonly onFilterChange: (filter: FilterType) => void;
     private readonly onCollapseAll: () => void;
     private readonly onExpandAll: () => void;
+    private readonly onExpandFullBranch: () => void;
     private readonly onSortChange: (sort: SortType) => void;
     private readonly onNoteSortChange: (sort: NoteSortType) => void;
+    private readonly onCardSortChange: (sort: CardSortType) => void;
     private readonly onRecalculate: () => void;
     private readonly onViewModeChange: (mode: SidebarViewMode) => void;
 
     private currentFilter: FilterType = FilterType.ALL;
     private currentSort: SortType = SortType.DATE_ASC;
     private currentNoteSort: NoteSortType = NoteSortType.DEFAULT;
+    private currentCardSort: CardSortType = CardSortType.DEFAULT;
     private currentViewMode: SidebarViewMode = SidebarViewMode.Notes;
     private activeNotesCount: number = 0;
     private activeCardsCount: number = 0;
@@ -30,8 +33,10 @@ export class SidebarHeader {
         onFilterChange: (filter: FilterType) => void,
         onCollapseAll: () => void,
         onExpandAll: () => void,
+        onExpandFullBranch: () => void,
         onSortChange: (sort: SortType) => void,
         onNoteSortChange: (sort: NoteSortType) => void,
+        onCardSortChange: (sort: CardSortType) => void,
         onRecalculate: () => void,
         onViewModeChange: (mode: SidebarViewMode) => void,
     ) {
@@ -39,8 +44,10 @@ export class SidebarHeader {
         this.onFilterChange = onFilterChange;
         this.onCollapseAll = onCollapseAll;
         this.onExpandAll = onExpandAll;
+        this.onExpandFullBranch = onExpandFullBranch;
         this.onSortChange = onSortChange;
         this.onNoteSortChange = onNoteSortChange;
+        this.onCardSortChange = onCardSortChange;
         this.onRecalculate = onRecalculate;
         this.onViewModeChange = onViewModeChange;
     }
@@ -94,8 +101,15 @@ export class SidebarHeader {
             t("EXPAND_ALL"),
             this.onExpandAll,
         );
+        this.createIconButton(
+            controlsContainer,
+            "maximize-2",
+            t("EXPAND_FULL_BRANCH"),
+            this.onExpandFullBranch,
+        );
         this.createSortButton(controlsContainer);
         this.createNoteSortButton(controlsContainer);
+        this.createCardSortButton(controlsContainer);
         this.createIconButton(
             controlsContainer,
             "refresh-cw",
@@ -142,9 +156,8 @@ export class SidebarHeader {
         if (hasChip) {
             this.activeCountChip = button.createSpan({
                 text: "0",
-                cls: "sr-filter-chip",
+                cls: "sr-filter-chip sr-hidden",
             });
-            this.activeCountChip.style.display = "none";
         }
 
         this.filterButtons.set(filter, button);
@@ -289,6 +302,58 @@ export class SidebarHeader {
         menu.showAtMouseEvent(e);
     }
 
+    private createCardSortButton(container: HTMLElement): void {
+        if (!this.abortController) return;
+
+        const cardSortButton = container.createEl("button", {
+            cls: "sr-control-btn",
+            attr: { "aria-label": t("SORT_CARDS") },
+        });
+
+        setIcon(cardSortButton, "layers");
+
+        cardSortButton.addEventListener(
+            "click",
+            (e) => {
+                e.stopPropagation();
+                this.showCardSortMenu(e as MouseEvent);
+            },
+            { signal: this.abortController.signal },
+        );
+    }
+
+    private showCardSortMenu(e: MouseEvent): void {
+        const menu = new Menu();
+
+        const sortOptions = [
+            { type: CardSortType.DEFAULT, label: t("DEFAULT"), icon: "arrow-up-down" },
+            { type: CardSortType.FRONT_ASC, label: t("SORT_FRONT_ASC"), icon: "sort-asc" },
+            { type: CardSortType.FRONT_DESC, label: t("SORT_FRONT_DESC"), icon: "sort-desc" },
+            { type: CardSortType.PATH_ASC, label: t("SORT_PATH_ASC"), icon: "sort-asc" },
+            { type: CardSortType.PATH_DESC, label: t("SORT_PATH_DESC"), icon: "sort-desc" },
+            { type: CardSortType.DUE_DATE_ASC, label: t("SORT_DUE_DATE_ASC"), icon: "calendar" },
+            { type: CardSortType.DUE_DATE_DESC, label: t("SORT_DUE_DATE_DESC"), icon: "calendar" },
+        ];
+
+        sortOptions.forEach((option) => {
+            menu.addItem((item) => {
+                item.setTitle(option.label)
+                    .setIcon(option.icon)
+                    .setChecked(this.currentCardSort === option.type)
+                    .onClick(() => {
+                        this.currentCardSort = option.type;
+                        this.onCardSortChange(option.type);
+                    });
+            });
+        });
+
+        menu.showAtMouseEvent(e);
+    }
+
+    public setCardSort(sort: CardSortType): void {
+        this.currentCardSort = sort;
+    }
+
     private updateView(): void {
         this.updateViewModeButtons();
         this.updateFilterButtons();
@@ -328,9 +393,7 @@ export class SidebarHeader {
             this.activeCountChip.setText(countStr);
         }
         
-        if (count > 0 && this.activeCountChip.style.display !== "inline-block") {
-            this.activeCountChip.style.display = "inline-block";
-        }
+        this.activeCountChip.toggleClass("sr-hidden", count === 0);
     }
 
     public setFilter(filter: FilterType): void {

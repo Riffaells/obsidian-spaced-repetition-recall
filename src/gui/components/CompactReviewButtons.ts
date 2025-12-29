@@ -152,8 +152,7 @@ export class CompactReviewButtons {
         
         // Add visual feedback
         const buttonConfig = getButtonConfig(this.options.icons);
-        // @ts-ignore
-        const config = buttonConfig[response];
+        const config = buttonConfig[response as ReviewResponse.Hard | ReviewResponse.Good | ReviewResponse.Easy];
         if (!config) return;
 
         const button = this.buttonsContainer.querySelector<HTMLButtonElement>(
@@ -163,9 +162,11 @@ export class CompactReviewButtons {
         if (button) {
             button.addClass("sr-compact-btn-clicked");
             // Animation duration is 300ms in CSS
-            setTimeout(() => {
-                button.removeClass("sr-compact-btn-clicked");
-            }, 300);
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    button.removeClass("sr-compact-btn-clicked");
+                });
+            });
         }
 
         // Call the review handler
@@ -173,11 +174,11 @@ export class CompactReviewButtons {
     }
 
     public show(): void {
-        this.containerEl.style.display = "block";
+        this.containerEl.removeClass("sr-hidden");
     }
 
     public hide(): void {
-        this.containerEl.style.display = "none";
+        this.containerEl.addClass("sr-hidden");
     }
 
     public setCollapsed(collapsed: boolean): void {

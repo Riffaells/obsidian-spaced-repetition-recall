@@ -68,7 +68,7 @@ export function balance(
     interval = Math.min(interval, maximumInterval);
     if (isChange) {
         const msg = `balance: interval from ${beforeIntvl} balance to ${interval} days.`;
-        console.debug(msg);
+        // console.debug(msg);
     } else {
         interval = beforeIntvl;
     }

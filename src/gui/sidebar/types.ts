@@ -21,6 +21,16 @@ export enum NoteSortType {
     PATH_DESC = "path_desc",
 }
 
+export enum CardSortType {
+    DEFAULT = "default",
+    FRONT_ASC = "front_asc",
+    FRONT_DESC = "front_desc",
+    PATH_ASC = "path_asc",
+    PATH_DESC = "path_desc",
+    DUE_DATE_ASC = "due_date_asc",
+    DUE_DATE_DESC = "due_date_desc",
+}
+
 export enum SidebarViewMode {
     Notes = "notes",
     FlashCards = "flashcards",

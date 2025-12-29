@@ -111,14 +111,17 @@ export function addDataLocationSettings(containerEl: HTMLElement, plugin: SRPlug
                 // if (Promise.resolve(moveP)) {
                 if (await confirmP) {
                     dropdown.setValue(plugin.data.settings.dataLocation);
-                    // plugin.savePluginData();
                     await plugin.savePluginData();
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    await plugin.app.plugins.disablePlugin(plugin.manifest.id);
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    await plugin.app.plugins.enablePlugin(plugin.manifest.id);
+                    /**
+                     * Reload plugin to apply data location changes.
+                     * 
+                     * @warning This uses private APIs (app.plugins.disablePlugin/enablePlugin) that may break in future Obsidian versions.
+                     */
+                    const plugins = (plugin.app as any).plugins;
+                    if (plugins?.disablePlugin && plugins?.enablePlugin) {
+                        await plugins.disablePlugin(plugin.manifest.id);
+                        await plugins.enablePlugin(plugin.manifest.id);
+                    }
                     console.debug(t("LOCATION_CHANGE_FINISHED"));
 
                     await plugin.sync();

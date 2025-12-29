@@ -3,6 +3,7 @@ import type SRPlugin from "src/main";
 import { ReviewDeck, SchedNote } from "src/core/models/ReviewDeck";
 import { DataLocation } from "src/dataStore/dataLocation";
 import { NoteSortType } from "./types";
+import { t } from "src/lang/helpers";
 
 export class NoteGroupComponent {
     private plugin: SRPlugin;
@@ -20,6 +21,8 @@ export class NoteGroupComponent {
     private abortController = new AbortController();
     private notesAbortController = new AbortController();
     private noteSort: NoteSortType;
+    private showAllNotes: boolean = false;
+    private showMoreButton: HTMLElement | null = null;
 
     constructor(
         plugin: SRPlugin,
@@ -83,7 +86,7 @@ export class NoteGroupComponent {
 
             const notesList = this.groupEl.createDiv("sr-new-notes-list");
             if (!isExpanded) {
-                notesList.style.display = "none";
+                notesList.addClass("sr-hidden");
             }
 
             const headerClickHandler = () => {
@@ -137,11 +140,7 @@ export class NoteGroupComponent {
         const notesList = this.groupEl.querySelector(".sr-new-notes-list") as HTMLElement;
         if (notesList) {
             const isExpanded = this.expandedGroups.has(this.groupKey);
-            const shouldDisplay = isExpanded ? "block" : "none";
-            
-            if (notesList.style.display !== shouldDisplay) {
-                notesList.style.display = shouldDisplay;
-            }
+            notesList.toggleClass("sr-hidden", !isExpanded);
 
             // Only re-render if expanded
             if (isExpanded) {
@@ -184,7 +183,10 @@ export class NoteGroupComponent {
         }
 
         // Full re-render needed
-        container.empty();
+        // Remove only note items, keep the button
+        const noteItems = container.querySelectorAll(".sr-new-note-item");
+        noteItems.forEach(item => item.remove());
+        
         this.notesAbortController.abort();
         this.notesAbortController = new AbortController();
         this.renderNotes(container);
@@ -192,11 +194,115 @@ export class NoteGroupComponent {
 
     private renderNotes(container: HTMLElement): void {
         const sortedNotes = this.sortNotes(this.notes);
-        for (const note of sortedNotes) {
+        const notesLimit = this.plugin.data.settings.sidebarInitialNotesLimit;
+        
+        // Check if active file is in the notes
+        const activeNoteIndex = this.activeFile 
+            ? sortedNotes.findIndex(note => note.note.path === this.activeFile!.path)
+            : -1;
+        
+        // Determine which notes to show
+        let notesToShow: SchedNote[];
+        let shouldLimitNotes = false;
+        
+        if (!this.showAllNotes && sortedNotes.length > notesLimit) {
+            shouldLimitNotes = true;
+            
+            // If active note is beyond the limit, include it
+            if (activeNoteIndex >= notesLimit) {
+                notesToShow = [
+                    ...sortedNotes.slice(0, notesLimit - 1),
+                    sortedNotes[activeNoteIndex]
+                ];
+            } else {
+                notesToShow = sortedNotes.slice(0, notesLimit);
+            }
+        } else {
+            notesToShow = sortedNotes;
+        }
+        
+        // Remove existing button if it exists
+        if (this.showMoreButton && this.showMoreButton.parentElement) {
+            this.showMoreButton.remove();
+            this.showMoreButton = null;
+        }
+        
+        // Render notes
+        for (const note of notesToShow) {
             if (note && note.note) {
                 this.renderNote(container, note);
             }
         }
+        
+        // Show/hide "Show more" buttons
+        if (shouldLimitNotes) {
+            this.createShowMoreButtons(container, sortedNotes.length, notesLimit);
+        }
+    }
+
+    private createShowMoreButtons(container: HTMLElement, totalCount: number, currentLimit: number): void {
+        const remainingCount = totalCount - currentLimit;
+        const batchSize = this.plugin.data.settings.sidebarInitialNotesLimit;
+        
+        const buttonsContainer = container.createDiv("sr-show-more-buttons");
+        
+        // If remaining is less than or equal to batch size, show only "Show all" button
+        if (remainingCount <= batchSize) {
+            const showAllButton = buttonsContainer.createDiv("sr-show-more-notes sr-show-all sr-single-button");
+            showAllButton.setText(t("SHOW_ALL_NOTES", { count: remainingCount }));
+            showAllButton.addEventListener("click", () => {
+                this.showAllNotes = true;
+                const notesList = this.groupEl?.querySelector(".sr-new-notes-list") as HTMLElement;
+                if (notesList) {
+                    this.updateNotesList(notesList);
+                }
+            });
+        } else {
+            // Show both buttons
+            // Button 1: Show next batch
+            const showBatchButton = buttonsContainer.createDiv("sr-show-more-notes sr-show-batch");
+            const nextBatchCount = Math.min(batchSize, remainingCount);
+            showBatchButton.setText(t("SHOW_MORE_NOTES_BATCH", { count: nextBatchCount }));
+            showBatchButton.addEventListener("click", () => {
+                // Increase limit by batch size
+                const notesList = this.groupEl?.querySelector(".sr-new-notes-list") as HTMLElement;
+                if (notesList) {
+                    // Remove buttons
+                    buttonsContainer.remove();
+                    
+                    // Show next batch
+                    const sortedNotes = this.sortNotes(this.notes);
+                    const newLimit = currentLimit + batchSize;
+                    const notesToAdd = sortedNotes.slice(currentLimit, Math.min(newLimit, totalCount));
+                    
+                    for (const note of notesToAdd) {
+                        if (note && note.note) {
+                            this.renderNote(notesList, note);
+                        }
+                    }
+                    
+                    // Re-create buttons if there are still more notes
+                    if (newLimit < totalCount) {
+                        this.createShowMoreButtons(notesList, totalCount, newLimit);
+                    } else {
+                        this.showAllNotes = true;
+                    }
+                }
+            });
+            
+            // Button 2: Show all remaining
+            const showAllButton = buttonsContainer.createDiv("sr-show-more-notes sr-show-all");
+            showAllButton.setText(t("SHOW_ALL_NOTES", { count: remainingCount }));
+            showAllButton.addEventListener("click", () => {
+                this.showAllNotes = true;
+                const notesList = this.groupEl?.querySelector(".sr-new-notes-list") as HTMLElement;
+                if (notesList) {
+                    this.updateNotesList(notesList);
+                }
+            });
+        }
+        
+        this.showMoreButton = buttonsContainer;
     }
 
     private renderNote(container: HTMLElement, note: SchedNote): HTMLElement {
@@ -259,9 +365,26 @@ export class NoteGroupComponent {
         this.abortController.abort();
         this.notesAbortController.abort();
 
+        if (this.showMoreButton) {
+            this.showMoreButton.remove();
+            this.showMoreButton = null;
+        }
+
         if (this.groupEl) {
             this.groupEl.remove();
             this.groupEl = null;
         }
+    }
+
+    public resetShowAllNotes(): void {
+        this.showAllNotes = false;
+    }
+
+    public showAll(): void {
+        this.showAllNotes = true;
+    }
+
+    public getElement(): HTMLElement | null {
+        return this.groupEl;
     }
 }

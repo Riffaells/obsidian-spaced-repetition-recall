@@ -61,16 +61,17 @@ export function addAlgorithmSetting(containerEl: HTMLElement, plugin: SRPlugin) 
                         }
 
                         settings.algorithm = newValue;
-                        // plugin.algorithm = algorithms[settings.algorithm];
-                        // plugin.algorithm.updateSettings(settings.algorithmSettings[newValue]);
                         await plugin.savePluginData();
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        await plugin.app.plugins.disablePlugin(plugin.manifest.id);
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        await plugin.app.plugins.enablePlugin(plugin.manifest.id);
-                        // plugin.app.setting.openTabById(plugin.manifest.id);
+                        /**
+                         * Reload plugin to apply algorithm changes.
+                         * 
+                         * @warning This uses private APIs (app.plugins.disablePlugin/enablePlugin) that may break in future Obsidian versions.
+                         */
+                        const plugins = (plugin.app as any).plugins;
+                        if (plugins?.disablePlugin && plugins?.enablePlugin) {
+                            await plugins.disablePlugin(plugin.manifest.id);
+                            await plugins.enablePlugin(plugin.manifest.id);
+                        }
 
                         // this.display();
                     } else {
@@ -101,18 +102,22 @@ export function addResponseButtonTextSetting(containerEl: HTMLElement, plugin: S
 
     if (btnText[algo] == null) {
         btnText[algo] = [];
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        options.forEach((opt, ind) => (btnText[algo][ind] = t(opt.toUpperCase())));
+        // Initialize button text from translation keys
+        // Dynamic translation keys are constructed at runtime based on algorithm options
+        options.forEach((opt, ind) => {
+            const translationKey = opt.toUpperCase() as any;
+            btnText[algo][ind] = t(translationKey);
+        });
     }
     options.forEach((opt, ind) => {
+        // Build translation keys for name and description dynamically
+        // These keys follow the pattern: FLASHCARD_{OPTION}_LABEL and FLASHCARD_{OPTION}_DESC
+        const labelKey = `FLASHCARD_${opt.toUpperCase()}_LABEL` as any;
+        const descKey = `FLASHCARD_${opt.toUpperCase()}_DESC` as any;
+        
         const btnTextEl = new Setting(containerEl)
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            .setName(t("FLASHCARD_" + opt.toUpperCase() + "_LABEL"))
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            .setDesc(t("FLASHCARD_" + opt.toUpperCase() + "_DESC"));
+            .setName(t(labelKey))
+            .setDesc(t(descKey));
         btnTextEl.addText((text) =>
             text.setValue(btnText[algo][ind]).onChange((value) => {
                 applySettingsUpdate(() => {

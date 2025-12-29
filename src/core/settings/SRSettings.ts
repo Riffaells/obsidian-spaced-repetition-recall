@@ -1,4 +1,4 @@
-import { NoteSortType, SidebarViewMode, SortType } from "../../gui/sidebar/types";
+import { CardSortType, NoteSortType, SidebarViewMode, SortType } from "../../gui/sidebar/types";
 import { DataLocation } from "../../dataStore/dataLocation";
 import { FlashcardRule } from "../../parser/rule-based/types";
 
@@ -77,7 +77,10 @@ export interface SRSettings {
     sidebarShowRelativeDays: boolean;
     sidebarSortOrder: SortType;
     sidebarNoteSortOrder: NoteSortType;
+    sidebarCardSortOrder: CardSortType;
     sidebarViewMode: SidebarViewMode;
+    sidebarInitialGroupsLimit: number;
+    sidebarInitialNotesLimit: number;
 
     // algorithm
     algorithm: string;

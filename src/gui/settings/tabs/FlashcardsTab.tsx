@@ -56,12 +56,6 @@ export class FlashcardsTab {
 
         containerEl.createEl("h3", { text: t("CLOZE_SETTINGS_TITLE") });
         this.addClozeSettings(containerEl, plugin, settingsTab);
-
-        const separatorsDetails = containerEl.createEl("details");
-        separatorsDetails.createEl("summary", {
-            text: t("DEFAULT_CARD_SEPARATORS_ADVANCED_TITLE"),
-        });
-        this.addCardSeparators(separatorsDetails, plugin, settingsTab);
     }
 
     private static addClozeSettings(
@@ -228,43 +222,5 @@ export class FlashcardsTab {
         );
     }
 
-    private static addCardSeparators(
-        containerEl: HTMLElement,
-        plugin: SRPlugin,
-        settingsTab: SRSettingTab,
-    ): void {
-        const separators: { key: keyof SRSettings; name: string }[] = [
-            { key: "singleLineCardSeparator", name: "INLINE_CARDS_SEPARATOR" },
-            { key: "singleLineReversedCardSeparator", name: "INLINE_REVERSED_CARDS_SEPARATOR" },
-            { key: "multilineCardSeparator", name: "MULTILINE_CARDS_SEPARATOR" },
-            { key: "multilineReversedCardSeparator", name: "MULTILINE_REVERSED_CARDS_SEPARATOR" },
-            { key: "multilineCardEndMarker", name: "MULTILINE_CARDS_END_MARKER" },
-        ];
 
-        for (const sep of separators) {
-            new Setting(containerEl)
-                .setName(t(sep.name as any))
-                .setDesc(t("FIX_SEPARATORS_MANUALLY_WARNING"))
-                .addText((text) =>
-                    text.setValue(plugin.data.settings[sep.key] as string).onChange((value) => {
-                        applySettingsUpdate(async () => {
-                            (plugin.data.settings as any)[sep.key] = value;
-                            await plugin.savePluginData();
-                        });
-                    }),
-                )
-                .addExtraButton((button) => {
-                    button
-                        .setIcon("reset")
-                        .setTooltip(t("RESET_DEFAULT"))
-                        .onClick(async () => {
-                            (plugin.data.settings as any)[sep.key] = (DEFAULT_SETTINGS as any)[
-                                sep.key
-                            ];
-                            await plugin.savePluginData();
-                            settingsTab.redisplay();
-                        });
-                });
-        }
-    }
 }

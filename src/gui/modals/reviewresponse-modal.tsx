@@ -510,7 +510,7 @@ export class reviewResponseModal {
         const rrBar = this.vwcontainerEl?.querySelector("#" + this.barId) as HTMLElement;
         if (rrBar) {
             this.removeKeysEvent();
-            rrBar.style.visibility = "hidden";
+            rrBar.addClass("sr-hidden");
             if (rrBar.firstChild) {
                 rrBar.removeChild(rrBar.firstChild);
             }

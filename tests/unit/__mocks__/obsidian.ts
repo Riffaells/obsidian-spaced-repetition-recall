@@ -42,3 +42,7 @@ export class Vault {
 export class Notice {
     constructor(message: string) {}
 }
+
+export function getAllTags(cache: any): string[] {
+    return [];
+}

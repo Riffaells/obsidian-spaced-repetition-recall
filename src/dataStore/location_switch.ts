@@ -17,7 +17,7 @@ import { DataStore } from "./data";
 import { Tags } from "src/utils/tags";
 
 import { Stats } from "src/core/services/stats";
-import { SettingsUtil } from "src/settings/settings";
+import { TagService } from "src/core/services/TagService";
 import { RPITEMTYPE } from "./repetitionItem";
 import deepcopy from "deepcopy";
 import { NoteCardScheduleParser } from "src/core/scheduling/CardSchedule";
@@ -127,7 +127,7 @@ export class LocationSwitch {
         let notes: TFile[] = IAdapter.instance.vault.getMarkdownFiles();
         notes = notes.filter(
             (noteFile) =>
-                !SettingsUtil.isPathInNoteIgnoreFolder(settings, noteFile.path) &&
+                !TagService.isPathInNoteIgnoreFolder(settings, noteFile.path) &&
                 plugin.createSrTFile(noteFile).getAllTagsFromCache().length > 0,
         );
         for (const noteFile of notes) {
@@ -305,7 +305,7 @@ export class LocationSwitch {
             tracked_files
                 .filter((tkfile) => tkfile != null)
                 .filter(
-                    (tkfile) => !SettingsUtil.isPathInNoteIgnoreFolder(this.settings, tkfile.path),
+                    (tkfile) => !TagService.isPathInNoteIgnoreFolder(this.settings, tkfile.path),
                 )
                 .map(async (tkfile) => {
                     const item = store.getItembyID(tkfile.noteID);

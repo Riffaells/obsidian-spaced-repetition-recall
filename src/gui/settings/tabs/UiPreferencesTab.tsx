@@ -201,6 +201,66 @@ export class UiPreferencesTab {
                         });
                     }),
             );
+
+        new Setting(containerEl)
+            .setName(t("SIDEBAR_INITIAL_GROUPS_LIMIT"))
+            .setDesc(t("SIDEBAR_INITIAL_GROUPS_LIMIT_DESC"))
+            .addSlider((slider) =>
+                slider
+                    .setLimits(5, 100, 5)
+                    .setValue(plugin.data.settings.sidebarInitialGroupsLimit)
+                    .setDynamicTooltip()
+                    .onChange(async (value) => {
+                        plugin.data.settings.sidebarInitialGroupsLimit = value;
+                        await plugin.savePluginData();
+                        const leaves = app.workspace.getLeavesOfType("review-queue-list-view");
+                        leaves.forEach((leaf) => {
+                            if (leaf.view && "redraw" in leaf.view) {
+                                (leaf.view as { redraw: () => void }).redraw();
+                            }
+                        });
+                    }),
+            )
+            .addExtraButton((button) => {
+                button
+                    .setIcon("reset")
+                    .setTooltip(t("RESET_DEFAULT"))
+                    .onClick(async () => {
+                        plugin.data.settings.sidebarInitialGroupsLimit = DEFAULT_SETTINGS.sidebarInitialGroupsLimit;
+                        await plugin.savePluginData();
+                        settingsTab.redisplay();
+                    });
+            });
+
+        new Setting(containerEl)
+            .setName(t("SIDEBAR_INITIAL_NOTES_LIMIT"))
+            .setDesc(t("SIDEBAR_INITIAL_NOTES_LIMIT_DESC"))
+            .addSlider((slider) =>
+                slider
+                    .setLimits(5, 50, 5)
+                    .setValue(plugin.data.settings.sidebarInitialNotesLimit)
+                    .setDynamicTooltip()
+                    .onChange(async (value) => {
+                        plugin.data.settings.sidebarInitialNotesLimit = value;
+                        await plugin.savePluginData();
+                        const leaves = app.workspace.getLeavesOfType("review-queue-list-view");
+                        leaves.forEach((leaf) => {
+                            if (leaf.view && "redraw" in leaf.view) {
+                                (leaf.view as { redraw: () => void }).redraw();
+                            }
+                        });
+                    }),
+            )
+            .addExtraButton((button) => {
+                button
+                    .setIcon("reset")
+                    .setTooltip(t("RESET_DEFAULT"))
+                    .onClick(async () => {
+                        plugin.data.settings.sidebarInitialNotesLimit = DEFAULT_SETTINGS.sidebarInitialNotesLimit;
+                        await plugin.savePluginData();
+                        settingsTab.redisplay();
+                    });
+            });
     }
 
     private static updateDateFormatPreview(descEl: HTMLElement, format: string): void {

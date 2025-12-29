@@ -9,7 +9,11 @@ import {
 } from "obsidian";
 import * as graph from "pagerank.js";
 
-import { DEFAULT_SETTINGS, SettingsUtil, SRSettings } from "src/settings/settings";
+import { DEFAULT_SETTINGS, SRSettings } from "src/settings/settings";
+import { TagService } from "src/core/services/TagService";
+import { TrackedFile } from "./dataStore/trackedFile";
+import { RepetitionItem } from "./dataStore/repetitionItem";
+import { EventBus } from "./core/infrastructure/EventBus";
 import { FlashcardModal } from "./gui/modals/FlashcardModal";
 import { StatsModal } from "./gui/modals/StatsModal";
 import { REVIEW_QUEUE_VIEW_TYPE, ReviewQueueListView } from "src/gui/sidebar/Sidebar";
@@ -43,6 +47,7 @@ import { NoteEaseList } from "./core/scheduling/NoteEaseList";
 import { QuestionPostponementList } from "./core/scheduling/QuestionPostponementList";
 import { TextDirection } from "./utils/TextDirection";
 import { convertToStringOrEmpty } from "./utils/utils";
+import { getObsidianRtlSetting } from "./utils/obsidian-hacks";
 import { setDebugParser } from "src/parser";
 
 // https://github.com/martin-jw/obsidian-recall
@@ -50,6 +55,9 @@ import { DataStore } from "./dataStore/data";
 import CommandManager from "./managers/CommandManager";
 import { ReviewManager } from "src/managers/ReviewManager";
 import { SrsAlgorithm } from "src/algorithms/algorithms";
+import { setupServices } from "./core/storage/setupServices";
+import { ServiceContainer } from "./core/infrastructure/ServiceContainer";
+import { DataStoreAdapter } from "./dataStore/DataStoreAdapter";
 
 import { reviewResponseModal } from "./gui/modals/reviewresponse-modal";
 import { isVersionNewerThanOther } from "./utils/utils_recall";
@@ -89,15 +97,6 @@ const DEFAULT_DATA: PluginData = {
     historyDeck: null,
 };
 
-// export interface SchedNote {
-//     note: TFile;
-//     dueUnix: number;
-// }
-
-// export interface LinkStat {
-//     sourcePath: string;
-//     linkCount: number;
-// }
 
 export default class SRPlugin extends Plugin {
     private isSRInFocus: boolean = false;
@@ -125,6 +124,9 @@ export default class SRPlugin extends Plugin {
     public settingTab: SRSettingTab;
     public noteReviewManager: NoteReviewButtonsManager;
     public reviewManager: ReviewManager;
+
+    // New architecture components
+    public serviceContainer: ServiceContainer;
 
     public clock_start: number;
     private static _instance: SRPlugin;
@@ -172,6 +174,29 @@ export default class SRPlugin extends Plugin {
         this.algorithm.updateSettings(settings.algorithmSettings[settings.algorithm]);
         settings.algorithmSettings[settings.algorithm] = this.algorithm.settings;
         await this.savePluginData();
+
+        // Initialize new architecture services
+        console.log("SR: Initializing new architecture services...");
+        this.serviceContainer = setupServices(
+            this.app.vault.adapter,
+            this.app.vault,
+            settings,
+            this.manifest.dir,
+            this.algorithm
+        );
+
+        // Subscribe to events from the new architecture
+        const eventBus = this.serviceContainer.get<EventBus>("eventBus");
+        eventBus.on("item:updated", (item: RepetitionItem) => {
+            console.log("SR: Item updated event:", item.ID);
+        });
+        eventBus.on("item:reviewed", (item: RepetitionItem) => {
+            console.log("SR: Item reviewed event:", item.ID);
+        });
+        eventBus.on("file:updated", (file: TrackedFile) => {
+            console.log("SR: File updated event:", file.path);
+        });
+        console.log("SR: New architecture services initialized successfully");
 
         IReviewNote.create(
             settings,
@@ -508,8 +533,6 @@ export default class SRPlugin extends Plugin {
         // reset notes stuff
         graph.reset();
         this.easeByPath = new NoteEaseList(this.data.settings);
-        // this.incomingLinks = {};
-        // this.pageranks = {};
         this.linkRank = new LinkRank(this.data.settings, this.app.metadataCache);
         this.reviewDecks = {};
 
@@ -528,7 +551,7 @@ export default class SRPlugin extends Plugin {
         }
 
         // Build tag cache for optimization
-        SettingsUtil.buildTagCache(this.app, this.data.settings);
+        TagService.buildTagCache(this.app, this.data.settings);
 
         let notes: TFile[] = this.app.vault.getMarkdownFiles();
         notes = notes.filter((noteFile) => {
@@ -538,7 +561,7 @@ export default class SRPlugin extends Plugin {
                 tags.some((notetag) => notetag.startsWith(igntag)),
             );
             return (
-                !SettingsUtil.isPathInNoteIgnoreFolder(this.data.settings, noteFile.path) &&
+                !TagService.isPathInNoteIgnoreFolder(this.data.settings, noteFile.path) &&
                 !isIgnoredTags
             );
         });
@@ -682,10 +705,7 @@ export default class SRPlugin extends Plugin {
     }
 
     private getObsidianRtlSetting(): TextDirection {
-        // Get the direction with Obsidian's own setting
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const v: any = (this.app.vault as any).getConfig("rightToLeft");
-        return convertToStringOrEmpty(v) == "true" ? TextDirection.Rtl : TextDirection.Ltr;
+        return getObsidianRtlSetting(this.app);
     }
 
     // return false if is ignored
@@ -694,7 +714,7 @@ export default class SRPlugin extends Plugin {
 
         const tags = getAllTags(fileCachedData) || [];
         let shouldIgnore = true;
-        if (SettingsUtil.isPathInNoteIgnoreFolder(this.data.settings, note.path)) {
+        if (TagService.isPathInNoteIgnoreFolder(this.data.settings, note.path)) {
             new Notice(t("NOTE_IN_IGNORED_FOLDER"));
             return false;
         }
@@ -839,7 +859,7 @@ export default class SRPlugin extends Plugin {
 
     async savePluginData(): Promise<void> {
         // Clear pattern cache when settings change
-        SettingsUtil.clearPatternCache();
+        TagService.clearPatternCache();
         await this.saveData(this.data);
     }
 
