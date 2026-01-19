@@ -77,7 +77,9 @@ export class CompactReviewButtons {
         }
     }
 
-    private createButton(response: ReviewResponse.Hard | ReviewResponse.Good | ReviewResponse.Easy): HTMLButtonElement {
+    private createButton(
+        response: ReviewResponse.Hard | ReviewResponse.Good | ReviewResponse.Easy,
+    ): HTMLButtonElement {
         const buttonConfig = getButtonConfig(this.options.icons);
         const config = buttonConfig[response];
         const button = document.createElement("button");
@@ -149,10 +151,13 @@ export class CompactReviewButtons {
 
     private handleReview(response: ReviewResponse): void {
         if (response === ReviewResponse.Reset) return;
-        
+
         // Add visual feedback
         const buttonConfig = getButtonConfig(this.options.icons);
-        const config = buttonConfig[response as ReviewResponse.Hard | ReviewResponse.Good | ReviewResponse.Easy];
+        const config =
+            buttonConfig[
+                response as ReviewResponse.Hard | ReviewResponse.Good | ReviewResponse.Easy
+            ];
         if (!config) return;
 
         const button = this.buttonsContainer.querySelector<HTMLButtonElement>(

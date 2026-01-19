@@ -173,7 +173,9 @@ export class ItemTrans {
             let deckname = dtppath?.hasPath ? dtppath.path[0] : topicPath.path[0];
             deckname = Tags.isDefaultDackName(deckname) ? deckname : "#" + deckname;
             store.updateCardItems(trackedFile, cardinfo, count, deckname, false);
-            const update = question.cards ? updateCardObjs(question.cards, cardinfo, scheduling) : false;
+            const update = question.cards
+                ? updateCardObjs(question.cards, cardinfo, scheduling)
+                : false;
 
             // update question
             if (question.questionText.genBlockId && update) {

@@ -4,6 +4,8 @@ export default {
     DECKS: "Колоды",
     DUE_CARDS: "Повторяемые карточки",
     NEW_CARDS: "Новые карточки",
+    DUE_NOTES: "Повторяемые заметки",
+    NEW_NOTES: "Новые заметки",
     TOTAL_CARDS: "Всего карточек",
     BACK: "Назад",
     SKIP: "Пропустить",
@@ -23,40 +25,44 @@ export default {
     NO_INPUT: "Нет входных данных.",
     CURRENT_EASE_HELP_TEXT: "Текущая лёгкость: ",
     CURRENT_INTERVAL_HELP_TEXT: "Текущий интервал: ",
-    CARD_GENERATED_FROM: "Создано из: ${notePath}",
+    CARD_GENERATED_FROM: "Создано из: {notePath}",
     OPEN_NOTE: "Открыть заметку",
     FAILED_TO_EDIT_QUESTION_TEXT: "Не удалось отредактировать текст вопроса:",
+    PREVIOUS_DECK: "Предыдущая колода",
+    NEXT_DECK: "Следующая колода",
+    PREVIOUS_CARD: "Предыдущая карточка",
+    NEXT_CARD: "Следующая карточка",
 
     // main.ts
     OPEN_NOTE_FOR_REVIEW: "Открыть заметку для повторения",
     REVIEW_CARDS: "Изучать карточки",
-    REVIEW_DIFFICULTY_FILE_MENU: "Изучить: ${difficulty}",
-    REVIEW_NOTE_DIFFICULTY_CMD: 'Изучить заметку как "${difficulty}"',
+    REVIEW_DIFFICULTY_FILE_MENU: "Изучить: {difficulty}",
+    REVIEW_NOTE_DIFFICULTY_CMD: 'Изучить заметку как "{difficulty}"',
     CRAM_ALL_CARDS: "Выбрать колоду для интенсивного повторения",
     REVIEW_ALL_CARDS: "Повторить все карточки во всех заметках",
     REVIEW_CARDS_IN_NOTE: "Повторить карточки в этой заметке",
     CRAM_CARDS_IN_NOTE: "Зубрить карточки в этой заметке",
     VIEW_STATS: "Посмотреть статистику",
     OPEN_REVIEW_QUEUE_VIEW: "Открыть очередь повторения заметок на боковой панели",
-    STATUS_BAR: "Повторить: ${dueNotesCount} заметок, ${dueFlashcardsCount} карточек",
-    SYNC_TIME_TAKEN: "Синхронизация заняла ${t}мс",
+    STATUS_BAR: "Повторить: {dueNotesCount} заметок, {dueFlashcardsCount} карточек",
+    SYNC_TIME_TAKEN: "Синхронизация заняла {t}мс",
     NOTE_IN_IGNORED_FOLDER: "Заметка сохранена в игнорируемую папку (см. настройки).",
     PLEASE_TAG_NOTE: "Для изучения, пожалуйста, правильно пометьте заметку тегом (см. настройки).",
     RESPONSE_RECEIVED: "Ответ получен.",
-    NO_DECK_EXISTS: "Не существует уровня ${deckName}",
+    NO_DECK_EXISTS: "Не существует уровня {deckName}",
     ALL_CAUGHT_UP: "Молодец! Ты справился и дошел до конца! :D",
     NO_FLASHCARD_DECKS_FOUND: "Колоды с карточками не найдены.",
     // scheduling.ts
-    DAYS_STR_IVL: "${interval} дней",
-    MONTHS_STR_IVL: "${interval} месяцев",
-    YEARS_STR_IVL: "${interval} лет",
-    DAYS_STR_IVL_MOBILE: "${interval}д.",
-    MONTHS_STR_IVL_MOBILE: "${interval}м.",
-    YEARS_STR_IVL_MOBILE: "${interval}г.",
-    HOURS_STR_IVL: "${interval} часов",
-    MINUTES_STR_IVL: "${interval} минут",
-    HOURS_STR_IVL_MOBILE: "${interval}ч",
-    MINUTES_STR_IVL_MOBILE: "${interval}мин",
+    DAYS_STR_IVL: "{interval} дней",
+    MONTHS_STR_IVL: "{interval} месяцев",
+    YEARS_STR_IVL: "{interval} лет",
+    DAYS_STR_IVL_MOBILE: "{interval}д.",
+    MONTHS_STR_IVL_MOBILE: "{interval}м.",
+    YEARS_STR_IVL_MOBILE: "{interval}г.",
+    HOURS_STR_IVL: "{interval} часов",
+    MINUTES_STR_IVL: "{interval} минут",
+    HOURS_STR_IVL_MOBILE: "{interval}ч",
+    MINUTES_STR_IVL_MOBILE: "{interval}мин",
     // settings.ts
     SETTINGS_HEADER: "Интервальное Повторение с Вспоминанием",
     GROUP_TAGS_FOLDERS: "Теги и папки",
@@ -66,19 +72,18 @@ export default {
     GROUP_DATA_STORAGE_DESC: "Выберите, где хранить данные планирования",
     GROUP_FLASHCARDS_NOTES: "Карточки и заметки",
     GROUP_CONTRIBUTING: "Участие в разработке",
-    CHECK_WIKI: 'Для дополнительной информации посетите: <a href="${wikiUrl}">Документацию</a>.',
+    CHECK_WIKI: 'Для дополнительной информации посетите: <a href="{wikiUrl}">Документацию</a>.',
     GITHUB_DISCUSSIONS:
-        'Посетите раздел <a href="${discussionsUrl}">обсуждений</a> для вопросов и ответов, обратной связи и общих дискуссий.',
+        'Посетите раздел <a href="{discussionsUrl}">обсуждений</a> для вопросов и ответов, обратной связи и общих дискуссий.',
     GITHUB_ISSUES:
-        'Создайте <a href="${issuesUrl}">задачу</a>, если у вас есть предложение по улучшению или сообщение об ошибке.',
+        'Создайте <a href="{issuesUrl}">задачу</a>, если у вас есть предложение по улучшению или сообщение об ошибке.',
     GITHUB_ISSUES_MODIFIED_PLUGIN:
-        'Создайте <a href="${issuesUrl}">задачу</a> об этом измененном sr-плагине, если у вас есть предложение по улучшению или сообщение об ошибке.',
-    GITHUB_SOURCE_CODE:
-        'Исходный код проекта доступен на <a href="${githubProjectUrl}">GitHub</a>.',
+        'Создайте <a href="{issuesUrl}">задачу</a> об этом измененном sr-плагине, если у вас есть предложение по улучшению или сообщение об ошибке.',
+    GITHUB_SOURCE_CODE: 'Исходный код проекта доступен на <a href="{githubProjectUrl}">GitHub</a>.',
     CODE_CONTRIBUTION_INFO:
-        'Узнайте <a href="${codeContributionUrl}">здесь</a>, как внести свой вклад в код плагина.',
+        'Узнайте <a href="{codeContributionUrl}">здесь</a>, как внести свой вклад в код плагина.',
     TRANSLATION_CONTRIBUTION_INFO:
-        'Узнайте <a href="${translationContributionUrl}">здесь</a>, как перевести плагин на другой язык.',
+        'Узнайте <a href="{translationContributionUrl}">здесь</a>, как перевести плагин на другой язык.',
     FOLDERS_TO_IGNORE: "Игнорируемые папки",
     FOLDERS_TO_IGNORE_DESC:
         "Введите пути к папкам или glob-шаблоны на отдельных строках, например, Templates/Scripts или **/*.excalidraw.md. Эта настройка является общей как для карточек, так и для заметок.",
@@ -137,17 +142,17 @@ export default {
     CONVERT_HIGHLIGHTS_TO_CLOZES:
         "Конвертировать ==выделенный текст== в закрытые карточки (пример: [...])?",
     CONVERT_HIGHLIGHTS_TO_CLOZES_DESC:
-        'Добавьте/удалите <code>${defaultPattern}</code> из ваших "Шаблонов пропусков"',
+        'Добавьте/удалите <code>{defaultPattern}</code> из ваших "Шаблонов пропусков"',
     CONVERT_BOLD_TEXT_TO_CLOZES:
         "Конвертировать **жирный текст** в закрытые карточки (пример: [...])?",
     CONVERT_BOLD_TEXT_TO_CLOZES_DESC:
-        'Добавьте/удалите <code>${defaultPattern}</code> из ваших "Шаблонов пропусков"',
+        'Добавьте/удалите <code>{defaultPattern}</code> из ваших "Шаблонов пропусков"',
     CONVERT_CURLY_BRACKETS_TO_CLOZES: "Преобразовать {{curly brackets}} в закрытые карточки",
     CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC:
-        'Добавьте/удалите <code>${defaultPattern}</code> из ваших "Шаблонов пропусков"',
+        'Добавьте/удалите <code>{defaultPattern}</code> из ваших "Шаблонов пропусков"',
     CLOZE_PATTERNS: "Шаблоны закрытых карточек",
     CLOZE_PATTERNS_DESC:
-        'Введите шаблоны пропусков, разделенные новыми строками. Для получения дополнительной информации обратитесь к <a href="${docsUrl}">вики</a>.',
+        'Введите шаблоны пропусков, разделенные новыми строками. Для получения дополнительной информации обратитесь к <a href="{docsUrl}">вики</a>.',
     INLINE_CARDS_SEPARATOR: "Разделитель для внутристрочных карточек",
     FIX_SEPARATORS_MANUALLY_WARNING:
         "Обратите внимание, что после изменения этого параметра вам придется вручную отредактировать все уже существующие карточки.",
@@ -185,7 +190,7 @@ export default {
         "Отключите это, чтобы свернуть вложенные колоды в одной карточке. Полезно, если у вас есть карточки, принадлежащие многим колодам в одном файле.",
     ALGORITHM: "Алгоритм",
     CHECK_ALGORITHM_WIKI:
-        'Для получения дополнительной информации см. <a href="${algoUrl}">детали алгоритма</a>.',
+        'Для получения дополнительной информации см. <a href="{algoUrl}">детали алгоритма</a>.',
     SM2_OSR_VARIANT: "OSR's variant of SM-2",
     BASE_EASE: "Базовая Лёгкость",
     BASE_EASE_DESC: "минимум = 130, предпочтительно около 250.",
@@ -230,7 +235,8 @@ export default {
     REPEAT_ITEMS: "Повторять элементы",
     REPEAT_ITEMS_DESC:
         "Следует ли повторять элементы, отмеченные как неправильные, до тех пор, пока они не будут отмечены как правильные?",
-    ALGORITHMS_CONFIRM: "Переключение алгоритмов может сбросить или повлиять на время повторения существующих элементов. Это изменение необратимо. Смена алгоритма вступает в силу только после перезапуска или перезагрузки плагина. Вы уверены, что хотите переключить алгоритм?",
+    ALGORITHMS_CONFIRM:
+        "Переключение алгоритмов может сбросить или повлиять на время повторения существующих элементов. Это изменение необратимо. Смена алгоритма вступает в силу только после перезапуска или перезагрузки плагина. Вы уверены, что хотите переключить алгоритм?",
     ALGORITHMS_DESC:
         'Алгоритм, используемый для интервального повторения. Для получения дополнительной информации см. <a href="https://github.com/martin-jw/obsidian-recall">алгоритмы</a>.',
     CONVERT_TRACKED_TO_DECK: "Конвертировать отслеживаемые заметки в колоды?",
@@ -267,11 +273,11 @@ export default {
     COLLAPSE_ALL: "Свернуть все",
     EXPAND_ALL: "Развернуть все",
     SHOW_MORE_GROUPS: "Показать еще группы",
-    SHOW_MORE_GROUPS_BATCH: "Показать еще ${count}",
-    SHOW_ALL_GROUPS: "Показать все ${count}",
+    SHOW_MORE_GROUPS_BATCH: "Показать еще {count}",
+    SHOW_ALL_GROUPS: "Показать все {count}",
     SHOW_MORE_NOTES: "Показать еще заметки",
-    SHOW_MORE_NOTES_BATCH: "Показать еще ${count}",
-    SHOW_ALL_NOTES: "Показать все ${count}",
+    SHOW_MORE_NOTES_BATCH: "Показать еще {count}",
+    SHOW_ALL_NOTES: "Показать все {count}",
     SORT: "Сортировка",
     SORT_DATE_ASC: "По дате: Скоро → Позже",
     SORT_DATE_DESC: "По дате: Позже → Скоро",
@@ -283,8 +289,8 @@ export default {
     SORT_NAME_DESC: "По имени: Я → А",
     SORT_PATH_ASC: "По пути: А → Я",
     SORT_PATH_DESC: "По пути: Я → А",
-    OVERDUE_BY_DAYS: "Просрочено на ${count} дн.",
-    IN_DAYS: "Через ${count} дн.",
+    OVERDUE_BY_DAYS: "Просрочено на {count} дн.",
+    IN_DAYS: "Через {count} дн.",
     SIDEBAR_DATE_FORMAT: "Формат даты в боковой панели",
     SIDEBAR_DATE_FORMAT_DESC:
         "Формат отображения дат в новой боковой панели. Используйте moment.js формат. Пример: ddd MMM DD.YY",
@@ -305,6 +311,8 @@ export default {
     YESTERDAY: "Вчерашние",
     TODAY: "Сегодняшние",
     TOMORROW: "Завтрашние",
+    TODAY_LATER_HOURS: "Сегодня (через {hours}ч)",
+    TODAY_LATER_MINUTES: "Сегодня (через {minutes}мин)",
     // stats-modal.tsx
     STATS_TITLE: "Статистика",
     MONTH: "Месяц",
@@ -316,20 +324,20 @@ export default {
     SCHEDULED: "Запланировано",
     DAYS: "Дни",
     NUMBER_OF_CARDS: "Количество карточек",
-    REVIEWS_PER_DAY: "Среднее: ${avg} повторений/день",
+    REVIEWS_PER_DAY: "Среднее: {avg} повторений/день",
     INTERVALS: "Интервалы",
     INTERVALS_DESC: "Интервалы до следующего повторения",
     COUNT: "Количество",
-    INTERVALS_SUMMARY: "Средний промежуток: ${avg}, Самый длинный промежуток: ${longest}",
+    INTERVALS_SUMMARY: "Средний промежуток: {avg}, Самый длинный промежуток: {longest}",
     EASES: "Прогресс изучения",
-    EASES_SUMMARY: "Среднее значение прогресса: ${avgEase}",
+    EASES_SUMMARY: "Среднее значение прогресса: {avgEase}",
     EASE: "Ease",
     CARD_TYPES: "Типы карточек",
     CARD_TYPES_DESC: "Включая скрытые карточки, если таковые имеются",
     CARD_TYPE_NEW: "Новых",
     CARD_TYPE_YOUNG: "Повторяемых",
     CARD_TYPE_MATURE: "Изученных",
-    CARD_TYPES_SUMMARY: "Всего карточек: ${totalCardsCount}",
+    CARD_TYPES_SUMMARY: "Всего карточек: {totalCardsCount}",
     SEARCH: "Поиск",
     PREVIOUS: "Предыдущий",
     NEXT: "Следующий",
@@ -337,7 +345,7 @@ export default {
     REVIEWED_TODAY_DESC: "количество карточек/заметок, которые вы повторили сегодня",
     NEW_LEARNED: "Новых изучено",
     DUE_REVIEWED: "Просроченных повторено",
-    REVIEWED_TODAY_SUMMARY: "Всего повторено сегодня: ${totalreviewedCount}",
+    REVIEWED_TODAY_SUMMARY: "Всего повторено сегодня: {totalreviewedCount}",
     DATE: "Дата",
     // cardBlockIDSetting.ts
     CARD_BLOCK_ID: "ID блока карточки",
@@ -408,7 +416,7 @@ export default {
     DATA_LOCATION_WARNING_TO_TRACKED:
         "БУДЬТЕ ОСТОРОЖНЫ!!!\nЕсли вы подтвердите это, все ваши данные планирования из заметок (которые будут удалены одновременно) будут конвертированы В `tracked_files.json`.",
     POST_ISSUE_MODIFIED_PLUGIN:
-        'Сообщите о проблеме <a href="${issue_url}">здесь</a> касательно этого модифицированного sr-плагина с фоновым цветом для настроек.',
+        'Сообщите о проблеме <a href="{issue_url}">здесь</a> касательно этого модифицированного sr-плагина с фоновым цветом для настроек.',
     // donation.ts
     DONATION_TEXT:
         "Это хобби-проект. Если он вам помогает, можете угостить меня напитком или чаем с пузырьками",
@@ -435,7 +443,7 @@ export default {
     CMD_PRINT_DATA: "Вывести данные",
     CMD_UPDATE_ITEMS: "Обновить элементы",
     CMD_INPUT_POSITIVE_NUMBER: "Пожалуйста, введите положительное число",
-    CMD_NOTE_POSTPONED: "Эта заметка была отложена на ${days} дней",
+    CMD_NOTE_POSTPONED: "Эта заметка была отложена на {days} дней",
     // trackFileEvents.ts
     MENU_TRACK_ALL_NOTES: "Отслеживать все заметки",
     MENU_UNTRACK_ALL_NOTES: "Не отслеживать все заметки",
@@ -445,25 +453,26 @@ export default {
     DATA_TAGGED_FILE_CANT_UNTRACK:
         "Это файл с тегом, отменить отслеживание таким способом нельзя. Вы можете удалить тег #review в файле заметки.",
     // data.ts
-    DATA_UNTRACKED_ITEMS: "Отменено отслеживание ${numItems} элементов${nulrstr}",
+    DATA_UNTRACKED_ITEMS: "Отменено отслеживание {numItems} элементов{nulrstr}",
     DATA_UNABLE_TO_SAVE: "Не удалось сохранить файл данных!",
-    DATA_CORRUPTION_FIXED: "Исправлено ${count} проблем с повреждением данных. Создана резервная копия.",
+    DATA_CORRUPTION_FIXED:
+        "Исправлено {count} проблем с повреждением данных. Создана резервная копия.",
     DATA_FOLDER_UNTRACKED:
-        "В папке ${folderPath} ${totalRemoved} файлов больше не отслеживаются для повторения",
+        "В папке {folderPath} {totalRemoved} файлов больше не отслеживаются для повторения",
     DATA_ADDED_REMOVED_ITEMS:
-        "Добавлено ${totalAdded} новых элементов, удалено ${totalRemoved} элементов.",
+        "Добавлено {totalAdded} новых элементов, удалено {totalRemoved} элементов.",
     DATA_ADDED_REMOVED_ITEMS_SHORT:
-        "Добавлено ${added} новых элементов, удалено ${removed} элементов.",
+        "Добавлено {added} новых элементов, удалено {removed} элементов.",
     DATA_FILE_UPDATE:
-        "Обновление ${filePath} - строка: ${lineNo}\nДобавлено: ${added} новых карточек, удалено: ${removed} карточек.",
+        "Обновление {filePath} - строка: {lineNo}\nДобавлено: {added} новых карточек, удалено: {removed} карточек.",
     DATA_ALL_ITEMS_UPDATED: "Все элементы были обновлены.",
     RECALCULATE_NOTES: "Пересчёт заметок",
     RECALCULATING_NOTES_NOTICE_START: "Пересчитывая заметки...",
-    RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Нашлись ${count} новых заметок",
+    RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Нашлись {count} новых заметок",
     RECALCULATING_NOTES_NOTICE_DONE_NONE: "Новых заметок не найдено.",
     // reviewView.ts
-    NEXT_REVIEW_MINUTES: "Можно повторить через ${interval} минут",
-    NEXT_REVIEW_HOURS: "Можно повторить через ${interval} часов",
+    NEXT_REVIEW_MINUTES: "Можно повторить через {interval} минут",
+    NEXT_REVIEW_HOURS: "Можно повторить через {interval} часов",
     // location_switch.ts
     DATA_FILE_MOVED_SUCCESS: "Файл данных успешно перемещен!",
     DATA_FILE_DELETE_OLD_FAILED: "Не удалось удалить старый файл данных, удалите его вручную.",
@@ -490,11 +499,12 @@ export default {
     MANAGE_RULES_DESC:
         "Создавайте, редактируйте и управляйте правилами для карточек. Каждое правило может иметь свой приоритет и настройки.",
     ADD_RULE_BUTTON: "+ Добавить Правило",
-    RULE_CREATED_NOTICE: 'Правило "${ruleName}" создано',
-    RULE_UPDATED_NOTICE: 'Правило "${ruleName}" обновлено',
-    RULE_DELETED_NOTICE: 'Правило "${ruleName}" удалено',
-    DELETE_RULE_CONFIRMATION_MSG: 'Вы уверены, что хотите удалить правило "${ruleName}" (${tag})?',
-    NO_RULES_CONFIGURED: "Правила еще не настроены. Нажмите '+ Добавить правило' для создания первого правила.",
+    RULE_CREATED_NOTICE: 'Правило "{ruleName}" создано',
+    RULE_UPDATED_NOTICE: 'Правило "{ruleName}" обновлено',
+    RULE_DELETED_NOTICE: 'Правило "{ruleName}" удалено',
+    DELETE_RULE_CONFIRMATION_MSG: 'Вы уверены, что хотите удалить правило "{ruleName}" ({tag})?',
+    NO_RULES_CONFIGURED:
+        "Правила еще не настроены. Нажмите '+ Добавить правило' для создания первого правила.",
     INLINE_RULES_SECTION_TITLE: "Встроенные карточки",
     HEADER_BASED_RULES_SECTION_TITLE: "Карточки на основе заголовков",
     MULTILINE_RULES_SECTION_TITLE: "Многострочные карточки",
@@ -508,12 +518,13 @@ export default {
     // FlashcardRuleModal.tsx
     EDIT_FLASHCARD_RULE: "Редактировать правило карточки",
     CREATE_FLASHCARD_RULE: "Создать правило карточки",
-    FLASHCARD_RULE_MODAL_DESC: "Настройте, как это правило создает карточки из ваших заметок. Выберите тип карточки ниже и настройте его параметры.",
+    FLASHCARD_RULE_MODAL_DESC:
+        "Настройте, как это правило создает карточки из ваших заметок. Выберите тип карточки ниже и настройте его параметры.",
     SETTINGS_MODAL_SECTION_INLINE: "Встроенные",
     SETTINGS_MODAL_SECTION_HEADER: "Заголовки",
     SETTINGS_MODAL_SECTION_MULTILINE: "Многострочные",
     SETTINGS_MODAL_SECTION_CLOZE: "Пропуски",
-    
+
     // Section headers
     COMMON_SETTINGS: "Общие настройки",
     COMMON_SETTINGS_DESC: "Базовая конфигурация, применяемая к этому правилу",
@@ -525,7 +536,7 @@ export default {
     MULTILINE_SETTINGS_DESC: "Настройте многострочный формат вопроса и ответа",
     CLOZE_SETTINGS: "Настройки карточек с пропусками",
     CLOZE_SETTINGS_DESC: "Настройте шаблоны пропусков для скрытия частей текста",
-    
+
     // Common settings
     RULE_NAME: "Название правила",
     RULE_NAME_PLACEHOLDER: "Мое правило",
@@ -538,7 +549,7 @@ export default {
     PRIORITY: "Приоритет",
     PRIORITY_HINT: "Правила с более высоким приоритетом применяются первыми (0-100)",
     ENABLED: "Включено",
-    
+
     // Inline settings
     SEPARATOR: "Разделитель",
     SEPARATOR_DESC_INLINE: "Текст, разделяющий вопрос и ответ (например, ::)",
@@ -546,15 +557,17 @@ export default {
     REVERSED_SEPARATOR_DESC_INLINE: "Создает двунаправленные карточки (например, :::)",
     START_OF_LINE_ONLY: "Только в начале строки",
     START_OF_LINE_ONLY_DESC: "Сопоставлять только если разделитель находится в начале строки",
-    
+
     // Cloze settings
-    CLOZE_INFO_TEXT: "Карточки с пропусками скрывают части текста для запоминания. Введите шаблоны ниже, по одному на строку.",
+    CLOZE_INFO_TEXT:
+        "Карточки с пропусками скрывают части текста для запоминания. Введите шаблоны ниже, по одному на строку.",
     PATTERNS: "Шаблоны пропусков",
     PATTERNS_DESC: "Введите шаблоны пропусков, по одному на строку",
-    
+
     // Multiline settings
     QUESTION_LINE_PATTERN: "Шаблон строки вопроса",
-    QUESTION_LINE_PATTERN_DESC: "Регулярное выражение для определения строки вопроса (например, ^Q: (.*))",
+    QUESTION_LINE_PATTERN_DESC:
+        "Регулярное выражение для определения строки вопроса (например, ^Q: (.*))",
     STOP_CONDITION: "Условие остановки",
     STOP_CONDITION_DESC: "Когда заканчивается блок ответа?",
     STOP_BLANK_LINE: "Пустая строка",
@@ -562,14 +575,15 @@ export default {
     STOP_NEXT_QUESTION: "Следующий вопрос",
     STOP_CUSTOM_PATTERN: "Пользовательский шаблон",
     SEPARATOR_PLACEHOLDER: "например, ---",
-    
+
     // Header settings
     SELECTION_SETTINGS: "Настройки выбора",
     CONTENT_SETTINGS: "Настройки содержимого",
     HEADING_LEVELS: "Уровни заголовков",
     HEADING_LEVELS_DESC: "Выберите, какие уровни заголовков преобразовывать в карточки",
     STRICT_PRIORITY: "Строгий приоритет",
-    STRICT_PRIORITY_DESC: "Приоритет более высоких уровней заголовков (например, если есть H1, игнорировать H2)",
+    STRICT_PRIORITY_DESC:
+        "Приоритет более высоких уровней заголовков (например, если есть H1, игнорировать H2)",
     CONTENT_SCOPE: "Область содержимого",
     CONTENT_SCOPE_DESC: "Сколько содержимого включать в ответ карточки",
     SCOPE_FULL_SECTION: "Полная секция (до следующего заголовка)",
@@ -578,7 +592,7 @@ export default {
     INCLUDE_SUBHEADERS_DESC: "Включить содержимое из подразделов в ответ",
     STRIP_TAGS: "Удалить теги",
     STRIP_TAGS_DESC: "Удалить HTML/Markdown теги из вывода",
-    
+
     NESTING_MODE: "Режим вложенности",
     NESTING_MODE_NESTED: "Вложенный (под родительскими заголовками)",
     NESTING_MODE_FLAT: "Плоский (на корневом уровне)",
@@ -597,7 +611,7 @@ export default {
     END_MARKER_DESC: "Необязательный текст для обозначения конца многострочной карточки.",
     END_MARKER_PLACEHOLDER: "например, ---",
     CREATE: "Создать",
-    FLASHCARD_RULE_ERRORS: "Пожалуйста, исправьте следующие ошибки:\n${errors}",
+    FLASHCARD_RULE_ERRORS: "Пожалуйста, исправьте следующие ошибки:\n{errors}",
     TAG: "Тег",
     TAG_DESC: "Тег, который активирует это правило, например, #cards.",
     POSITIONAL_SELECTORS: "Позиционные селекторы",

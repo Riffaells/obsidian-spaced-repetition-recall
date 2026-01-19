@@ -46,9 +46,7 @@ export class FlashcardRuleModal extends Modal {
 
         // Modal title
         const title = contentEl.createEl("h2");
-        title.textContent = this.isEditMode
-            ? t("EDIT_FLASHCARD_RULE")
-            : t("CREATE_FLASHCARD_RULE");
+        title.textContent = this.isEditMode ? t("EDIT_FLASHCARD_RULE") : t("CREATE_FLASHCARD_RULE");
 
         // Tabs
         this.renderTabs(contentEl);

@@ -136,7 +136,7 @@ describe("Checkpoint - New Parser Methods", () => {
                 tagPattern: "",
                 config: {
                     selection: { levels: [2], strictPriority: false },
-                    content: { scope: "section", includeSubheaders: false, stripTags: false }
+                    content: { scope: "section", includeSubheaders: false, stripTags: false },
                 } as any, // Cast to any to avoid strict type checking if types are not fully aligned in test environment
             };
 

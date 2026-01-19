@@ -1,13 +1,7 @@
 import { Question } from "../models/Question";
 import SRPlugin from "../../main";
 import { SRSettings } from "src/settings/settings";
-
-export interface IQuestionPostponementList {
-    clear(): void;
-    add(question: Question): void;
-    includes(question: Question): boolean;
-    write(): Promise<void>;
-}
+import { IQuestionPostponementList } from "./IQuestionPostponementList";
 
 export class QuestionPostponementList implements IQuestionPostponementList {
     list: string[];

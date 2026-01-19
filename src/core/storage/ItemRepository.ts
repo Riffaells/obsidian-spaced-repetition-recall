@@ -147,7 +147,6 @@ export class ItemRepository implements IItemRepository {
             }
         }
 
-
         const index = data.items.findIndex((i) => i.ID === item.ID);
 
         if (index >= 0) {
@@ -159,9 +158,7 @@ export class ItemRepository implements IItemRepository {
         // Save
         const writeResult = await this.storage.write(data);
         if (writeResult.isErr) {
-            return createErr(
-                new RepositoryError("Failed to write data", writeResult.error),
-            );
+            return createErr(new RepositoryError("Failed to write data", writeResult.error));
         }
 
         // Emit event
@@ -219,9 +216,7 @@ export class ItemRepository implements IItemRepository {
      * @param items - The items to save
      * @returns A Result indicating success or failure
      */
-    async saveAll(
-        items: RepetitionItem[],
-    ): Promise<Result<void, RepositoryError>> {
+    async saveAll(items: RepetitionItem[]): Promise<Result<void, RepositoryError>> {
         // Update cache and indexes
         items.forEach((item) => {
             this.byId.set(item.ID, item);
@@ -254,9 +249,7 @@ export class ItemRepository implements IItemRepository {
         // Save
         const writeResult = await this.storage.write(data);
         if (writeResult.isErr) {
-            return createErr(
-                new RepositoryError("Failed to write data", writeResult.error),
-            );
+            return createErr(new RepositoryError("Failed to write data", writeResult.error));
         }
 
         return createOk(undefined);

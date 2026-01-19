@@ -2,7 +2,10 @@
  * Base error class for storage-related failures.
  */
 export class StorageError extends Error {
-    constructor(message: string, public cause?: Error) {
+    constructor(
+        message: string,
+        public cause?: Error,
+    ) {
         super(message);
         this.name = "StorageError";
     }

@@ -1,1 +1,15 @@
 declare module "pagerank.js";
+
+declare module "*.md" {
+    const content: string;
+    export default content;
+}
+
+declare module "*.png" {
+    const value: string;
+    export default value;
+}
+
+interface Navigator {
+    msMaxTouchPoints?: number;
+}

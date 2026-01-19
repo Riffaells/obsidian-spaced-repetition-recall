@@ -1,6 +1,7 @@
 import { Deck } from "src/core/models/Deck";
 import { Note } from "src/core/models/Note";
-import { DEFAULT_SETTINGS, SRSettings } from "src/settings/settings";
+import { DEFAULT_SETTINGS } from "src/settings/settings";
+import { SRSettings } from "src/core/settings/SRSettings";
 import { TopicPath } from "src/core/services/TopicPath";
 import { TextDirection } from "src/utils/TextDirection";
 import { UnitTestSRFile } from "./helpers/UnitTestSRFile";
@@ -30,9 +31,10 @@ Q3::A3`;
     static async createDeckFromText(
         text: string,
         folderTopicPath: TopicPath = TopicPath.emptyPath,
+        settings: SRSettings = DEFAULT_SETTINGS,
     ): Promise<Deck> {
         const file: UnitTestSRFile = new UnitTestSRFile(text);
-        return await this.createDeckFromFile(file, folderTopicPath);
+        return await this.createDeckFromFile(file, folderTopicPath, settings);
     }
 
     static async createDeckAndIteratorFromText(
@@ -40,8 +42,13 @@ Q3::A3`;
         folderTopicPath: TopicPath,
         cardOrder: CardOrder,
         deckOrder: DeckOrder,
+        settings: SRSettings = DEFAULT_SETTINGS,
     ): Promise<[Deck, DeckTreeIterator]> {
-        const deck: Deck = await SampleItemDecks.createDeckFromText(text, folderTopicPath);
+        const deck: Deck = await SampleItemDecks.createDeckFromText(
+            text,
+            folderTopicPath,
+            settings,
+        );
         const iterator: DeckTreeIterator = new DeckTreeIterator(
             {
                 cardOrder,
@@ -55,9 +62,10 @@ Q3::A3`;
     static async createDeckFromFile(
         file: UnitTestSRFile,
         folderTopicPath: TopicPath = TopicPath.emptyPath,
+        settings: SRSettings = DEFAULT_SETTINGS,
     ): Promise<Deck> {
         const deck: Deck = new Deck("Root", null);
-        const noteFileLoader: NoteFileLoader = new NoteFileLoader(DEFAULT_SETTINGS);
+        const noteFileLoader: NoteFileLoader = new NoteFileLoader(settings);
         const note: Note = await noteFileLoader.load(file, TextDirection.Ltr, folderTopicPath);
         if (note) {
             note.appendCardsToDeck(deck);

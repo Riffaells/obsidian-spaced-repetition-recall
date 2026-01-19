@@ -56,9 +56,7 @@ export class BackupManager {
     async createCorruptedBackup(path: string): Promise<void> {
         // Check if file exists
         if (!(await this.adapter.exists(path))) {
-            throw new Error(
-                `Cannot create corrupted backup: file not found at ${path}`,
-            );
+            throw new Error(`Cannot create corrupted backup: file not found at ${path}`);
         }
 
         // Read the corrupted file data

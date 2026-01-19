@@ -1,14 +1,10 @@
 import { Card } from "./Card";
-import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewSequencer";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewMode";
 import { Question } from "./Question";
-import { IQuestionPostponementList } from "src/core/scheduling/QuestionPostponementList";
+import { IQuestionPostponementList } from "src/core/scheduling/IQuestionPostponementList";
 import { TopicPath, TopicPathList } from "src/core/services/TopicPath";
 
-export enum CardListType {
-    NewCard,
-    DueCard,
-    All,
-}
+import { CardListType } from "./CardListType";
 
 //
 // The same card can be added to multiple decks e.g.

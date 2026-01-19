@@ -120,7 +120,10 @@ class MockAlgorithm extends SrsAlgorithm {
 
     importer(fromAlgo: any, items: RepetitionItem[]): void {}
 
-    displaySettings(containerEl: HTMLElement, update: (settings: unknown, refresh?: boolean) => void): void {}
+    displaySettings(
+        containerEl: HTMLElement,
+        update: (settings: unknown, refresh?: boolean) => void,
+    ): void {}
 }
 
 describe("FileTrackService", () => {
@@ -171,7 +174,11 @@ describe("FileTrackService", () => {
         });
 
         it("should return error for non-existent file", async () => {
-            const result = await fileTrackService.trackFile("nonexistent.md", RPITEMTYPE.NOTE, "default");
+            const result = await fileTrackService.trackFile(
+                "nonexistent.md",
+                RPITEMTYPE.NOTE,
+                "default",
+            );
             expect(result.isErr).toBe(true);
             if (result.isErr) {
                 expect(result.error.name).toBe("FileNotFoundError");
@@ -196,8 +203,20 @@ describe("FileTrackService", () => {
     describe("untrackFile", () => {
         it("should untrack a file and remove all entities", async () => {
             const trackedFile = new TrackedFile("test.md", RPITEMTYPE.NOTE, "default");
-            const item1 = new RepetitionItem(1, 0, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
-            const item2 = new RepetitionItem(2, 0, RPITEMTYPE.CARD, "default", algorithm.defaultData());
+            const item1 = new RepetitionItem(
+                1,
+                0,
+                RPITEMTYPE.NOTE,
+                "default",
+                algorithm.defaultData(),
+            );
+            const item2 = new RepetitionItem(
+                2,
+                0,
+                RPITEMTYPE.CARD,
+                "default",
+                algorithm.defaultData(),
+            );
             storage.setData({ items: [item1, item2], trackedFiles: [trackedFile] });
             await itemRepo.load();
             await fileRepo.load();
@@ -244,7 +263,11 @@ describe("FileTrackService", () => {
                 for (let i = 0; i < 100; i++) {
                     const randomPath = `nonexistent-${Math.random()}-${i}.md`;
                     vault.removeFile(randomPath);
-                    const result = await fileTrackService.trackFile(randomPath, RPITEMTYPE.NOTE, "default");
+                    const result = await fileTrackService.trackFile(
+                        randomPath,
+                        RPITEMTYPE.NOTE,
+                        "default",
+                    );
                     expect(result.isErr).toBe(true);
                     if (result.isErr) {
                         expect(result.error.name).toBe("FileNotFoundError");
@@ -263,7 +286,11 @@ describe("FileTrackService", () => {
                     const trackedFile = new TrackedFile(filePath, RPITEMTYPE.NOTE, deckName);
                     storage.setData({ items: [], trackedFiles: [trackedFile] });
                     await fileRepo.load();
-                    const result = await fileTrackService.trackFile(filePath, RPITEMTYPE.NOTE, deckName);
+                    const result = await fileTrackService.trackFile(
+                        filePath,
+                        RPITEMTYPE.NOTE,
+                        deckName,
+                    );
                     expect(result.isErr).toBe(true);
                     if (result.isErr) {
                         expect(result.error.name).toBe("FileAlreadyTrackedError");
@@ -284,7 +311,11 @@ describe("FileTrackService", () => {
                     storage.setData({ items: [], trackedFiles: [] });
                     await itemRepo.load();
                     await fileRepo.load();
-                    const trackResult = await fileTrackService.trackFile(filePath, itemType, deckName);
+                    const trackResult = await fileTrackService.trackFile(
+                        filePath,
+                        itemType,
+                        deckName,
+                    );
                     expect(trackResult.isOk).toBe(true);
                     const trackedFile = await fileRepo.findByPath(filePath);
                     expect(trackedFile).not.toBeNull();
@@ -312,7 +343,11 @@ describe("FileTrackService", () => {
                     if (shouldExist) {
                         vault.addFile(filePath);
                         if (shouldBeTracked) {
-                            const trackedFile = new TrackedFile(filePath, RPITEMTYPE.NOTE, "default");
+                            const trackedFile = new TrackedFile(
+                                filePath,
+                                RPITEMTYPE.NOTE,
+                                "default",
+                            );
                             storage.setData({ items: [], trackedFiles: [trackedFile] });
                             await fileRepo.load();
                         } else {
@@ -325,7 +360,11 @@ describe("FileTrackService", () => {
                     let result: any;
                     let threwException = false;
                     try {
-                        result = await fileTrackService.trackFile(filePath, RPITEMTYPE.NOTE, "default");
+                        result = await fileTrackService.trackFile(
+                            filePath,
+                            RPITEMTYPE.NOTE,
+                            "default",
+                        );
                     } catch (error) {
                         threwException = true;
                     }
@@ -357,7 +396,10 @@ describe("FileTrackService", () => {
                     expect(result.isErr).toBe(true);
                     if (result.isErr) {
                         const errorName = result.error.name;
-                        expect(errorName === "FileNotFoundError" || errorName === "FileNotTrackedError").toBe(true);
+                        expect(
+                            errorName === "FileNotFoundError" ||
+                                errorName === "FileNotTrackedError",
+                        ).toBe(true);
                     }
                 }
             });
@@ -372,7 +414,13 @@ describe("FileTrackService", () => {
                     const trackedFile = new TrackedFile(filePath, RPITEMTYPE.NOTE, deckName);
                     const items: RepetitionItem[] = [];
                     for (let j = 0; j < numItems; j++) {
-                        const item = new RepetitionItem(i * 100 + j, 0, Math.random() > 0.5 ? RPITEMTYPE.NOTE : RPITEMTYPE.CARD, deckName, algorithm.defaultData());
+                        const item = new RepetitionItem(
+                            i * 100 + j,
+                            0,
+                            Math.random() > 0.5 ? RPITEMTYPE.NOTE : RPITEMTYPE.CARD,
+                            deckName,
+                            algorithm.defaultData(),
+                        );
                         items.push(item);
                     }
                     storage.setData({ items: items, trackedFiles: [trackedFile] });
@@ -410,8 +458,17 @@ describe("FileTrackService", () => {
                         if (!isTracked) {
                             trackedFile.setUnTracked();
                         }
-                        const item = new RepetitionItem(i, 0, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
-                        storage.setData({ items: isTracked ? [item] : [], trackedFiles: [trackedFile] });
+                        const item = new RepetitionItem(
+                            i,
+                            0,
+                            RPITEMTYPE.NOTE,
+                            "default",
+                            algorithm.defaultData(),
+                        );
+                        storage.setData({
+                            items: isTracked ? [item] : [],
+                            trackedFiles: [trackedFile],
+                        });
                         await itemRepo.load();
                         await fileRepo.load();
                     } else {

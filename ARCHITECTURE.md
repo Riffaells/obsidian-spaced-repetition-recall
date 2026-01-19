@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document describes the internal architecture of the Obsidian Spaced Repetition Flow plugin, focusing on the data storage layer refactoring that implements a clean, layered architecture with proper separation of concerns.
+This document describes the internal architecture of the Obsidian Spaced Repetition Flow plugin, focusing on the data
+storage layer refactoring that implements a clean, layered architecture with proper separation of concerns.
 
 ## Contributors
 
@@ -73,6 +74,7 @@ The data storage system is organized into three distinct layers:
 - **BackupManager**: Creates and manages timestamped backups
 
 **Features**:
+
 - Automatic data validation on load
 - Auto-fix for common data corruption issues
 - Sequential schema migrations
@@ -91,12 +93,13 @@ The data storage system is organized into three distinct layers:
 - **FileRepository**: Implementation with path and index lookups
 
 **Features**:
+
 - In-memory caching for O(1) lookups
 - Multiple indexes for fast queries:
-  - Items by ID
-  - Items by file index
-  - Due items
-  - New items
+    - Items by ID
+    - Items by file index
+    - Due items
+    - New items
 - Event emission on data changes
 - Batch operations support
 
@@ -107,17 +110,19 @@ The data storage system is organized into three distinct layers:
 **Key Components**:
 
 - **ItemService**: Handles item review logic and queue management
-  - `reviewItem()`: Apply spaced repetition algorithm and save
-  - `getNextDueItem()`: Get next item to review (with optional deck filtering)
-  - `getItemById()`: Retrieve item by ID
-  - `getItemsByFile()`: Get all items for a file
+
+    - `reviewItem()`: Apply spaced repetition algorithm and save
+    - `getNextDueItem()`: Get next item to review (with optional deck filtering)
+    - `getItemById()`: Retrieve item by ID
+    - `getItemsByFile()`: Get all items for a file
 
 - **FileTrackService**: Manages file tracking lifecycle
-  - `trackFile()`: Add file to spaced repetition system
-  - `untrackFile()`: Remove file and all associated items
-  - `generateItemId()`: Generate unique item IDs
+    - `trackFile()`: Add file to spaced repetition system
+    - `untrackFile()`: Remove file and all associated items
+    - `generateItemId()`: Generate unique item IDs
 
 **Features**:
+
 - Type-safe error handling with Result types
 - Event emission for state changes
 - Algorithm integration for review scheduling
@@ -144,6 +149,7 @@ if (result.isErr) {
 ```
 
 **Benefits**:
+
 - Explicit error handling
 - Type-safe error types
 - No unexpected exceptions
@@ -155,15 +161,16 @@ Publish-subscribe mechanism for decoupled communication:
 
 ```typescript
 // Subscribe to events
-eventBus.on('item:updated', (item) => {
-    console.log('Item updated:', item.ID);
+eventBus.on("item:updated", (item) => {
+    console.log("Item updated:", item.ID);
 });
 
 // Emit events
-eventBus.emit('item:reviewed', { item, result });
+eventBus.emit("item:reviewed", { item, result });
 ```
 
 **Events**:
+
 - `item:updated`: Emitted when an item is saved
 - `item:deleted`: Emitted when an item is deleted
 - `item:reviewed`: Emitted when an item is reviewed
@@ -176,20 +183,23 @@ Dependency injection container for managing service lifecycles:
 
 ```typescript
 // Register services
-container.register('itemService', () => 
-    new ItemService(
-        container.get('itemRepository'),
-        container.get('fileRepository'),
-        algorithm,
-        container.get('eventBus')
-    )
+container.register(
+    "itemService",
+    () =>
+        new ItemService(
+            container.get("itemRepository"),
+            container.get("fileRepository"),
+            algorithm,
+            container.get("eventBus"),
+        ),
 );
 
 // Retrieve services
-const itemService = container.get<ItemService>('itemService');
+const itemService = container.get<ItemService>("itemService");
 ```
 
 **Benefits**:
+
 - Centralized service management
 - Singleton pattern support
 - Dependency resolution
@@ -201,38 +211,38 @@ const itemService = container.get<ItemService>('itemService');
 
 1. **User initiates review** → Application Layer
 2. **ItemService.reviewItem()** → Service Layer
-   - Retrieves item from repository
-   - Validates item state
-   - Applies spaced repetition algorithm
-   - Updates item statistics
+    - Retrieves item from repository
+    - Validates item state
+    - Applies spaced repetition algorithm
+    - Updates item statistics
 3. **ItemRepository.save()** → Repository Layer
-   - Updates in-memory cache
-   - Updates indexes
-   - Persists to storage
-   - Emits `item:updated` event
+    - Updates in-memory cache
+    - Updates indexes
+    - Persists to storage
+    - Emits `item:updated` event
 4. **JsonStorage.write()** → Storage Layer
-   - Creates backup
-   - Serializes to JSON
-   - Writes to file
+    - Creates backup
+    - Serializes to JSON
+    - Writes to file
 5. **Event handlers notified** → Application Layer
-   - UI updates
-   - Statistics refresh
+    - UI updates
+    - Statistics refresh
 
 ### Track File Flow
 
 1. **User tracks file** → Application Layer
 2. **FileTrackService.trackFile()** → Service Layer
-   - Validates file exists
-   - Checks if already tracked
-   - Creates TrackedFile entity
-   - Creates RepetitionItem entity
+    - Validates file exists
+    - Checks if already tracked
+    - Creates TrackedFile entity
+    - Creates RepetitionItem entity
 3. **FileRepository.save() + ItemRepository.save()** → Repository Layer
-   - Updates caches and indexes
-   - Persists both entities
-   - Emits events
+    - Updates caches and indexes
+    - Persists both entities
+    - Emits events
 4. **JsonStorage.write()** → Storage Layer
-   - Creates backup
-   - Saves data
+    - Creates backup
+    - Saves data
 
 ## Performance Optimizations
 
@@ -242,13 +252,18 @@ The repository layer maintains multiple indexes for O(1) lookups:
 
 ```typescript
 // ItemRepository indexes
-private byId: Map<number, RepetitionItem>           // O(1) by ID
-private byFileIndex: Map<number, Set<number>>       // O(1) by file
-private dueItems: Set<number>                       // O(1) due items
-private newItems: Set<number>                       // O(1) new items
+private
+byId: Map<number, RepetitionItem>           // O(1) by ID
+private
+byFileIndex: Map<number, Set<number>>       // O(1) by file
+private
+dueItems: Set<number>                       // O(1) due items
+private
+newItems: Set<number>                       // O(1) new items
 ```
 
 **Impact**:
+
 - Finding due items: O(n) → O(1)
 - Finding items by file: O(n) → O(1)
 - Finding item by ID: O(n) → O(1)
@@ -256,11 +271,13 @@ private newItems: Set<number>                       // O(1) new items
 ### Caching
 
 Repositories maintain in-memory caches:
+
 - Items cached after first load
 - Cache updated on save/delete
 - No disk access for queries
 
 **Impact**:
+
 - Typical query: ~0.1ms (vs ~10ms with disk access)
 - Review session: 100x faster
 
@@ -280,6 +297,7 @@ await itemRepository.saveAll([item1, item2, item3]);
 The system defines specific error types for different scenarios:
 
 **Storage Errors**:
+
 - `StorageError`: Base class for storage failures
 - `FileNotFoundError`: File not found
 - `ParseError`: JSON parsing failed
@@ -288,9 +306,11 @@ The system defines specific error types for different scenarios:
 - `MigrationError`: Schema migration failed
 
 **Repository Errors**:
+
 - `RepositoryError`: Base class for repository failures
 
 **Service Errors**:
+
 - `ItemNotFoundError`: Item not found
 - `ItemNotTrackedError`: Item not tracked
 - `FileAlreadyTrackedError`: File already tracked
@@ -329,6 +349,7 @@ Data is validated on every load:
 4. **FSRS data validation**: Validates FSRS-specific date fields
 
 **Auto-fix**:
+
 - Invalid timestamps → Reset to current time
 - Invalid file references → Mark as untracked (-1)
 - Missing required fields → Add with defaults
@@ -339,19 +360,20 @@ Schema migrations are applied automatically:
 
 ```typescript
 // Version 0 → 1: Add itemType field
-items.map(item => ({
+items.map((item) => ({
     ...item,
-    itemType: item.itemType || 'note'
-}))
+    itemType: item.itemType || "note",
+}));
 
 // Version 1 → 2: Normalize deckName field
-items.map(item => ({
+items.map((item) => ({
     ...item,
-    deckName: item.deckName || item.deck || 'default'
-}))
+    deckName: item.deckName || item.deck || "default",
+}));
 ```
 
 **Process**:
+
 1. Detect data version
 2. Apply migrations sequentially
 3. Create backup before changes
@@ -379,7 +401,7 @@ data.json.corrupted.1735124000  # Corrupted data backup
 ### Restoration
 
 ```typescript
-const backupManager = container.get<BackupManager>('backupManager');
+const backupManager = container.get<BackupManager>("backupManager");
 await backupManager.restore(dataPath, backupPath);
 ```
 
@@ -401,15 +423,16 @@ The system uses property-based testing to validate correctness properties:
 for (let i = 0; i < 100; i++) {
     const item = generateRandomItem();
     const response = generateRandomResponse();
-    
+
     const result = await itemService.reviewItem(item.ID, response);
-    
+
     expect(result.isOk).toBe(true);
     expect(item.nextReview).toBeGreaterThan(Date.now());
 }
 ```
 
 **Properties Tested**:
+
 - Storage operations return Result types
 - File existence checks are accurate
 - JSON parsing handles all invalid input
@@ -451,6 +474,7 @@ const item = dataStore.getItemById(itemId);
 ```
 
 **Purpose**:
+
 - Gradual migration path
 - Backward compatibility during transition
 - Minimal code changes required

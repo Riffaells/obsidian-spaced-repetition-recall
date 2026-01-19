@@ -3,13 +3,8 @@ import { App, MarkdownRenderer, Modal, moment, Notice, request } from "obsidian"
 import { errorlog, isVersionNewerThanOther } from "src/utils/utils_recall";
 import SRPlugin from "src/main";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import README from "README.md";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import RELEASE_changelog from "docs/docs/changelog.md";
+// import RELEASE_changelog from "docs/docs/changelog.md";
 import { buildDonation } from "../settings-views/donation";
 
 // const fmd = fs.readFileSync("CHANGELOG.md", "utf8");
@@ -20,7 +15,7 @@ let readme: string[];
 README_LOC = README;
 readme = README_LOC.match(/^(.|\r?\n)*(?=\r?\n## How)/gm);
 
-const latestRelease = RELEASE_changelog.match(/## \[(?:.|\r?\n)*?(?=\r?\n## \[)/gm);
+const latestRelease: any[] = []; // RELEASE_changelog.match(/## \[(?:.|\r?\n)*?(?=\r?\n## \[)/gm);
 let PLUGIN_VERSION: string;
 
 // https://github.com/zsviczian/obsidian-excalidraw-plugin/blob/master/src/dialogs/ReleaseNotes.ts
@@ -92,9 +87,9 @@ export class ReleaseNotes extends Modal {
 
     async getReleaseNote(): Promise<any[]> {
         const release_url =
-            "https://api.github.com/repos/open-spaced-repetiton/obsidian-spaced-repetition-recall/releases?per_page=5&page=1";
+            "https://api.github.com/repos/Riffaells/obsidian-spaced-repetition-flow/releases?per_page=5&page=1";
         // const readMe_url =
-        //     "https://api.github.com/repos/open-spaced-repetiton/obsidian-spaced-repetition-recall/readme";
+        //     "https://api.github.com/repos/Riffaells/obsidian-spaced-repetition-flow/readme";
 
         // "content":  "encoding": "base64"
 

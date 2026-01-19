@@ -10,10 +10,7 @@ import { t } from "src/lang/helpers";
 /**
  * Render common settings shared by all rule types
  */
-export function renderCommonSettings(
-    containerEl: HTMLElement,
-    rule: FlashcardRule,
-): void {
+export function renderCommonSettings(containerEl: HTMLElement, rule: FlashcardRule): void {
     // Name
     new Setting(containerEl)
         .setName(t("RULE_NAME"))
@@ -61,10 +58,7 @@ export function renderCommonSettings(
 /**
  * Render tag pattern setting with exact/regex mode
  */
-function renderTagPatternSetting(
-    containerEl: HTMLElement,
-    rule: FlashcardRule,
-): void {
+function renderTagPatternSetting(containerEl: HTMLElement, rule: FlashcardRule): void {
     const isPattern = hasRegexMetachars(rule.tagPattern);
 
     const setting = new Setting(containerEl)
@@ -115,12 +109,9 @@ function renderTagPatternSetting(
 /**
  * Render scope settings (collapsible)
  */
-function renderScopeSettings(
-    containerEl: HTMLElement,
-    rule: FlashcardRule,
-): void {
+function renderScopeSettings(containerEl: HTMLElement, rule: FlashcardRule): void {
     const scopeContainer = containerEl.createDiv("sr-scope-settings");
-    
+
     // Collapsible header
     const header = scopeContainer.createDiv("sr-scope-header");
     const arrow = header.createSpan({ cls: "sr-scope-arrow" });

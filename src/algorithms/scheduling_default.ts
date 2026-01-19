@@ -120,7 +120,9 @@ export class DefaultAlgorithm extends SrsAlgorithm {
         const data = item.data as Sm2Data;
         // console.log("item.data:", item.data);
 
-        const response = Sm2Options.indexOf(optionStr) as ReviewResponse;
+        const response = Sm2Options.findIndex(
+            (opt) => opt.toLowerCase() === (optionStr || "").toLowerCase(),
+        ) as ReviewResponse;
 
         let correct = true;
         if (repeat) {

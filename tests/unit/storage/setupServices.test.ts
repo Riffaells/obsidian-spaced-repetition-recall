@@ -48,7 +48,10 @@ class MockSrsAlgorithm extends SrsAlgorithm {
         // Mock implementation
     }
 
-    displaySettings(containerEl: HTMLElement, update: (settings: unknown, refresh?: boolean) => void): void {
+    displaySettings(
+        containerEl: HTMLElement,
+        update: (settings: unknown, refresh?: boolean) => void,
+    ): void {
         // Mock implementation
     }
 }

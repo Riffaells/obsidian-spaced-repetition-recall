@@ -4,12 +4,7 @@ import { IValidator } from "./IValidator";
 import { IMigrator } from "./IMigrator";
 import { BackupManager } from "./BackupManager";
 import { Result, createOk, createErr } from "../infrastructure/Result";
-import {
-    StorageError,
-    FileNotFoundError,
-    ParseError,
-    WriteError,
-} from "../infrastructure/errors";
+import { StorageError, FileNotFoundError, ParseError, WriteError } from "../infrastructure/errors";
 
 /**
  * JSON-based storage implementation.
@@ -56,9 +51,7 @@ export class JsonStorage<T> implements IStorage<T> {
                 parsed = JSON.parse(raw);
             } catch (error) {
                 return createErr(
-                    new ParseError(
-                        `Failed to parse JSON from ${this.path}: ${error.message}`,
-                    ),
+                    new ParseError(`Failed to parse JSON from ${this.path}: ${error.message}`),
                 );
             }
 
@@ -92,18 +85,12 @@ export class JsonStorage<T> implements IStorage<T> {
                 return createOk(migrated);
             } catch (migrationError) {
                 return createErr(
-                    new StorageError(
-                        `Migration failed: ${migrationError.message}`,
-                        migrationError,
-                    ),
+                    new StorageError(`Migration failed: ${migrationError.message}`, migrationError),
                 );
             }
         } catch (error) {
             return createErr(
-                new StorageError(
-                    `Failed to read from ${this.path}: ${error.message}`,
-                    error,
-                ),
+                new StorageError(`Failed to read from ${this.path}: ${error.message}`, error),
             );
         }
     }
@@ -121,9 +108,7 @@ export class JsonStorage<T> implements IStorage<T> {
                 try {
                     await this.backupManager.createBackup(this.path);
                 } catch (backupError) {
-                    console.error(
-                        `[JsonStorage] Failed to create backup: ${backupError.message}`,
-                    );
+                    console.error(`[JsonStorage] Failed to create backup: ${backupError.message}`);
                     // Continue with write even if backup fails
                 }
             }
@@ -136,11 +121,7 @@ export class JsonStorage<T> implements IStorage<T> {
 
             return createOk(undefined);
         } catch (error) {
-            return createErr(
-                new WriteError(
-                    `Failed to write to ${this.path}: ${error.message}`,
-                ),
-            );
+            return createErr(new WriteError(`Failed to write to ${this.path}: ${error.message}`));
         }
     }
 

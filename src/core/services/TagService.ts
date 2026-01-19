@@ -19,10 +19,7 @@ export class TagService {
             if (!rule.enabled) continue;
 
             if (rule.tagPattern) {
-                const pattern = TagService.getCompiledPattern(
-                    rule.id,
-                    rule.tagPattern,
-                );
+                const pattern = TagService.getCompiledPattern(rule.id, rule.tagPattern);
                 if (pattern && pattern.test(tag)) {
                     return true;
                 }
@@ -41,10 +38,7 @@ export class TagService {
             if (!rule.enabled) continue;
 
             if (rule.tagPattern) {
-                const pattern = TagService.getCompiledPattern(
-                    rule.id,
-                    rule.tagPattern,
-                );
+                const pattern = TagService.getCompiledPattern(rule.id, rule.tagPattern);
                 if (pattern && pattern.test(tag)) {
                     matches.push(rule);
                 }
@@ -141,7 +135,6 @@ export class TagService {
         }
         return patterns;
     }
-
 
     static isPathInNoteIgnoreFolder(settings: SRSettings, path: string): boolean {
         return settings.noteFoldersToIgnore.some((folder) => pathMatchesPattern(path, folder));

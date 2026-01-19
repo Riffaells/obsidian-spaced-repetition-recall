@@ -1,0 +1,10 @@
+
+[test]
+bail = false
+
+verbose = true
+
+timeout = 5000
+
+coverage = true
+coverageThreshold = 0.92

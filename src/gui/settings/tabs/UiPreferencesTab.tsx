@@ -226,7 +226,8 @@ export class UiPreferencesTab {
                     .setIcon("reset")
                     .setTooltip(t("RESET_DEFAULT"))
                     .onClick(async () => {
-                        plugin.data.settings.sidebarInitialGroupsLimit = DEFAULT_SETTINGS.sidebarInitialGroupsLimit;
+                        plugin.data.settings.sidebarInitialGroupsLimit =
+                            DEFAULT_SETTINGS.sidebarInitialGroupsLimit;
                         await plugin.savePluginData();
                         settingsTab.redisplay();
                     });
@@ -256,7 +257,8 @@ export class UiPreferencesTab {
                     .setIcon("reset")
                     .setTooltip(t("RESET_DEFAULT"))
                     .onClick(async () => {
-                        plugin.data.settings.sidebarInitialNotesLimit = DEFAULT_SETTINGS.sidebarInitialNotesLimit;
+                        plugin.data.settings.sidebarInitialNotesLimit =
+                            DEFAULT_SETTINGS.sidebarInitialNotesLimit;
                         await plugin.savePluginData();
                         settingsTab.redisplay();
                     });

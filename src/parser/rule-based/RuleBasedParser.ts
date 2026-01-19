@@ -157,6 +157,7 @@ export class RuleBasedParser {
                     tags: noteContext.tags,
                     ruleId: rule.id,
                     vars: ruleMatch.vars,
+                    metadata: card.metadata,
                 });
                 results.push(flashcard);
             }

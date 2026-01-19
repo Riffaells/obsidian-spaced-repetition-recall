@@ -392,7 +392,7 @@ export class SidebarHeader {
         if (this.activeCountChip.textContent !== countStr) {
             this.activeCountChip.setText(countStr);
         }
-        
+
         this.activeCountChip.toggleClass("sr-hidden", count === 0);
     }
 
@@ -420,12 +420,12 @@ export class SidebarHeader {
     }
 
     public setActiveCount(notesCount: number, cardsCount: number = 0): void {
-        const relevantCount = this.currentViewMode === SidebarViewMode.FlashCards 
-            ? cardsCount 
-            : notesCount;
-        const currentRelevantCount = this.currentViewMode === SidebarViewMode.FlashCards
-            ? this.activeCardsCount
-            : this.activeNotesCount;
+        const relevantCount =
+            this.currentViewMode === SidebarViewMode.FlashCards ? cardsCount : notesCount;
+        const currentRelevantCount =
+            this.currentViewMode === SidebarViewMode.FlashCards
+                ? this.activeCardsCount
+                : this.activeNotesCount;
 
         this.activeNotesCount = notesCount;
         this.activeCardsCount = cardsCount;

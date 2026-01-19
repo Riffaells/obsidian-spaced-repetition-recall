@@ -61,10 +61,7 @@ export function setupServices(
 
     // Repository Layer
     container.register("itemRepository", () => {
-        const repo = new ItemRepository(
-            container.get("storage"),
-            container.get("eventBus"),
-        );
+        const repo = new ItemRepository(container.get("storage"), container.get("eventBus"));
         // Load data on creation (async operation, but we don't await here)
         // The repository will be ready after load() completes
         repo.load().catch((error) => {
@@ -74,10 +71,7 @@ export function setupServices(
     });
 
     container.register("fileRepository", () => {
-        const repo = new FileRepository(
-            container.get("storage"),
-            container.get("eventBus"),
-        );
+        const repo = new FileRepository(container.get("storage"), container.get("eventBus"));
         // Load data on creation (async operation, but we don't await here)
         repo.load().catch((error) => {
             console.error("[setupServices] Failed to load FileRepository:", error);

@@ -97,7 +97,10 @@ class MockAlgorithm extends SrsAlgorithm {
         // Mock implementation
     }
 
-    displaySettings(containerEl: HTMLElement, update: (settings: unknown, refresh?: boolean) => void): void {
+    displaySettings(
+        containerEl: HTMLElement,
+        update: (settings: unknown, refresh?: boolean) => void,
+    ): void {
         // Mock implementation
     }
 }
@@ -129,7 +132,13 @@ describe("ItemService", () => {
     describe("reviewItem", () => {
         it("should review an item and update its state", async () => {
             // Setup: create a tracked item
-            const item = new RepetitionItem(1, 0, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
+            const item = new RepetitionItem(
+                1,
+                0,
+                RPITEMTYPE.NOTE,
+                "default",
+                algorithm.defaultData(),
+            );
             item.nextReview = Date.now() - 1000; // Due now
 
             const trackedFile = new TrackedFile("test.md", RPITEMTYPE.NOTE, "default");
@@ -170,7 +179,13 @@ describe("ItemService", () => {
 
         it("should return error for untracked item", async () => {
             // Setup: create an untracked item (fileIndex = -1)
-            const item = new RepetitionItem(1, -1, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
+            const item = new RepetitionItem(
+                1,
+                -1,
+                RPITEMTYPE.NOTE,
+                "default",
+                algorithm.defaultData(),
+            );
 
             storage.setData({
                 items: [item],
@@ -190,7 +205,13 @@ describe("ItemService", () => {
 
         it("should emit item:reviewed event on successful review", async () => {
             // Setup: create a tracked item
-            const item = new RepetitionItem(1, 0, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
+            const item = new RepetitionItem(
+                1,
+                0,
+                RPITEMTYPE.NOTE,
+                "default",
+                algorithm.defaultData(),
+            );
             item.nextReview = Date.now() - 1000;
 
             const trackedFile = new TrackedFile("test.md", RPITEMTYPE.NOTE, "default");
@@ -224,15 +245,33 @@ describe("ItemService", () => {
         it("should return the item with earliest nextReview", async () => {
             // Setup: create multiple due items
             const now = Date.now();
-            const item1 = new RepetitionItem(1, 0, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
+            const item1 = new RepetitionItem(
+                1,
+                0,
+                RPITEMTYPE.NOTE,
+                "default",
+                algorithm.defaultData(),
+            );
             item1.nextReview = now - 3000; // Due 3 seconds ago
             item1.timesReviewed = 1;
 
-            const item2 = new RepetitionItem(2, 0, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
+            const item2 = new RepetitionItem(
+                2,
+                0,
+                RPITEMTYPE.NOTE,
+                "default",
+                algorithm.defaultData(),
+            );
             item2.nextReview = now - 1000; // Due 1 second ago (more recent)
             item2.timesReviewed = 1;
 
-            const item3 = new RepetitionItem(3, 0, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
+            const item3 = new RepetitionItem(
+                3,
+                0,
+                RPITEMTYPE.NOTE,
+                "default",
+                algorithm.defaultData(),
+            );
             item3.nextReview = now - 5000; // Due 5 seconds ago (earliest)
             item3.timesReviewed = 1;
 
@@ -255,11 +294,23 @@ describe("ItemService", () => {
         it("should filter by deck name when specified", async () => {
             // Setup: create items in different decks
             const now = Date.now();
-            const item1 = new RepetitionItem(1, 0, RPITEMTYPE.NOTE, "deck1", algorithm.defaultData());
+            const item1 = new RepetitionItem(
+                1,
+                0,
+                RPITEMTYPE.NOTE,
+                "deck1",
+                algorithm.defaultData(),
+            );
             item1.nextReview = now - 3000;
             item1.timesReviewed = 1;
 
-            const item2 = new RepetitionItem(2, 0, RPITEMTYPE.NOTE, "deck2", algorithm.defaultData());
+            const item2 = new RepetitionItem(
+                2,
+                0,
+                RPITEMTYPE.NOTE,
+                "deck2",
+                algorithm.defaultData(),
+            );
             item2.nextReview = now - 5000; // Earlier, but different deck
             item2.timesReviewed = 1;
 
@@ -283,7 +334,13 @@ describe("ItemService", () => {
         it("should return null when no items are due", async () => {
             // Setup: create items that are not due
             const future = Date.now() + 100000;
-            const item = new RepetitionItem(1, 0, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
+            const item = new RepetitionItem(
+                1,
+                0,
+                RPITEMTYPE.NOTE,
+                "default",
+                algorithm.defaultData(),
+            );
             item.nextReview = future;
             item.timesReviewed = 1;
 
@@ -306,7 +363,13 @@ describe("ItemService", () => {
     describe("getItemById", () => {
         it("should return item when it exists", async () => {
             // Setup: create an item
-            const item = new RepetitionItem(1, 0, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
+            const item = new RepetitionItem(
+                1,
+                0,
+                RPITEMTYPE.NOTE,
+                "default",
+                algorithm.defaultData(),
+            );
 
             storage.setData({
                 items: [item],
@@ -339,9 +402,27 @@ describe("ItemService", () => {
     describe("getItemsByFile", () => {
         it("should return all items for a file", async () => {
             // Setup: create items for a file
-            const item1 = new RepetitionItem(1, 0, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
-            const item2 = new RepetitionItem(2, 0, RPITEMTYPE.CARD, "default", algorithm.defaultData());
-            const item3 = new RepetitionItem(3, 1, RPITEMTYPE.NOTE, "default", algorithm.defaultData());
+            const item1 = new RepetitionItem(
+                1,
+                0,
+                RPITEMTYPE.NOTE,
+                "default",
+                algorithm.defaultData(),
+            );
+            const item2 = new RepetitionItem(
+                2,
+                0,
+                RPITEMTYPE.CARD,
+                "default",
+                algorithm.defaultData(),
+            );
+            const item3 = new RepetitionItem(
+                3,
+                1,
+                RPITEMTYPE.NOTE,
+                "default",
+                algorithm.defaultData(),
+            );
 
             const trackedFile1 = new TrackedFile("test1.md", RPITEMTYPE.NOTE, "default");
             const trackedFile2 = new TrackedFile("test2.md", RPITEMTYPE.NOTE, "default");

@@ -28,6 +28,14 @@ export interface ITrackedFile {
      * @type {number} transient index for repository lookups
      */
     index?: number;
+    /**
+     * @type {number} when the file was last scanned/parsed
+     */
+    scanMtime?: number;
+    /**
+     * @type {ParsedFlashcard[]} cached results of the last parse
+     */
+    cachedFlashcards?: ParsedFlashcard[];
 }
 
 /**
@@ -82,6 +90,14 @@ export class TrackedFile implements ITrackedFile {
      * @type {number} transient index for repository lookups
      */
     index: number;
+    /**
+     * @type {number}
+     */
+    scanMtime?: number;
+    /**
+     * @type {ParsedFlashcard[]}
+     */
+    cachedFlashcards?: ParsedFlashcard[];
     // private _isTracked?: boolean;
 
     static create(trackedfile: ITrackedFile): TrackedFile {

@@ -57,10 +57,10 @@ Flow introduces 15+ major enhancements over the original plugin:
 ## 📚 Documentation
 
 -   **[Full Documentation](https://riffaells.github.io/obsidian-spaced-repetition-flow/)** - Complete guide to all Flow features
--   **[Flow Features Guide](https://open-spaced-repetition.github.io/obsidian-spaced-repetition-recall/flow-features/)** - Detailed documentation of Flow-specific enhancements
--   **[Usage Guide](./docs/usage.md)** - Practical scenarios for new users and migration from original SR plugin
--   **[Algorithms](https://open-spaced-repetition.github.io/obsidian-spaced-repetition-recall/algorithms/)** - FSRS, Anki, and Default algorithm details
--   **[Data Storage](https://open-spaced-repetition.github.io/obsidian-spaced-repetition-recall/data-storage/)** - Separate JSON storage vs in-note storage options
+-   **[Flow Features Guide](https://riffaells.github.io/obsidian-spaced-repetition-flow/flow-features/)** - Detailed documentation of Flow-specific enhancements
+-   **[Usage Guide](./docs/docs/en/usage.md)** - Practical scenarios for new users and migration from original SR plugin
+-   **[Algorithms](https://riffaells.github.io/obsidian-spaced-repetition-flow/algorithms/)** - FSRS, Anki, and Default algorithm details
+-   **[Data Storage](https://riffaells.github.io/obsidian-spaced-repetition-flow/data-storage/)** - Separate JSON storage vs in-note storage options
 
 ## 📦 Installation
 
@@ -73,7 +73,7 @@ Flow introduces 15+ major enhancements over the original plugin:
 
 ### Manual Installation
 
-1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/releases/)
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/Riffaells/obsidian-spaced-repetition-flow/releases/)
 2. Create folder `YourVault/.obsidian/plugins/obsidian-spaced-repetition-flow`
 3. Place downloaded files in the folder
 4. Reload Obsidian (Ctrl/Cmd + R) and enable the plugin in Settings → Community Plugins
@@ -84,7 +84,7 @@ Install using the [BRAT plugin](https://github.com/TfTHacker/obsidian42-brat) fo
 
 1. Install BRAT from Community Plugins
 2. In BRAT settings, click "Add Beta Plugin"
-3. Enter: `open-spaced-repetition/obsidian-spaced-repetition-recall`
+3. Enter: `Riffaells/obsidian-spaced-repetition-flow`
 4. Enable the plugin
 
 ## 🎯 Quick Start
@@ -104,11 +104,11 @@ Install using the [BRAT plugin](https://github.com/TfTHacker/obsidian42-brat) fo
 1. **Backup Your Vault** - Create a complete backup of your vault
 2. **Disable Original Plugin** - Disable the original Spaced Repetition plugin to avoid conflicts
 3. **Close Obsidian** - Completely close Obsidian
-4. **Copy Data** - Copy `obsidian-spaced-repetition/data.json` to `obsidian-spaced-repetition-recall/data.json`
+4. **Copy Data** - Copy `obsidian-spaced-repetition/data.json` to `obsidian-spaced-repetition-flow/data.json`
 5. **Reopen Obsidian** - Launch Obsidian and enable Flow plugin
 6. **Configure Settings** - Follow CASE1 settings if using FSRS algorithm
 
-For detailed usage instructions and scenarios, check the [Usage Guide](./docs/usage.md).
+For detailed usage instructions and scenarios, check the [Usage Guide](./docs/docs/en/usage.md).
 
 ## 🎯 Use Cases
 
@@ -122,8 +122,8 @@ Flow is designed for three primary workflows:
 
 Contributions are welcome! Whether it's bug fixes, new features, or UI improvements, feel free to:
 
--   Submit an [issue](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/issues)
--   Create a [pull request](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/pulls)
+-   Submit an [issue](https://github.com/Riffaells/obsidian-spaced-repetition-flow/issues)
+-   Create a [pull request](https://github.com/Riffaells/obsidian-spaced-repetition-flow/pulls)
 -   Share feedback and suggestions
 
 Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
@@ -132,7 +132,7 @@ Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 If you find Flow valuable, consider:
 
--   ⭐ Starring the [repository](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall)
+-   ⭐ Starring the [repository](https://github.com/Riffaells/obsidian-spaced-repetition-flow)
 -   📢 Sharing Flow with others who might benefit
 -   🐛 Reporting bugs and suggesting improvements
 -   💻 Contributing code or documentation

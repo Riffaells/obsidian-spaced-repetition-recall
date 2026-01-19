@@ -23,10 +23,11 @@ import { ReviewDeck, SchedNote } from "src/core/models/ReviewDeck";
 import { t } from "src/lang/helpers";
 import { appIcon } from "src/icons/appicon";
 import { TopicPath } from "./core/services/TopicPath";
-import { CardListType, Deck, DeckTreeFilter } from "./core/models/Deck";
+import { Deck, DeckTreeFilter } from "./core/models/Deck";
+import { CardListType } from "./core/models/CardListType";
 import { Stats } from "./core/services/stats";
+import { FlashcardReviewMode } from "./core/scheduling/FlashcardReviewMode";
 import {
-    FlashcardReviewMode,
     FlashcardReviewSequencer as FlashcardReviewSequencer,
     IFlashcardReviewSequencer as IFlashcardReviewSequencer,
 } from "./core/scheduling/FlashcardReviewSequencer";
@@ -58,6 +59,7 @@ import { SrsAlgorithm } from "src/algorithms/algorithms";
 import { setupServices } from "./core/storage/setupServices";
 import { ServiceContainer } from "./core/infrastructure/ServiceContainer";
 import { DataStoreAdapter } from "./dataStore/DataStoreAdapter";
+import { cyrb53 } from "./utils/utils";
 
 import { reviewResponseModal } from "./gui/modals/reviewresponse-modal";
 import { isVersionNewerThanOther } from "./utils/utils_recall";
@@ -96,7 +98,6 @@ const DEFAULT_DATA: PluginData = {
     buryList: [],
     historyDeck: null,
 };
-
 
 export default class SRPlugin extends Plugin {
     private isSRInFocus: boolean = false;
@@ -163,7 +164,7 @@ export default class SRPlugin extends Plugin {
         }
 
         const settings = this.data.settings;
-        
+
         // Migrate settings if needed
         if (SettingsMigration.migrate(settings)) {
             await this.savePluginData();
@@ -182,7 +183,7 @@ export default class SRPlugin extends Plugin {
             this.app.vault,
             settings,
             this.manifest.dir,
-            this.algorithm
+            this.algorithm,
         );
 
         // Subscribe to events from the new architecture
@@ -486,6 +487,7 @@ export default class SRPlugin extends Plugin {
         fullDeckTree: Deck,
         remainingDeckTree: Deck,
         reviewMode: FlashcardReviewMode,
+        startDeck?: Deck,
     ): void {
         const deckIterator = SRPlugin.createDeckTreeIterator(this.data.settings, remainingDeckTree);
         const cardScheduleCalculator = new CardScheduleCalculator(
@@ -501,6 +503,9 @@ export default class SRPlugin extends Plugin {
         );
 
         reviewSequencer.setDeckTree(fullDeckTree, remainingDeckTree);
+        if (startDeck) {
+            reviewSequencer.setCurrentDeck(startDeck.getTopicPath());
+        }
         reviewResponseModal.getInstance().cardtotalCB = () => {
             return remainingDeckTree.getCardCount(CardListType.All, true);
         };
@@ -539,6 +544,19 @@ export default class SRPlugin extends Plugin {
         // reset flashcards stuff
         const fullDeckTree = new Deck("root", null);
 
+        // Check if settings changed to invalidate cache
+        const currentHash = this.computeSettingsHash();
+        const settingsChanged = this.store.data.settingsHash !== currentHash;
+        if (settingsChanged) {
+            console.log("SR: Settings changed, invalidating note cache");
+            this.store.data.trackedFiles.forEach((tf) => {
+                tf.scanMtime = 0;
+                tf.cachedFlashcards = undefined;
+            });
+            this.store.data.settingsHash = currentHash;
+            // No await here, will be saved at the end of sync if needed
+        }
+
         const now = window.moment(Date.now());
         const todayDate: string = now.format("YYYY-MM-DD");
         // clear bury list if we've changed dates
@@ -568,7 +586,41 @@ export default class SRPlugin extends Plugin {
         this.linkRank.readLinks(notes);
         await Promise.all(
             notes.map(async (noteFile) => {
-                const note: Note = await this.loadNote(noteFile);
+                const trackedFile = this.store.getTrackedFile(noteFile.path);
+                let note: Note;
+
+                // Check cache: mtime must match and we must have cached flashcards
+                if (
+                    trackedFile &&
+                    trackedFile.scanMtime === noteFile.stat.mtime &&
+                    trackedFile.cachedFlashcards
+                ) {
+                    const loader = new NoteFileLoader(this.data.settings);
+                    const srFile = this.createSrTFile(noteFile);
+                    const folderTopicPath = TopicPath.getFolderPathFromFilename(
+                        srFile,
+                        this.data.settings,
+                    );
+                    note = loader.reconstituteNote(
+                        srFile,
+                        trackedFile.cachedFlashcards,
+                        this.getObsidianRtlSetting(),
+                        folderTopicPath,
+                    );
+
+                    // Still need to update scheduling from items in store
+                    ItemTrans.updateCardsSchedbyItems(note, folderTopicPath);
+                    note.createMultiCloze(this.data.settings);
+                } else {
+                    note = await this.loadNote(noteFile);
+
+                    // Update cache
+                    if (trackedFile && note.parsedFlashcards) {
+                        trackedFile.scanMtime = noteFile.stat.mtime;
+                        trackedFile.cachedFlashcards = note.parsedFlashcards;
+                    }
+                }
+
                 if (note.questionList.length > 0) {
                     const flashcardsInNoteAvgEase: number = NoteEaseCalculator.Calculate(
                         note,
@@ -854,6 +906,12 @@ export default class SRPlugin extends Plugin {
         this.data.settings = Object.assign({}, DEFAULT_SETTINGS, this.data.settings);
         this.store = new DataStore(this.data.settings, this.manifest.dir);
         await this.store.load();
+
+        // Schedule a backup 5 minutes after plugin startup (only if using separate storage)
+        if (this.data.settings.dataLocation !== DataLocation.SaveOnNoteFile) {
+            this.store.scheduleStartupBackup();
+        }
+
         setDebugParser(this.data.settings.showParserDebugMessages);
     }
 
@@ -991,5 +1049,25 @@ export default class SRPlugin extends Plugin {
 
     public getSRInFocusState(): boolean {
         return this.isSRInFocus;
+    }
+
+    private computeSettingsHash(): string {
+        const settingsToHash = {
+            rules: this.data.settings.flashcardRules,
+            multiCloze: this.data.settings.multiClozeCard,
+            highlights: this.data.settings.convertHighlightsToClozes,
+            bold: this.data.settings.convertBoldTextToClozes,
+            curly: this.data.settings.convertCurlyBracketsToClozes,
+            clozePatterns: this.data.settings.clozePatterns,
+            separators: [
+                this.data.settings.singleLineCardSeparator,
+                this.data.settings.singleLineReversedCardSeparator,
+                this.data.settings.multilineCardSeparator,
+                this.data.settings.multilineReversedCardSeparator,
+                this.data.settings.multilineCardEndMarker,
+            ],
+            foldersToDecks: this.data.settings.convertFoldersToDecks,
+        };
+        return cyrb53(JSON.stringify(settingsToHash)).toString();
     }
 }

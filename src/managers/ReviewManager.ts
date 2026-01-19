@@ -189,13 +189,13 @@ export class ReviewManager {
                         );
                         console.debug("schedNotes:", deck.scheduledNotes);
                     }
-                    const id = "obsidian-spaced-repetition-recall:view-item-info";
+                    const id = "obsidian-spaced-repetition-flow:view-item-info";
                     /**
                      * Execute command using Obsidian's internal command API.
-                     * 
+                     *
                      * @warning This uses a private API (app.commands.executeCommandById) that may break in future Obsidian versions.
                      */
-                    const app = this.plugin.app as any;
+                    const app = this.plugin.app;
                     if (app.commands?.executeCommandById) {
                         app.commands.executeCommandById(id);
                     }

@@ -114,10 +114,10 @@ export function addDataLocationSettings(containerEl: HTMLElement, plugin: SRPlug
                     await plugin.savePluginData();
                     /**
                      * Reload plugin to apply data location changes.
-                     * 
+                     *
                      * @warning This uses private APIs (app.plugins.disablePlugin/enablePlugin) that may break in future Obsidian versions.
                      */
-                    const plugins = (plugin.app as any).plugins;
+                    const plugins = plugin.app.plugins;
                     if (plugins?.disablePlugin && plugins?.enablePlugin) {
                         await plugins.disablePlugin(plugin.manifest.id);
                         await plugins.enablePlugin(plugin.manifest.id);
@@ -125,7 +125,12 @@ export function addDataLocationSettings(containerEl: HTMLElement, plugin: SRPlug
                     console.debug(t("LOCATION_CHANGE_FINISHED"));
 
                     await plugin.sync();
-                    locSwitch.resultCheck(noteStats, cardStats, plugin.reviewManager.noteStats, plugin.cardStats);
+                    locSwitch.resultCheck(
+                        noteStats,
+                        cardStats,
+                        plugin.reviewManager.noteStats,
+                        plugin.cardStats,
+                    );
                 }
                 // this.display();
                 addDataLocationSettings(containerEl, plugin);

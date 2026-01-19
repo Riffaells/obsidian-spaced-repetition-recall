@@ -1,9 +1,10 @@
 import { t } from "src/lang/helpers";
-import { SidebarStats as Stats } from "./types";
+import { SidebarStats as Stats, SidebarViewMode } from "./types";
 
 export class SidebarStats {
     private containerEl: HTMLElement;
     private stats: Stats;
+    private viewMode: SidebarViewMode;
     private onOpenRandomNew: (() => void) | null = null;
     private onOpenRandomDue: (() => void) | null = null;
     private abortController: AbortController | null = null;
@@ -11,11 +12,13 @@ export class SidebarStats {
     constructor(
         containerEl: HTMLElement,
         stats: Stats,
+        viewMode: SidebarViewMode,
         onOpenRandomNew?: () => void,
         onOpenRandomDue?: () => void,
     ) {
         this.containerEl = containerEl;
         this.stats = stats;
+        this.viewMode = viewMode;
         this.onOpenRandomNew = onOpenRandomNew || null;
         this.onOpenRandomDue = onOpenRandomDue || null;
     }
@@ -29,22 +32,18 @@ export class SidebarStats {
         }
         this.abortController = new AbortController();
 
-        this.createStatCard(
-            "sr-stat-due",
-            this.stats.totalDue,
-            t("DUE_CARDS"),
-            this.onOpenRandomDue,
-        );
-        this.createStatCard(
-            "sr-stat-new",
-            this.stats.totalNew,
-            t("NEW_CARDS"),
-            this.onOpenRandomNew,
-        );
+        const dueLabel =
+            this.viewMode === SidebarViewMode.FlashCards ? t("DUE_CARDS") : t("DUE_NOTES");
+        const newLabel =
+            this.viewMode === SidebarViewMode.FlashCards ? t("NEW_CARDS") : t("NEW_NOTES");
+
+        this.createStatCard("sr-stat-due", this.stats.totalDue, dueLabel, this.onOpenRandomDue);
+        this.createStatCard("sr-stat-new", this.stats.totalNew, newLabel, this.onOpenRandomNew);
     }
 
-    public updateStats(stats: Stats): void {
+    public updateStats(stats: Stats, viewMode: SidebarViewMode): void {
         this.stats = stats;
+        this.viewMode = viewMode;
         this.render();
     }
 

@@ -696,4 +696,4 @@ Start simple with `#flashcard/h2` and expand as needed!
 
 ---
 
-**Need Help?** Check the [main plugin documentation](../index.md) or open an issue on [GitHub](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/issues).
+**Need Help?** Check the [main plugin documentation](../index.md) or open an issue on [GitHub](https://github.com/Riffaells/obsidian-spaced-repetition-flow/issues).

@@ -2,7 +2,8 @@ import { App, Modal } from "obsidian";
 import { t } from "src/lang/helpers";
 import { TextDirection } from "src/utils/TextDirection";
 
-// from https://github.com/chhoumann/quickadd/blob/bce0b4cdac44b867854d6233796e3406dfd163c6/src/gui/GenericInputPrompt/GenericInputPrompt.ts#L5
+export const EDIT_CANCELLED = "EDIT_CANCELLED";
+
 export class FlashcardEditModal extends Modal {
     public changedText: string;
     public waitForClose: Promise<string>;
@@ -112,7 +113,7 @@ export class FlashcardEditModal extends Modal {
     }
 
     private resolveInput() {
-        if (!this.didSaveChanges) this.rejectPromise(t("NO_INPUT"));
+        if (!this.didSaveChanges) this.rejectPromise(EDIT_CANCELLED);
         else this.resolvePromise(this.changedText);
     }
 

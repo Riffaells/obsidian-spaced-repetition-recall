@@ -3,11 +3,7 @@ import { SrsAlgorithm } from "../../algorithms/algorithms";
 import { IItemRepository } from "../storage/IItemRepository";
 import { IFileRepository } from "../storage/IFileRepository";
 import { Result, createOk, createErr } from "../infrastructure/Result";
-import {
-    ItemNotFoundError,
-    ItemNotTrackedError,
-    ReviewError,
-} from "../infrastructure/errors";
+import { ItemNotFoundError, ItemNotTrackedError, ReviewError } from "../infrastructure/errors";
 import { EventBus } from "../infrastructure/EventBus";
 
 /**
@@ -54,9 +50,7 @@ export class ItemService {
         // Save
         const saveResult = await this.itemRepo.save(item);
         if (saveResult.isErr) {
-            return createErr(
-                new ReviewError("Failed to save item", saveResult.error),
-            );
+            return createErr(new ReviewError("Failed to save item", saveResult.error));
         }
 
         // Emit event
@@ -95,9 +89,7 @@ export class ItemService {
      * @param id - The item ID
      * @returns A Result containing the item or an error
      */
-    async getItemById(
-        id: number,
-    ): Promise<Result<RepetitionItem, ItemNotFoundError>> {
+    async getItemById(id: number): Promise<Result<RepetitionItem, ItemNotFoundError>> {
         const item = await this.itemRepo.findById(id);
         if (!item) {
             return createErr(new ItemNotFoundError(id));
@@ -120,7 +112,7 @@ export class ItemService {
         // Find the file's index in the trackedFiles array
         const allFiles = await this.fileRepo.list();
         const fileIndex = allFiles.findIndex((f) => f.path === path);
-        
+
         if (fileIndex < 0) {
             return [];
         }

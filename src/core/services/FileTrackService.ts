@@ -53,12 +53,7 @@ export class FileTrackService {
         path: string,
         type: RPITEMTYPE,
         deckName: string = "default",
-    ): Promise<
-        Result<
-            TrackResult,
-            FileNotFoundError | FileAlreadyTrackedError | TrackError
-        >
-    > {
+    ): Promise<Result<TrackResult, FileNotFoundError | FileAlreadyTrackedError | TrackError>> {
         // Check if file exists
         const file = this.vault.getAbstractFileByPath(path);
         if (!file) {
@@ -72,20 +67,14 @@ export class FileTrackService {
         }
 
         // Create or update TrackedFile
-        const trackedFile =
-            existing || new TrackedFile(path, type, deckName);
+        const trackedFile = existing || new TrackedFile(path, type, deckName);
         if (!existing) {
             trackedFile.setTracked(type, deckName);
         }
 
         const saveFileResult = await this.fileRepo.save(trackedFile);
         if (saveFileResult.isErr) {
-            return createErr(
-                new TrackError(
-                    "Failed to save tracked file",
-                    saveFileResult.error,
-                ),
-            );
+            return createErr(new TrackError("Failed to save tracked file", saveFileResult.error));
         }
 
         // Get file index
@@ -93,9 +82,7 @@ export class FileTrackService {
         const fileIndex = allFiles.findIndex((f) => f.path === path);
 
         if (fileIndex < 0) {
-            return createErr(
-                new TrackError("Failed to find tracked file after save"),
-            );
+            return createErr(new TrackError("Failed to find tracked file after save"));
         }
 
         // Create RepetitionItem
@@ -110,9 +97,7 @@ export class FileTrackService {
 
         const saveItemResult = await this.itemRepo.save(item);
         if (saveItemResult.isErr) {
-            return createErr(
-                new TrackError("Failed to save item", saveItemResult.error),
-            );
+            return createErr(new TrackError("Failed to save item", saveItemResult.error));
         }
 
         return createOk({ added: 1, removed: 0 });
@@ -127,9 +112,7 @@ export class FileTrackService {
      */
     async untrackFile(
         path: string,
-    ): Promise<
-        Result<UntrackResult, FileNotFoundError | FileNotTrackedError | TrackError>
-    > {
+    ): Promise<Result<UntrackResult, FileNotFoundError | FileNotTrackedError | TrackError>> {
         // Find tracked file
         const trackedFile = await this.fileRepo.findByPath(path);
         if (!trackedFile) {
@@ -145,9 +128,7 @@ export class FileTrackService {
         const fileIndex = allFiles.findIndex((f) => f.path === path);
 
         if (fileIndex < 0) {
-            return createErr(
-                new TrackError("Failed to find file index for untracking"),
-            );
+            return createErr(new TrackError("Failed to find file index for untracking"));
         }
 
         // Find all items for this file
@@ -166,10 +147,7 @@ export class FileTrackService {
         const deleteFileResult = await this.fileRepo.delete(path);
         if (deleteFileResult.isErr) {
             return createErr(
-                new TrackError(
-                    "Failed to delete tracked file",
-                    deleteFileResult.error,
-                ),
+                new TrackError("Failed to delete tracked file", deleteFileResult.error),
             );
         }
 

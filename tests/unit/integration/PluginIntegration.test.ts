@@ -13,7 +13,7 @@ import { DEFAULT_SETTINGS } from "../../../src/core/settings/DefaultSettings";
 /**
  * End-to-end integration tests for the new architecture.
  * Tests complete flows from service layer through repository to storage.
- * 
+ *
  * Requirements: 17.3
  */
 describe("Plugin Integration - End-to-End Tests", () => {
@@ -139,7 +139,8 @@ describe("Plugin Integration - End-to-End Tests", () => {
             expect(item.fileIndex).toBe(trackedFile!.index);
 
             // Act 2: Review the item
-            const reviewResult = await itemService.reviewItem(item.ID, "good");
+            const initialInterval = item.interval;
+            const reviewResult = await itemService.reviewItem(item.ID, "easy");
 
             // Assert 4: Review succeeded
             expect(reviewResult.isOk).toBe(true);
@@ -150,7 +151,7 @@ describe("Plugin Integration - End-to-End Tests", () => {
             // Assert 6: Item was updated
             const updatedItem = await itemRepo.findById(item.ID);
             expect(updatedItem).not.toBeNull();
-            expect(updatedItem!.interval).toBeGreaterThan(item.interval);
+            expect(updatedItem!.interval).toBeGreaterThan(initialInterval);
         });
 
         test("should handle review of non-existent item", async () => {

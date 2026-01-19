@@ -13,6 +13,8 @@ export interface BackupInfo {
 export class BackupManager {
     private readonly maxBackups = 5;
     private readonly backupDir: string;
+    private lastBackupTime: number = 0;
+    private readonly minBackupInterval: number = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
     constructor(dataPath: string) {
         const dir = dataPath.substring(0, dataPath.lastIndexOf("/"));
@@ -20,10 +22,20 @@ export class BackupManager {
     }
 
     /**
-     * Create a backup of the source file
+     * Create a backup of the source file (throttled to once per day)
+     * @param sourcePath - Path to the file to backup
+     * @param force - If true, bypass the time throttle
+     * @returns Path to the created backup, or null if skipped due to throttling
      */
-    async createBackup(sourcePath: string): Promise<string> {
+    async createBackup(sourcePath: string, force: boolean = false): Promise<string | null> {
         const adapter = IAdapter.instance.adapter;
+
+        // Check if enough time has passed since last backup (unless forced)
+        const now = Date.now();
+        if (!force && now - this.lastBackupTime < this.minBackupInterval) {
+            // Skip backup - too soon since last one
+            return null;
+        }
 
         // Create backups directory if it doesn't exist
         if (!(await adapter.exists(this.backupDir))) {
@@ -41,8 +53,32 @@ export class BackupManager {
         // Clean up old backups
         await this.cleanOldBackups();
 
-        console.log(`[BackupManager] Created backup: ${backupPath}`);
+        // Update last backup time
+        this.lastBackupTime = now;
+
+        // Only log in debug mode
+        if (process.env.NODE_ENV === "development") {
+            console.log(`[BackupManager] Created backup: ${backupPath}`);
+        }
         return backupPath;
+    }
+
+    /**
+     * Schedule a delayed backup (e.g., 5 minutes after plugin load)
+     * @param sourcePath - Path to the file to backup
+     * @param delayMs - Delay in milliseconds before creating backup
+     */
+    scheduleDelayedBackup(sourcePath: string, delayMs: number = 5 * 60 * 1000): void {
+        setTimeout(async () => {
+            try {
+                if (await IAdapter.instance.adapter.exists(sourcePath)) {
+                    await this.createBackup(sourcePath, true);
+                    console.log("[BackupManager] Scheduled startup backup completed");
+                }
+            } catch (error) {
+                console.warn("[BackupManager] Scheduled backup failed:", error);
+            }
+        }, delayMs);
     }
 
     /**
@@ -57,11 +93,14 @@ export class BackupManager {
                 const adapter = IAdapter.instance.adapter;
                 for (let i = this.maxBackups; i < backups.length; i++) {
                     await adapter.remove(backups[i].path);
-                    console.log(`[BackupManager] Removed old backup: ${backups[i].path}`);
+                    // Only log in debug mode
+                    if (process.env.NODE_ENV === "development") {
+                        console.log(`[BackupManager] Removed old backup: ${backups[i].path}`);
+                    }
                 }
             }
         } catch (error) {
-            console.warn(`[BackupManager] Failed to clean old backups:`, error);
+            console.warn("[BackupManager] Failed to clean old backups:", error);
         }
     }
 
@@ -71,14 +110,14 @@ export class BackupManager {
     async listBackups(): Promise<BackupInfo[]> {
         try {
             const adapter = IAdapter.instance.adapter;
-            
+
             if (!(await adapter.exists(this.backupDir))) {
                 return [];
             }
 
             // Get all files in the vault
             const allFiles = IAdapter.instance.vault.getAllLoadedFiles();
-            
+
             // Filter for backup files in our backup directory
             const backupFiles = allFiles.filter((file) => {
                 if (!(file instanceof TFile)) return false;
@@ -101,7 +140,7 @@ export class BackupManager {
 
             return backups;
         } catch (error) {
-            console.warn(`[BackupManager] Failed to list backups:`, error);
+            console.warn("[BackupManager] Failed to list backups:", error);
             return [];
         }
     }

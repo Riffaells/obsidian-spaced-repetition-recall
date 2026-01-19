@@ -10,10 +10,7 @@ import { t } from "src/lang/helpers";
 /**
  * Render header-specific settings
  */
-export function renderHeaderSettings(
-    containerEl: HTMLElement,
-    rule: HeaderRule,
-): void {
+export function renderHeaderSettings(containerEl: HTMLElement, rule: HeaderRule): void {
     // Selection section
     const selectionSection = containerEl.createDiv("sr-section");
     selectionSection.createEl("h4", { text: t("SELECTION_SETTINGS") });
@@ -76,10 +73,7 @@ export function renderHeaderSettings(
 /**
  * Render header level checkboxes
  */
-function renderHeaderLevels(
-    containerEl: HTMLElement,
-    rule: HeaderRule,
-): void {
+function renderHeaderLevels(containerEl: HTMLElement, rule: HeaderRule): void {
     const setting = new Setting(containerEl)
         .setName(t("HEADER_LEVELS"))
         .setDesc(t("HEADER_LEVELS_DESC"));
@@ -88,7 +82,7 @@ function renderHeaderLevels(
 
     for (let level = 1; level <= 6; level++) {
         const checkbox = levelsContainer.createEl("label", { cls: "sr-header-level-checkbox" });
-        
+
         const input = checkbox.createEl("input", { type: "checkbox" });
         input.checked = rule.config.selection.levels.includes(level);
         input.addEventListener("change", () => {
@@ -111,10 +105,7 @@ function renderHeaderLevels(
 /**
  * Render limit strategy settings
  */
-function renderLimitStrategy(
-    containerEl: HTMLElement,
-    rule: HeaderRule,
-): void {
+function renderLimitStrategy(containerEl: HTMLElement, rule: HeaderRule): void {
     const setting = new Setting(containerEl)
         .setName(t("LIMIT_STRATEGY"))
         .setDesc(t("LIMIT_STRATEGY_DESC"));
@@ -123,7 +114,7 @@ function renderLimitStrategy(
 
     // Type dropdown
     const currentType = rule.config.selection.limit?.type || "none";
-    
+
     const typeDropdown = controlsContainer.createEl("select");
     typeDropdown.createEl("option", { value: "none", text: t("NO_LIMIT") });
     typeDropdown.createEl("option", { value: "count", text: t("COUNT_LIMIT") });
@@ -155,10 +146,7 @@ function renderLimitStrategy(
 /**
  * Render count limit inputs
  */
-function renderCountInputs(
-    containerEl: HTMLElement,
-    rule: HeaderRule,
-): void {
+function renderCountInputs(containerEl: HTMLElement, rule: HeaderRule): void {
     const limit = rule.config.selection.limit;
     const mode = limit?.type === "count" ? limit.mode : "first";
     const count = limit?.type === "count" ? limit.count : 3;
@@ -190,10 +178,7 @@ function renderCountInputs(
 /**
  * Render range limit inputs
  */
-function renderRangeInputs(
-    containerEl: HTMLElement,
-    rule: HeaderRule,
-): void {
+function renderRangeInputs(containerEl: HTMLElement, rule: HeaderRule): void {
     const limit = rule.config.selection.limit;
     const start = limit?.type === "range" ? limit.start : 0;
     const end = limit?.type === "range" ? limit.end : 3;
@@ -224,10 +209,7 @@ function renderRangeInputs(
 /**
  * Render random limit inputs
  */
-function renderRandomInputs(
-    containerEl: HTMLElement,
-    rule: HeaderRule,
-): void {
+function renderRandomInputs(containerEl: HTMLElement, rule: HeaderRule): void {
     const limit = rule.config.selection.limit;
     const count = limit?.type === "random" ? limit.count : 3;
 

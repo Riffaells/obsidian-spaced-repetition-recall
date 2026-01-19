@@ -50,7 +50,7 @@ If you're new to spaced repetition plugins and starting fresh with Flow, follow 
 
 **Example Configuration:**
 
-![Recommended Settings](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/assets/9208450/a22d23df-5d11-4b19-9007-e1530e2808be)
+![Recommended Settings](https://github.com/Riffaells/obsidian-spaced-repetition-flow/assets/9208450/a22d23df-5d11-4b19-9007-e1530e2808be)
 
 **Other Settings:**
 
@@ -107,7 +107,7 @@ Changing the Data Location setting will delete review information from your note
 
     - Close Obsidian completely
     - Navigate to your vault's `.obsidian/plugins/` directory
-    - Copy `obsidian-spaced-repetition/data.json` to `obsidian-spaced-repetition-recall/data.json`
+    - Copy `obsidian-spaced-repetition/data.json` to `obsidian-spaced-repetition-flow/data.json`
     - This preserves your existing review history
 
 4. **Reopen Obsidian**
@@ -164,7 +164,7 @@ Notes in Flow can be tracked for spaced repetition review. This is perfect for p
 -   Select "Track All Notes" to add all notes in that folder
 -   Select "Untrack All Notes" to remove all notes from review
 
-![Folder Operations](https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/assets/9208450/163f397c-cc8f-49a6-ab6f-cb929cf91d2d)
+![Folder Operations](https://github.com/Riffaells/obsidian-spaced-repetition-flow/assets/9208450/163f397c-cc8f-49a6-ab6f-cb929cf91d2d)
 
 #### Removing Notes from Review
 

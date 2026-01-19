@@ -52,7 +52,7 @@ Flow introduces the ability to store all scheduling information in a separate JS
 
 The scheduling data is stored in `tracked_files.json` in one of these locations (configurable in settings):
 
--   Plugin folder (`.obsidian/plugins/obsidian-spaced-repetition-recall/`)
+-   Plugin folder (`.obsidian/plugins/obsidian-spaced-repetition-flow/`)
 -   Vault root folder
 -   Custom specified folder
 

@@ -90,10 +90,10 @@ export class NoteFileLoader {
 
             // Create cards based on card type
             const cards: Card[] = [];
-            
+
             // For now, we assume standard card creation logic.
             // This logic should ideally be centralized, but for fixing the runtime error:
-            
+
             if (cardType === CardType.Cloze) {
                 // For cloze, we need to determine how many clozes there are.
                 // The ParsedFlashcard metadata might have this info, or we need to parse the text.
@@ -102,7 +102,7 @@ export class NoteFileLoader {
                 // But for Cloze, a single line might generate multiple cards.
                 // However, the parser returns ParsedFlashcard[], so maybe each cloze is already a separate ParsedFlashcard?
                 // If so, we just create one Card per ParsedFlashcard.
-                
+
                 // Let's assume 1-to-1 mapping for now as a safe default to prevent empty cards.
                 const card = new Card({
                     question: question,
@@ -111,7 +111,10 @@ export class NoteFileLoader {
                     back: flashcard.back,
                 });
                 cards.push(card);
-            } else if (cardType === CardType.SingleLineReversed || cardType === CardType.MultiLineReversed) {
+            } else if (
+                cardType === CardType.SingleLineReversed ||
+                cardType === CardType.MultiLineReversed
+            ) {
                 // Reversed cards create two cards: Front->Back and Back->Front
                 const card1 = new Card({
                     question: question,
@@ -120,7 +123,7 @@ export class NoteFileLoader {
                     back: flashcard.back,
                 });
                 cards.push(card1);
-                
+
                 const card2 = new Card({
                     question: question,
                     cardIdx: 1,
@@ -141,7 +144,7 @@ export class NoteFileLoader {
 
             // Set the cards on the question
             question.setCardList(cards);
-            
+
             questions.push(question);
         }
 
@@ -175,11 +178,11 @@ export class NoteFileLoader {
 
             // Create NoteContext
             const noteContext: NoteContext = {
-                filePath: noteFile.path,
-                fileName: noteFile.basename,
+                filePath: noteFile.path || "",
+                fileName: noteFile.basename || "",
                 text: noteText,
                 tags: tags,
-                folderPath: noteFile.path.split("/").slice(0, -1).join("/"),
+                folderPath: (noteFile.path || "").split("/").slice(0, -1).join("/"),
             };
 
             // Call parser.parse(noteContext) to get ParsedFlashcard[]
@@ -196,10 +199,41 @@ export class NoteFileLoader {
             );
 
             // Return new Note(noteFile, questionList)
-            return new Note(noteFile, questionList);
+            const note = new Note(noteFile, questionList);
+            note.parsedFlashcards = flashcards;
+            return note;
         } catch (error) {
             console.error(`Failed to load note with new parser: ${noteFile.path}`, error);
             return null;
         }
+    }
+
+    /**
+     * Reconstitute a Note from cached flashcards.
+     *
+     * @param noteFile - The note file
+     * @param flashcards - Array of cached flashcards
+     * @param defaultTextDirection - Default text direction
+     * @param folderTopicPath - Topic path from folder structure
+     * @returns A Note object
+     */
+    reconstituteNote(
+        noteFile: ISRFile,
+        flashcards: ParsedFlashcard[],
+        defaultTextDirection: TextDirection,
+        folderTopicPath: TopicPath,
+    ): Note {
+        const onlyKeepQuestionsWithTopicPath = true;
+        const questionList = this.createQuestionListFromFlashcards(
+            flashcards,
+            noteFile,
+            defaultTextDirection,
+            folderTopicPath,
+            onlyKeepQuestionsWithTopicPath,
+        );
+
+        const note = new Note(noteFile, questionList);
+        note.parsedFlashcards = flashcards;
+        return note;
     }
 }

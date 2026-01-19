@@ -199,7 +199,7 @@ Stores scheduling data in `tracked_files.json` separate from notes.
 
 **File Locations:**
 
-1. **Plugin folder** (default): `.obsidian/plugins/obsidian-spaced-repetition-recall/tracked_files.json`
+1. **Plugin folder** (default): `.obsidian/plugins/obsidian-spaced-repetition-flow/tracked_files.json`
 2. **Vault folder**: `tracked_files.json` in vault root
 3. **Specified folder**: Custom location you configure
 

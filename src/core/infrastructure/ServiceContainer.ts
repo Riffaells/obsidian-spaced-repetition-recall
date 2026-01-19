@@ -18,11 +18,7 @@ export class ServiceContainer {
      * @param factory - The factory function to create the service
      * @param singleton - Whether to create a singleton instance (default: true)
      */
-    register<T>(
-        name: string,
-        factory: Factory<T>,
-        singleton: boolean = true,
-    ): void {
+    register<T>(name: string, factory: Factory<T>, singleton: boolean = true): void {
         this.services.set(name, factory);
         if (singleton) {
             this.singletons.add(name);

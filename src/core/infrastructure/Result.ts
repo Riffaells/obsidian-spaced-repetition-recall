@@ -41,5 +41,3 @@ export function createOk<T>(value: T): Ok<T> {
 export function createErr<E>(error: E): Err<E> {
     return new Err(error);
 }
-
-

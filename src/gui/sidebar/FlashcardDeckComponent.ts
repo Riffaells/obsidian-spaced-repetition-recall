@@ -167,7 +167,7 @@ export class FlashcardDeckComponent {
 
     public setCardSort(sort: CardSortType): void {
         this.cardSort = sort;
-        
+
         // Update all group components with new sort
         for (const group of this.groupComponents.values()) {
             group.setCardSort(sort);

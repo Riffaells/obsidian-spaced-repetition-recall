@@ -34,12 +34,11 @@ export class MultilineExtractor {
         const lines = text.split("\n");
         const cards: ExtractedCard[] = [];
 
-        // Compile the question pattern regex once
         let questionRegex: RegExp;
         try {
             questionRegex = new RegExp(config.questionLinePattern);
+            console.log("MultilineExtractor: Using question pattern:", config.questionLinePattern);
         } catch (error) {
-            // Invalid regex pattern - skip this rule
             console.warn(`Invalid question line pattern: ${config.questionLinePattern}`, error);
             return [];
         }
@@ -67,6 +66,14 @@ export class MultilineExtractor {
             }
 
             // Check if this line matches the question pattern
+            console.log(
+                "MultilineExtractor: Testing line:",
+                line,
+                "with pattern:",
+                config.questionLinePattern,
+                "Result:",
+                questionRegex.test(line),
+            );
             if (questionRegex.test(line)) {
                 const card = this.extractCard(
                     lines,

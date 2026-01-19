@@ -64,10 +64,10 @@ export function addAlgorithmSetting(containerEl: HTMLElement, plugin: SRPlugin) 
                         await plugin.savePluginData();
                         /**
                          * Reload plugin to apply algorithm changes.
-                         * 
+                         *
                          * @warning This uses private APIs (app.plugins.disablePlugin/enablePlugin) that may break in future Obsidian versions.
                          */
-                        const plugins = (plugin.app as any).plugins;
+                        const plugins = plugin.app.plugins;
                         if (plugins?.disablePlugin && plugins?.enablePlugin) {
                             await plugins.disablePlugin(plugin.manifest.id);
                             await plugins.enablePlugin(plugin.manifest.id);
@@ -114,10 +114,8 @@ export function addResponseButtonTextSetting(containerEl: HTMLElement, plugin: S
         // These keys follow the pattern: FLASHCARD_{OPTION}_LABEL and FLASHCARD_{OPTION}_DESC
         const labelKey = `FLASHCARD_${opt.toUpperCase()}_LABEL` as any;
         const descKey = `FLASHCARD_${opt.toUpperCase()}_DESC` as any;
-        
-        const btnTextEl = new Setting(containerEl)
-            .setName(t(labelKey))
-            .setDesc(t(descKey));
+
+        const btnTextEl = new Setting(containerEl).setName(t(labelKey)).setDesc(t(descKey));
         btnTextEl.addText((text) =>
             text.setValue(btnText[algo][ind]).onChange((value) => {
                 applySettingsUpdate(() => {

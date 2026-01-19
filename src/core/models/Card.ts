@@ -1,7 +1,7 @@
 import { Question } from "./Question";
 import { CardScheduleInfo } from "src/core/scheduling/CardSchedule";
-import { CardListType } from "./Deck";
-import { IQuestionPostponementList } from "src/core/scheduling/QuestionPostponementList";
+import { CardListType } from "./CardListType";
+import { IQuestionPostponementList } from "src/core/scheduling/IQuestionPostponementList";
 import { globalDateProvider } from "src/utils/DateProvider";
 import { Queue } from "src/dataStore/queue";
 

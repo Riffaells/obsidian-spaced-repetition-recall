@@ -276,7 +276,12 @@ export class Queue implements IQueue {
         return this.repeatQueue.includes(item);
     }
 
-    updateWhenReview(item: RepetitionItem, correct: boolean, repeatItems: boolean, store: IDataStore) {
+    updateWhenReview(
+        item: RepetitionItem,
+        correct: boolean,
+        repeatItems: boolean,
+        store: IDataStore,
+    ) {
         if (this.isInRepeatQueue(item.ID)) {
             this.remove(item, this.repeatQueue);
         }

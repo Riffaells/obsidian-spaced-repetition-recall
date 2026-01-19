@@ -10,10 +10,7 @@ import { t } from "src/lang/helpers";
 /**
  * Render multiline-specific settings
  */
-export function renderMultilineSettings(
-    containerEl: HTMLElement,
-    rule: MultilineRule,
-): void {
+export function renderMultilineSettings(containerEl: HTMLElement, rule: MultilineRule): void {
     // Question line pattern
     new Setting(containerEl)
         .setName(t("QUESTION_LINE_PATTERN"))
@@ -37,10 +34,7 @@ export function renderMultilineSettings(
 /**
  * Render stop condition settings
  */
-function renderStopCondition(
-    containerEl: HTMLElement,
-    rule: MultilineRule,
-): void {
+function renderStopCondition(containerEl: HTMLElement, rule: MultilineRule): void {
     const setting = new Setting(containerEl)
         .setName(t("STOP_CONDITION"))
         .setDesc(t("STOP_CONDITION_DESC"));
@@ -81,10 +75,7 @@ function renderStopCondition(
 /**
  * Render separator input
  */
-function renderSeparatorInput(
-    containerEl: HTMLElement,
-    rule: MultilineRule,
-): void {
+function renderSeparatorInput(containerEl: HTMLElement, rule: MultilineRule): void {
     const separator =
         rule.config.stopCondition.type === "separator"
             ? rule.config.stopCondition.separator
@@ -111,10 +102,7 @@ function renderSeparatorInput(
 /**
  * Render custom pattern input
  */
-function renderCustomPatternInput(
-    containerEl: HTMLElement,
-    rule: MultilineRule,
-): void {
+function renderCustomPatternInput(containerEl: HTMLElement, rule: MultilineRule): void {
     const pattern =
         rule.config.stopCondition.type === "custom-pattern"
             ? rule.config.stopCondition.pattern

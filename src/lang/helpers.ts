@@ -71,11 +71,16 @@ export const localeMap: { [k: string]: Partial<typeof en> } = {
 
 const locale = localeMap[moment.locale()];
 
-// https://stackoverflow.com/a/41015840/
 function interpolate(str: string, params: Record<string, unknown>): string {
-    const names: string[] = Object.keys(params);
-    const vals: unknown[] = Object.values(params);
-    return new Function(...names, `return \`${str}\`;`)(...vals);
+    return str.replace(/\{(\w+)}/g, (match, key) => {
+        const value = params[key];
+        if (value === undefined) return match;
+        if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+            return String(value);
+        }
+        // For objects, arrays, etc., use JSON.stringify or return empty string
+        return JSON.stringify(value);
+    });
 }
 
 export function t(str: keyof typeof en, params?: Record<string, unknown>): string {

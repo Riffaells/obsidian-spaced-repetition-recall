@@ -134,10 +134,10 @@ export abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
             this.suggest.setSuggestions(suggestions);
             /**
              * Access Obsidian's private API to get the app container element.
-             * 
+             *
              * @warning This uses a private API (app.dom.appContainerEl) that may break in future Obsidian versions.
              */
-            const app = IAdapter.instance.app as any;
+            const app = IAdapter.instance.app;
             if (app.dom?.appContainerEl) {
                 this.open(app.dom.appContainerEl, this.inputEl);
             }

@@ -34,14 +34,10 @@ export class HeaderExtractor {
             const levelFromTag = Number(context.vars.level);
             if (!isNaN(levelFromTag) && levelFromTag >= 1 && levelFromTag <= 6) {
                 levelsToUse = [levelFromTag];
-                console.log(
-                    `[HeaderExtractor] Using level ${levelFromTag} from tag variable`,
-                );
+                console.log(`[HeaderExtractor] Using level ${levelFromTag} from tag variable`);
             }
         } else {
-            console.log(
-                `[HeaderExtractor] Using configured levels: ${levelsToUse.join(", ")}`,
-            );
+            console.log(`[HeaderExtractor] Using configured levels: ${levelsToUse.join(", ")}`);
         }
 
         // Step 2: Filter headings by level
@@ -223,6 +219,9 @@ export class HeaderExtractor {
             back: content,
             lineNumber: heading.lineNumber,
             headersPath,
+            metadata: {
+                headingLevel: heading.level,
+            },
         };
     }
 

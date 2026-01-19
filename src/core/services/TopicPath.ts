@@ -57,8 +57,6 @@ export class TopicPath {
         if (tag == null || tag.length == 0) return false;
         if (tag[0] != "#") return false;
         return tag.length != 1;
-
-
     }
 
     static getTopicPathFromTag(tag: string): TopicPath {

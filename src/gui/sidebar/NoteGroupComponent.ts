@@ -152,7 +152,7 @@ export class NoteGroupComponent {
     private updateNotesList(container: HTMLElement): void {
         const sortedNotes = this.sortNotes(this.notes);
         const existingItems = Array.from(container.querySelectorAll(".sr-new-note-item"));
-        
+
         // Quick check: if only active state changed, just update classes
         if (existingItems.length === sortedNotes.length) {
             let onlyActiveChanged = true;
@@ -165,7 +165,7 @@ export class NoteGroupComponent {
                     break;
                 }
             }
-            
+
             if (onlyActiveChanged) {
                 // Just update active states
                 for (let i = 0; i < sortedNotes.length; i++) {
@@ -185,8 +185,8 @@ export class NoteGroupComponent {
         // Full re-render needed
         // Remove only note items, keep the button
         const noteItems = container.querySelectorAll(".sr-new-note-item");
-        noteItems.forEach(item => item.remove());
-        
+        noteItems.forEach((item) => item.remove());
+
         this.notesAbortController.abort();
         this.notesAbortController = new AbortController();
         this.renderNotes(container);
@@ -195,24 +195,24 @@ export class NoteGroupComponent {
     private renderNotes(container: HTMLElement): void {
         const sortedNotes = this.sortNotes(this.notes);
         const notesLimit = this.plugin.data.settings.sidebarInitialNotesLimit;
-        
+
         // Check if active file is in the notes
-        const activeNoteIndex = this.activeFile 
-            ? sortedNotes.findIndex(note => note.note.path === this.activeFile!.path)
+        const activeNoteIndex = this.activeFile
+            ? sortedNotes.findIndex((note) => note.note.path === this.activeFile!.path)
             : -1;
-        
+
         // Determine which notes to show
         let notesToShow: SchedNote[];
         let shouldLimitNotes = false;
-        
+
         if (!this.showAllNotes && sortedNotes.length > notesLimit) {
             shouldLimitNotes = true;
-            
+
             // If active note is beyond the limit, include it
             if (activeNoteIndex >= notesLimit) {
                 notesToShow = [
                     ...sortedNotes.slice(0, notesLimit - 1),
-                    sortedNotes[activeNoteIndex]
+                    sortedNotes[activeNoteIndex],
                 ];
             } else {
                 notesToShow = sortedNotes.slice(0, notesLimit);
@@ -220,35 +220,41 @@ export class NoteGroupComponent {
         } else {
             notesToShow = sortedNotes;
         }
-        
+
         // Remove existing button if it exists
         if (this.showMoreButton && this.showMoreButton.parentElement) {
             this.showMoreButton.remove();
             this.showMoreButton = null;
         }
-        
+
         // Render notes
         for (const note of notesToShow) {
             if (note && note.note) {
                 this.renderNote(container, note);
             }
         }
-        
+
         // Show/hide "Show more" buttons
         if (shouldLimitNotes) {
             this.createShowMoreButtons(container, sortedNotes.length, notesLimit);
         }
     }
 
-    private createShowMoreButtons(container: HTMLElement, totalCount: number, currentLimit: number): void {
+    private createShowMoreButtons(
+        container: HTMLElement,
+        totalCount: number,
+        currentLimit: number,
+    ): void {
         const remainingCount = totalCount - currentLimit;
         const batchSize = this.plugin.data.settings.sidebarInitialNotesLimit;
-        
+
         const buttonsContainer = container.createDiv("sr-show-more-buttons");
-        
+
         // If remaining is less than or equal to batch size, show only "Show all" button
         if (remainingCount <= batchSize) {
-            const showAllButton = buttonsContainer.createDiv("sr-show-more-notes sr-show-all sr-single-button");
+            const showAllButton = buttonsContainer.createDiv(
+                "sr-show-more-notes sr-show-all sr-single-button",
+            );
             showAllButton.setText(t("SHOW_ALL_NOTES", { count: remainingCount }));
             showAllButton.addEventListener("click", () => {
                 this.showAllNotes = true;
@@ -269,18 +275,21 @@ export class NoteGroupComponent {
                 if (notesList) {
                     // Remove buttons
                     buttonsContainer.remove();
-                    
+
                     // Show next batch
                     const sortedNotes = this.sortNotes(this.notes);
                     const newLimit = currentLimit + batchSize;
-                    const notesToAdd = sortedNotes.slice(currentLimit, Math.min(newLimit, totalCount));
-                    
+                    const notesToAdd = sortedNotes.slice(
+                        currentLimit,
+                        Math.min(newLimit, totalCount),
+                    );
+
                     for (const note of notesToAdd) {
                         if (note && note.note) {
                             this.renderNote(notesList, note);
                         }
                     }
-                    
+
                     // Re-create buttons if there are still more notes
                     if (newLimit < totalCount) {
                         this.createShowMoreButtons(notesList, totalCount, newLimit);
@@ -289,7 +298,7 @@ export class NoteGroupComponent {
                     }
                 }
             });
-            
+
             // Button 2: Show all remaining
             const showAllButton = buttonsContainer.createDiv("sr-show-more-notes sr-show-all");
             showAllButton.setText(t("SHOW_ALL_NOTES", { count: remainingCount }));
@@ -301,7 +310,7 @@ export class NoteGroupComponent {
                 }
             });
         }
-        
+
         this.showMoreButton = buttonsContainer;
     }
 

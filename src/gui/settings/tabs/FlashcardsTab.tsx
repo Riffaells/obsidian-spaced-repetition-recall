@@ -221,6 +221,4 @@ export class FlashcardsTab {
                 }),
         );
     }
-
-
 }

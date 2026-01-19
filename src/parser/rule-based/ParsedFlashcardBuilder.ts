@@ -47,6 +47,9 @@ export interface FlashcardBuildInput {
 
     /** Optional Obsidian block ID (if present, use instead of hash) */
     blockId?: string;
+
+    /** Additional metadata to include in the flashcard */
+    metadata?: Record<string, unknown>;
 }
 
 /**
@@ -66,6 +69,7 @@ export class ParsedFlashcardBuilder {
         // Build metadata object
         const metadata: Record<string, unknown> = {
             ruleId: input.ruleId,
+            ...(input.metadata || {}), // Include extra metadata
         };
 
         // Include extracted variables in metadata if present

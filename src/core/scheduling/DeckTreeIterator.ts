@@ -1,5 +1,6 @@
 import { Card } from "../models/Card";
-import { CardListType, Deck } from "../models/Deck";
+import { Deck } from "../models/Deck";
+import { CardListType } from "../models/CardListType";
 import { Question } from "../models/Question";
 import { TopicPath } from "src/core/services/TopicPath";
 import { globalRandomNumberProvider, WeightedRandomNumber } from "src/utils/RandomNumberProvider";

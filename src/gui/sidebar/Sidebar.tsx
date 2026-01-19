@@ -85,14 +85,14 @@ export class ReviewQueueListView extends ItemView {
         this.registerEvent(this.app.workspace.on("file-open", () => this.debouncedRedraw()));
         this.registerEvent(this.app.vault.on("rename", () => this.debouncedRedraw()));
         this.registerEvent(
-            this.app.workspace.on("sr:note-reviewed" as any, () => {
+            this.app.workspace.on("sr:note-reviewed", () => {
                 this.needsCountRecalculation = true;
                 this.needsGroupRecalculation = true;
                 this.debouncedRedraw();
             }),
         );
         this.registerEvent(
-            this.app.workspace.on("sr:stats-updated" as any, () => {
+            this.app.workspace.on("sr:stats-updated", () => {
                 this.needsCountRecalculation = true;
                 this.needsGroupRecalculation = true;
                 this.debouncedRedraw();
@@ -167,6 +167,7 @@ export class ReviewQueueListView extends ItemView {
         this.stats = new SidebarStats(
             statsContainer,
             this.cachedStats,
+            this.currentViewMode,
             () => this.openRandomNew(),
             () => this.openRandomDue(),
         );
@@ -234,7 +235,7 @@ export class ReviewQueueListView extends ItemView {
         this.currentCardSort = sort;
         this.plugin.data.settings.sidebarCardSortOrder = sort;
         this.saveSettingsDebounced();
-        
+
         // Update card sort in reconciler
         if (this.deckReconciler) {
             this.deckReconciler.setCardSort(sort);
@@ -296,10 +297,10 @@ export class ReviewQueueListView extends ItemView {
         if (!this.decksContainer || !this.deckReconciler) return;
 
         this.clearScrollTimeout();
-        
+
         // Check if we need to recalculate groups due to date change
         this.checkDateChange();
-        
+
         this.updateStats();
         this.updateHeader();
         this.reconcileDecks(activeFile, resort, shouldScroll);
@@ -313,7 +314,7 @@ export class ReviewQueueListView extends ItemView {
         const now = Date.now();
         const currentDay = Math.floor(now / (24 * 3600 * 1000));
         const lastDay = Math.floor(this.lastGroupRecalculationDate / (24 * 3600 * 1000));
-        
+
         // If day has changed since last recalculation, mark groups for recalculation
         if (currentDay !== lastDay) {
             this.needsGroupRecalculation = true;
@@ -336,7 +337,7 @@ export class ReviewQueueListView extends ItemView {
                     : calculateSidebarStats(this.plugin);
         }
 
-        this.stats?.updateStats(this.cachedStats);
+        this.stats?.updateStats(this.cachedStats, this.currentViewMode);
     }
 
     private updateHeader(): void {
@@ -357,11 +358,7 @@ export class ReviewQueueListView extends ItemView {
         this.header.render();
     }
 
-    private reconcileDecks(
-        activeFile: TFile | null,
-        resort = true,
-        shouldScroll = false,
-    ): void {
+    private reconcileDecks(activeFile: TFile | null, resort = true, shouldScroll = false): void {
         if (!this.deckReconciler) return;
 
         this.lastActiveFilePath = activeFile?.path || null;
@@ -388,6 +385,13 @@ export class ReviewQueueListView extends ItemView {
                     this.currentSort,
                 );
                 this.needsGroupRecalculation = false;
+            }
+
+            // Reset showAllGroups for collapsed decks
+            for (const [deckName, component] of this.deckComponents) {
+                if (!this.expandedDecks.has(deckName)) {
+                    component.resetShowAllGroups();
+                }
             }
 
             this.deckReconciler.reconcileNoteDecks(
@@ -482,11 +486,6 @@ export class ReviewQueueListView extends ItemView {
     private toggleDeck(deckName: string): void {
         if (this.expandedDecks.has(deckName)) {
             this.expandedDecks.delete(deckName);
-            // Reset showAllGroups when collapsing deck
-            const deckComponent = this.deckComponents.get(deckName);
-            if (deckComponent) {
-                deckComponent.resetShowAllGroups();
-            }
         } else {
             this.expandedDecks.add(deckName);
         }

@@ -10,10 +10,7 @@ import { t } from "src/lang/helpers";
 /**
  * Render inline-specific settings
  */
-export function renderInlineSettings(
-    containerEl: HTMLElement,
-    rule: InlineRule,
-): void {
+export function renderInlineSettings(containerEl: HTMLElement, rule: InlineRule): void {
     // Separator
     new Setting(containerEl)
         .setName(t("SEPARATOR"))

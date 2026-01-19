@@ -2,7 +2,7 @@ import { PaneType, TFile, ViewCreator, WorkspaceLeaf } from "obsidian";
 
 import { SR_TAB_VIEW } from "src/constants";
 import SRPlugin from "src/main";
-import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewSequencer";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewMode";
 import { Deck } from "src/core/models/Deck";
 import { TabView } from "./TabView";
 
@@ -40,14 +40,24 @@ export default class TabViewManager {
      *
      * @param reviewMode - The mode of flashcard review.
      * @param singleNote - Optional parameter specifying a single note to review.
+     * @param startDeck - Optional parameter specifying the deck to start with.
      *
      * @returns {Promise<void>} - A promise that resolves when the tab view is opened.
      */
-    public async openSRTabView(reviewMode: FlashcardReviewMode, singleNote?: TFile): Promise<void> {
-        const state = {
+    public async openSRTabView(
+        reviewMode: FlashcardReviewMode,
+        singleNote?: TFile,
+        startDeck?: Deck,
+    ): Promise<void> {
+        const state: any = {
             reviewMode,
             singleNotePath: singleNote?.path,
         };
+
+        if (startDeck) {
+            state.startDeckPath = startDeck.getTopicPath().path;
+        }
+
         await this.openTabView(SR_TAB_VIEW, true, state);
     }
 

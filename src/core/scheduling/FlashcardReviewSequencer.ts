@@ -1,5 +1,6 @@
 import { Card } from "../models/Card";
-import { CardListType, Deck } from "../models/Deck";
+import { Deck } from "../models/Deck";
+import { CardListType } from "../models/CardListType";
 import { Question, QuestionText } from "../models/Question";
 import { ReviewResponse } from "./scheduling";
 import { SRSettings } from "src/settings/settings";
@@ -7,10 +8,11 @@ import { TopicPath } from "src/core/services/TopicPath";
 import { CardScheduleInfo, ICardScheduleCalculator } from "./CardSchedule";
 import { Note } from "../models/Note";
 import { IDeckTreeIterator } from "./DeckTreeIterator";
-import { IQuestionPostponementList } from "./QuestionPostponementList";
+import { IQuestionPostponementList } from "./IQuestionPostponementList";
 import { DataLocation } from "src/dataStore/dataLocation";
 import { DataStore } from "src/dataStore/data";
 import { RPITEMTYPE } from "src/dataStore/repetitionItem";
+import { FlashcardReviewMode } from "./FlashcardReviewMode";
 
 export interface IFlashcardReviewSequencer {
     get hasCurrentCard(): boolean;
@@ -39,11 +41,6 @@ export class DeckStats {
         this.newCount = newCount;
         this.totalCount = totalCount;
     }
-}
-
-export enum FlashcardReviewMode {
-    Cram,
-    Review,
 }
 
 export class FlashcardReviewSequencer implements IFlashcardReviewSequencer {

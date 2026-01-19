@@ -44,18 +44,21 @@ export default class CommandManager {
                     if (!checking) {
                         // Use new architecture if available
                         if (plugin.serviceContainer) {
-                            const fileTrackService = plugin.serviceContainer.get("fileTrackService") as FileTrackService;
-                            fileTrackService.trackFile(file.path, RPITEMTYPE.NOTE, "default")
-                                .then(result => {
-                                    if (result.isOk) {
+                            const fileTrackService = plugin.serviceContainer.get(
+                                "fileTrackService",
+                            ) as FileTrackService;
+                            fileTrackService
+                                .trackFile(file.path, RPITEMTYPE.NOTE, "default")
+                                .then((result) => {
+                                    if (result.isErr) {
+                                        console.error("Failed to track file:", result.error);
+                                        new Notice(t("CMD_TRACK_FAILED"));
+                                    } else {
                                         new Notice(t("CMD_NOTE_TRACKED"));
                                         plugin.sync();
-                                    } else {
-                                        console.error("Failed to track file:", (result as any).error);
-                                        new Notice(t("CMD_TRACK_FAILED"));
                                     }
                                 })
-                                .catch(error => {
+                                .catch((error) => {
                                     console.error("Error tracking file:", error);
                                     new Notice(t("CMD_TRACK_FAILED"));
                                 });
@@ -80,18 +83,21 @@ export default class CommandManager {
                     if (!checking) {
                         // Use new architecture if available
                         if (plugin.serviceContainer) {
-                            const fileTrackService = plugin.serviceContainer.get("fileTrackService") as FileTrackService;
-                            fileTrackService.untrackFile(file.path)
-                                .then(result => {
-                                    if (result.isOk) {
+                            const fileTrackService = plugin.serviceContainer.get(
+                                "fileTrackService",
+                            ) as FileTrackService;
+                            fileTrackService
+                                .untrackFile(file.path)
+                                .then((result) => {
+                                    if (result.isErr) {
+                                        console.error("Failed to untrack file:", result.error);
+                                        new Notice(t("CMD_UNTRACK_FAILED"));
+                                    } else {
                                         new Notice(t("CMD_NOTE_UNTRACKED"));
                                         plugin.sync();
-                                    } else {
-                                        console.error("Failed to untrack file:", (result as any).error);
-                                        new Notice(t("CMD_UNTRACK_FAILED"));
                                     }
                                 })
-                                .catch(error => {
+                                .catch((error) => {
                                     console.error("Error untracking file:", error);
                                     new Notice(t("CMD_UNTRACK_FAILED"));
                                 });

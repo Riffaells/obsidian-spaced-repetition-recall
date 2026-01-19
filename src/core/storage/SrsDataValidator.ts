@@ -22,17 +22,12 @@ export class SrsDataValidator implements IValidator<SrsData> {
 
         // Check required fields
         if (!data.items || !Array.isArray(data.items)) {
-            errors.push(
-                new ValidationError("items", "Missing or invalid items array"),
-            );
+            errors.push(new ValidationError("items", "Missing or invalid items array"));
         }
 
         if (!data.trackedFiles || !Array.isArray(data.trackedFiles)) {
             errors.push(
-                new ValidationError(
-                    "trackedFiles",
-                    "Missing or invalid trackedFiles array",
-                ),
+                new ValidationError("trackedFiles", "Missing or invalid trackedFiles array"),
             );
         }
 
@@ -45,8 +40,7 @@ export class SrsDataValidator implements IValidator<SrsData> {
         }
 
         const now = Date.now();
-        const maxFutureTimestamp =
-            now + this.MAX_FUTURE_YEARS * 365 * 24 * 60 * 60 * 1000;
+        const maxFutureTimestamp = now + this.MAX_FUTURE_YEARS * 365 * 24 * 60 * 60 * 1000;
 
         // Validate each item
         data.items.forEach((item: any, index: number) => {

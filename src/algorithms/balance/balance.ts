@@ -32,7 +32,7 @@ export function balance(
     // replaces random fuzz with load balancing over the fuzz interval
     const beforeIntvl = interval;
     let isChange = false;
-    const dueDates = dueDatesDict[type];
+    const dueDates = dueDatesDict?.[type];
     if (dueDates !== undefined) {
         interval = Math.round(interval);
         // const due = window.moment().add(interval,"days");

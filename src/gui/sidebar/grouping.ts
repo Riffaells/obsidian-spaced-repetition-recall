@@ -2,7 +2,7 @@ import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
 import { Card } from "src/core/models/Card";
 import { SchedNote } from "src/core/models/ReviewDeck";
-import { calculateDaysUntilDue, getGroupTitle } from "./utils";
+import { calculateDaysUntilDue, getGroupTitle, getFlashcardGroupTitle } from "./utils";
 import { FilterType } from "./types";
 
 export function groupFlashcards(
@@ -21,12 +21,11 @@ export function groupFlashcards(
         }
 
         let groupTitle: string;
-        if (card.isDue) {
-            groupTitle = t("DUE_CARDS");
-        } else if (card.scheduleInfo?.dueDate) {
+        if (card.scheduleInfo?.dueDate) {
             const dueUnix = card.scheduleInfo.dueDate.valueOf();
-            const nDays = calculateDaysUntilDue(dueUnix, plugin);
-            groupTitle = getGroupTitle(nDays, dueUnix, plugin);
+            groupTitle = getFlashcardGroupTitle(dueUnix, card.isDue, plugin);
+        } else if (card.isDue) {
+            groupTitle = t("DUE_CARDS");
         } else {
             // Fallback for cards that are not due but have no schedule info
             groupTitle = t("REVIEWED");
@@ -72,12 +71,14 @@ export function groupNotes(
 
     // Sort filtered notes by due date
     filteredNotes.sort((a, b) =>
-        filter === FilterType.REVIEWED ? b.note.dueUnix - a.note.dueUnix : a.note.dueUnix - b.note.dueUnix
+        filter === FilterType.REVIEWED
+            ? b.note.dueUnix - a.note.dueUnix
+            : a.note.dueUnix - b.note.dueUnix,
     );
 
     // Group sorted notes with nDays for later sorting
     const groupsWithDays: Map<string, { notes: SchedNote[]; minDays: number }> = new Map();
-    
+
     for (const item of filteredNotes) {
         const existing = groupsWithDays.get(item.groupTitle);
         if (existing) {

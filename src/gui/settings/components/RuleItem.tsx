@@ -34,20 +34,20 @@ export function createRuleItem(containerEl: HTMLElement, props: RuleItemProps): 
 
     // Rule info
     const infoContainer = leftSection.createDiv("flashcard-rule-info");
-    
+
     const nameEl = infoContainer.createDiv("flashcard-rule-name");
     nameEl.textContent = rule.name || "(Unnamed Rule)";
-    
+
     const metaEl = infoContainer.createDiv("flashcard-rule-meta");
-    
+
     // Type badge
     const typeBadge = metaEl.createSpan("flashcard-rule-badge");
     typeBadge.textContent = rule.type;
-    
+
     // Priority
     const prioritySpan = metaEl.createSpan("flashcard-rule-priority");
     prioritySpan.textContent = `Priority: ${rule.priority}`;
-    
+
     // Tag pattern
     const tagSpan = metaEl.createSpan("flashcard-rule-tag");
     tagSpan.textContent = rule.tagPattern;

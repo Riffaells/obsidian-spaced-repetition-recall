@@ -35,12 +35,26 @@ class MockSRFile implements ISRFile {
     path: string;
     basename: string;
     content: string;
-    constructor(path: string) { this.path = path; this.basename = ""; this.content = ""; }
-    getQuestionContext() { return []; }
-    getAllTagsFromCache() { return []; }
-    getAllTagsFromText() { return []; }
-    getTextDirection() { return TextDirection.Ltr; }
-    async read() { return ""; }
+    constructor(path: string) {
+        this.path = path;
+        this.basename = "";
+        this.content = "";
+    }
+    getQuestionContext() {
+        return [];
+    }
+    getAllTagsFromCache() {
+        return [];
+    }
+    getAllTagsFromText() {
+        return [];
+    }
+    getTextDirection() {
+        return TextDirection.Ltr;
+    }
+    async read() {
+        return "";
+    }
     async write() {}
 }
 
@@ -53,13 +67,36 @@ describe("Question.Create", () => {
             back: "A",
             tags: ["#flashcards"],
             ruleId: "rule1",
-            context: { lineNumber: 1, text: "Q::A", filePath: "Folder/Note.md", fileName: "Note.md", folderPath: "Folder", tags: [] }
+            context: {
+                lineNumber: 1,
+                text: "Q::A",
+                filePath: "Folder/Note.md",
+                fileName: "Note.md",
+                folderPath: "Folder",
+                tags: [],
+            },
         };
-        const rule: FlashcardRule = { id: "rule1", name: "Rule", type: "inline", enabled: true, priority: 0, tagPattern: "", config: {} };
+        const rule: FlashcardRule = {
+            id: "rule1",
+            name: "Rule",
+            type: "inline",
+            enabled: true,
+            priority: 0,
+            tagPattern: "",
+            config: {},
+        };
         const noteFile = new MockSRFile("Folder/Note.md");
         const folderTopicPath = new TopicPath(["Folder"]);
 
-        const question = Question.Create(settings, flashcard, CardType.SingleLineBasic, rule, noteFile, TextDirection.Ltr, folderTopicPath);
+        const question = Question.Create(
+            settings,
+            flashcard,
+            CardType.SingleLineBasic,
+            rule,
+            noteFile,
+            TextDirection.Ltr,
+            folderTopicPath,
+        );
 
         expect(question.topicPathList.list.length).toBe(1);
         expect(question.topicPathList.list[0].formatAsTag()).toBe("#Folder");
@@ -73,13 +110,36 @@ describe("Question.Create", () => {
             back: "A",
             tags: ["#flashcards", "#mytag"],
             ruleId: "rule1",
-            context: { lineNumber: 1, text: "Q::A", filePath: "Folder/Note.md", fileName: "Note.md", folderPath: "Folder", tags: [] }
+            context: {
+                lineNumber: 1,
+                text: "Q::A",
+                filePath: "Folder/Note.md",
+                fileName: "Note.md",
+                folderPath: "Folder",
+                tags: [],
+            },
         };
-        const rule: FlashcardRule = { id: "rule1", name: "Rule", type: "inline", enabled: true, priority: 0, tagPattern: "", config: {} };
+        const rule: FlashcardRule = {
+            id: "rule1",
+            name: "Rule",
+            type: "inline",
+            enabled: true,
+            priority: 0,
+            tagPattern: "",
+            config: {},
+        };
         const noteFile = new MockSRFile("Folder/Note.md");
         const folderTopicPath = new TopicPath(["Folder"]);
 
-        const question = Question.Create(settings, flashcard, CardType.SingleLineBasic, rule, noteFile, TextDirection.Ltr, folderTopicPath);
+        const question = Question.Create(
+            settings,
+            flashcard,
+            CardType.SingleLineBasic,
+            rule,
+            noteFile,
+            TextDirection.Ltr,
+            folderTopicPath,
+        );
 
         // Should have only 1 topic path: folder path takes priority over tags
         expect(question.topicPathList.list.length).toBe(1);

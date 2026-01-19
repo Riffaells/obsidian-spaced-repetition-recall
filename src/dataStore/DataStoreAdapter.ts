@@ -17,11 +17,11 @@ import { Tags } from "../utils/tags";
 
 /**
  * DataStoreAdapter - Adapter layer for gradual migration from old DataStore to new architecture.
- * 
+ *
  * This class implements the same interface as the old DataStore class but delegates
  * operations to the new service layer internally. This allows for gradual migration
  * of calling code while maintaining backward compatibility.
- * 
+ *
  * Requirements: 16.1-16.5, 17.1-17.5
  */
 export class DataStoreAdapter {
@@ -31,7 +31,7 @@ export class DataStoreAdapter {
      * @type {SrsData}
      */
     data: SrsData;
-    
+
     settings: SRSettings;
     dataPath: string;
 
@@ -74,10 +74,10 @@ export class DataStoreAdapter {
         this.eventBus = eventBus;
         this.vault = vault;
         this.metadataCache = metadataCache;
-        
+
         // Initialize with default data
         this.data = Object.assign({}, DEFAULT_SRS_DATA);
-        
+
         DataStoreAdapter.instance = this;
     }
 
@@ -99,7 +99,7 @@ export class DataStoreAdapter {
         try {
             // Load data through new storage layer
             const result = await this.storage.read();
-            
+
             if (result.isOk) {
                 // console.log("Reading tracked files...");
                 this.data = result.value;
@@ -114,7 +114,7 @@ export class DataStoreAdapter {
             this.data = Object.assign({}, DEFAULT_SRS_DATA);
             await this.save();
         }
-        
+
         this.toInstances();
     }
 
@@ -145,7 +145,7 @@ export class DataStoreAdapter {
      * Get item by ID.
      */
     getItembyID(id: number): RepetitionItem {
-        return this.data.items.find(item => item?.ID === id);
+        return this.data.items.find((item) => item?.ID === id);
     }
 
     /**
@@ -156,14 +156,14 @@ export class DataStoreAdapter {
         if (!file || !file.isTracked) {
             return [];
         }
-        return file.itemIDs.map(id => this.getItembyID(id)).filter(item => item != null);
+        return file.itemIDs.map((id) => this.getItembyID(id)).filter((item) => item != null);
     }
 
     /**
      * Get file index by path.
      */
     getFileIndex(path: string): number {
-        return this.data.trackedFiles.findIndex(file => file?.path === path);
+        return this.data.trackedFiles.findIndex((file) => file?.path === path);
     }
 
     /**
@@ -184,7 +184,11 @@ export class DataStoreAdapter {
     /**
      * Track a file.
      */
-    trackFile(path: string, type: RPITEMTYPE, notice: boolean = true): { added: number; removed: number } | null {
+    trackFile(
+        path: string,
+        type: RPITEMTYPE,
+        notice: boolean = true,
+    ): { added: number; removed: number } | null {
         const file = this.vault.getAbstractFileByPath(path);
         if (!file) {
             console.error(`File not found: ${path}`);
@@ -193,7 +197,7 @@ export class DataStoreAdapter {
 
         const index = this.getFileIndex(path);
         let trackedFile: TrackedFile;
-        
+
         if (index < 0) {
             // New file
             trackedFile = new TrackedFile(path, type, "default");
@@ -210,8 +214,14 @@ export class DataStoreAdapter {
         const fileIndex = this.getFileIndex(path);
         const itemId = this.maxItemId + 1;
         const algorithm = SrsAlgorithm.getInstance();
-        const item = new RepetitionItem(itemId, fileIndex, type, "default", algorithm.defaultData());
-        
+        const item = new RepetitionItem(
+            itemId,
+            fileIndex,
+            type,
+            "default",
+            algorithm.defaultData(),
+        );
+
         this.data.items.push(item);
         trackedFile.items = { file: itemId };
 
@@ -235,9 +245,9 @@ export class DataStoreAdapter {
         // Remove all items for this file
         const itemIds = trackedFile.itemIDs;
         let removed = 0;
-        
-        itemIds.forEach(id => {
-            const itemIndex = this.data.items.findIndex(item => item?.ID === id);
+
+        itemIds.forEach((id) => {
+            const itemIndex = this.data.items.findIndex((item) => item?.ID === id);
             if (itemIndex >= 0) {
                 this.data.items.splice(itemIndex, 1);
                 removed++;
@@ -274,10 +284,7 @@ export class DataStoreAdapter {
      * Get max item ID.
      */
     get maxItemId(): number {
-        return Math.max(
-            ...this.data.items.map(item => item?.ID ?? 0),
-            0
-        );
+        return Math.max(...this.data.items.map((item) => item?.ID ?? 0), 0);
     }
 
     /**
@@ -301,5 +308,4 @@ export class DataStoreAdapter {
     resetData(): void {
         this.data = Object.assign({}, DEFAULT_SRS_DATA);
     }
-
 }

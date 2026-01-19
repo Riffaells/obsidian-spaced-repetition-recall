@@ -23,39 +23,39 @@ export default {
     NO_INPUT: "No input provided.",
     CURRENT_EASE_HELP_TEXT: "Current Ease: ",
     CURRENT_INTERVAL_HELP_TEXT: "Current Interval: ",
-    CARD_GENERATED_FROM: "Generated from: ${notePath}",
+    CARD_GENERATED_FROM: "Generated from: {notePath}",
     OPEN_NOTE: "Open Note",
     FAILED_TO_EDIT_QUESTION_TEXT: "Failed to edit question text:", // New entry
 
     // main.ts
     OPEN_NOTE_FOR_REVIEW: "리뷰할 노트 열기",
     REVIEW_CARDS: "플래시카드 리뷰",
-    REVIEW_DIFFICULTY_FILE_MENU: "리뷰: ${difficulty}",
-    REVIEW_NOTE_DIFFICULTY_CMD: "노트를 ${difficulty}으로 리뷰합니다",
+    REVIEW_DIFFICULTY_FILE_MENU: "리뷰: {difficulty}",
+    REVIEW_NOTE_DIFFICULTY_CMD: "노트를 {difficulty}으로 리뷰합니다",
     CRAM_ALL_CARDS: "Select a deck to cram",
     REVIEW_ALL_CARDS: "모든 노트들의 플래시카드들을 리뷰합니다",
     REVIEW_CARDS_IN_NOTE: "이 노트의 플래시카드들을 리뷰합니다",
     CRAM_CARDS_IN_NOTE: "이 노트의 플래시카드들을 벼락치기합니다.",
     VIEW_STATS: "통계 확인",
     OPEN_REVIEW_QUEUE_VIEW: "Open Notes Review Queue in sidebar",
-    STATUS_BAR: "--리뷰: ${dueNotesCount} 노트, ${dueFlashcardsCount} 카드 남았습니다.",
-    SYNC_TIME_TAKEN: "동기화에 ${t}밀리초 걸렸습니다",
+    STATUS_BAR: "--리뷰: {dueNotesCount} 노트, {dueFlashcardsCount} 카드 남았습니다.",
+    SYNC_TIME_TAKEN: "동기화에 {t}밀리초 걸렸습니다",
     NOTE_IN_IGNORED_FOLDER: "노트가 무시된 폴더 아래에 저장되어 있습니다. (설정을 확인해주세요)",
     PLEASE_TAG_NOTE: "리뷰를 하기위해 노트에 적절히 태그해주세요. (설정을 확인해주세요)",
     RESPONSE_RECEIVED: "요청이 완료되었습니다",
-    NO_DECK_EXISTS: "${deckName}이라는 이름의 덱이 존재하지 않습니다.",
+    NO_DECK_EXISTS: "{deckName}이라는 이름의 덱이 존재하지 않습니다.",
     ALL_CAUGHT_UP: "모두 확인했습니다. :D",
     // scheduling.ts
-    DAYS_STR_IVL: "${interval} 일 후",
-    MONTHS_STR_IVL: "${interval} 개월 후",
-    YEARS_STR_IVL: "${interval} 년 후",
-    DAYS_STR_IVL_MOBILE: "${interval}d",
-    MONTHS_STR_IVL_MOBILE: "${interval}m",
-    YEARS_STR_IVL_MOBILE: "${interval}y",
-    HOURS_STR_IVL: "${interval}hour(s)",
-    MINUTES_STR_IVL: "${interval}minute(s)",
-    HOURS_STR_IVL_MOBILE: "${interval}h",
-    MINUTES_STR_IVL_MOBILE: "${interval}min",
+    DAYS_STR_IVL: "{interval} 일 후",
+    MONTHS_STR_IVL: "{interval} 개월 후",
+    YEARS_STR_IVL: "{interval} 년 후",
+    DAYS_STR_IVL_MOBILE: "{interval}d",
+    MONTHS_STR_IVL_MOBILE: "{interval}m",
+    YEARS_STR_IVL_MOBILE: "{interval}y",
+    HOURS_STR_IVL: "{interval}hour(s)",
+    MINUTES_STR_IVL: "{interval}minute(s)",
+    HOURS_STR_IVL_MOBILE: "{interval}h",
+    MINUTES_STR_IVL_MOBILE: "{interval}min",
     // settings.ts
     SETTINGS_HEADER: "Spaced Repetition",
     GROUP_TAGS_FOLDERS: "Tags & Folders",
@@ -65,19 +65,19 @@ export default {
     GROUP_DATA_STORAGE_DESC: "Choose where to store the scheduling data",
     GROUP_FLASHCARDS_NOTES: "Flashcards & Notes",
     GROUP_CONTRIBUTING: "Contributing",
-    CHECK_WIKI: '더 많은 정보를 원하시면, <a href="${wikiUrl}">wiki</a>를 확인해주세요.',
+    CHECK_WIKI: '더 많은 정보를 원하시면, <a href="{wikiUrl}">wiki</a>를 확인해주세요.',
     GITHUB_DISCUSSIONS:
-        'Visit the <a href="${discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
+        'Visit the <a href="{discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
     GITHUB_ISSUES:
-        'Raise an <a href="${issuesUrl}">issue</a> if you have a feature request or a bug report.',
+        'Raise an <a href="{issuesUrl}">issue</a> if you have a feature request or a bug report.',
     GITHUB_ISSUES_MODIFIED_PLUGIN:
-        'Raise an <a href="${issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
+        'Raise an <a href="{issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
     GITHUB_SOURCE_CODE:
-        'The project\'s source code is available on <a href="${githubProjectUrl}">GitHub</a>.',
+        'The project\'s source code is available on <a href="{githubProjectUrl}">GitHub</a>.',
     CODE_CONTRIBUTION_INFO:
-        '<a href="${codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
+        '<a href="{codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
     TRANSLATION_CONTRIBUTION_INFO:
-        '<a href="${translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
+        '<a href="{translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
     FOLDERS_TO_IGNORE: "무시할 폴더들",
     FOLDERS_TO_IGNORE_DESC:
         "Enter folder paths or glob patterns on separate lines e.g. Templates/Scripts or **/*.excalidraw.md. This setting is common to both flashcards and notes.",
@@ -133,16 +133,16 @@ export default {
     DISABLE_CLOZE_CARDS: "빈 칸 채우기 카드를 비활성화하시겠습니까?",
     CONVERT_HIGHLIGHTS_TO_CLOZES: "==highlights== 를 빈 칸 채우기로 전환하시겠습니까?",
     CONVERT_HIGHLIGHTS_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+        'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_BOLD_TEXT_TO_CLOZES: "**bolded text** 를 빈 칸 채우기로 전환하시겠습니까?",
     CONVERT_BOLD_TEXT_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+        'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_CURLY_BRACKETS_TO_CLOZES: "{{curly brackets}} 를 빈 칸 채우기로 전환하시겠습니까?",
     CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+        'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
     CLOZE_PATTERNS: "빈 칸 채우기 패턴",
     CLOZE_PATTERNS_DESC:
-        'Enter cloze patterns separated by newlines. Check the <a href="${docsUrl}">wiki</a> for guidance.',
+        'Enter cloze patterns separated by newlines. Check the <a href="{docsUrl}">wiki</a> for guidance.',
     INLINE_CARDS_SEPARATOR: "인라인 플래시카드 구분자",
     FIX_SEPARATORS_MANUALLY_WARNING:
         "Note that after changing this you have to manually edit any flashcards you already have.",
@@ -178,7 +178,7 @@ export default {
         "Turn this off to collapse nested decks in the same card. Useful if you have cards which belong to many decks in the same file.",
     ALGORITHM: "알고리즘",
     CHECK_ALGORITHM_WIKI:
-        'For more information, check the <a href="${algoUrl}">algorithm details</a>.',
+        'For more information, check the <a href="{algoUrl}">algorithm details</a>.',
     SM2_OSR_VARIANT: "OSR's variant of SM-2",
     BASE_EASE: "기본 ease",
     BASE_EASE_DESC: "최솟값 = 130, 적정치는 대략 250입니다.",
@@ -270,8 +270,8 @@ export default {
     SORT_NAME_DESC: "By name: Z → A",
     SORT_PATH_ASC: "By path: A → Z",
     SORT_PATH_DESC: "By path: Z → A",
-    OVERDUE_BY_DAYS: "Overdue by ${count} days",
-    IN_DAYS: "In ${count} days",
+    OVERDUE_BY_DAYS: "Overdue by {count} days",
+    IN_DAYS: "In {count} days",
     SIDEBAR_DATE_FORMAT: "Sidebar date format",
     SIDEBAR_DATE_FORMAT_DESC:
         "Date format for the new sidebar. Use moment.js format. Example: ddd MMM DD.YY",
@@ -285,6 +285,8 @@ export default {
     YESTERDAY: "어제",
     TODAY: "오늘",
     TOMORROW: "내일",
+    TODAY_LATER_HOURS: "오늘 ({hours}시간 후)",
+    TODAY_LATER_MINUTES: "오늘 ({minutes}분 후)",
     // stats-modal.tsx
     STATS_TITLE: "통계",
     MONTH: "월",
@@ -296,20 +298,20 @@ export default {
     SCHEDULED: "Scheduled",
     DAYS: "일",
     NUMBER_OF_CARDS: "카드의 수",
-    REVIEWS_PER_DAY: "평균: ${avg} 리뷰/일",
+    REVIEWS_PER_DAY: "평균: {avg} 리뷰/일",
     INTERVALS: "간격",
     INTERVALS_DESC: "리뷰를 다시 할 때 까지의 기간",
     COUNT: "Count",
-    INTERVALS_SUMMARY: "평균 간격: ${avg}, 가장 긴 간격: ${longest}",
+    INTERVALS_SUMMARY: "평균 간격: {avg}, 가장 긴 간격: {longest}",
     EASES: "Eases",
-    EASES_SUMMARY: "Average ease: ${avgEase}",
+    EASES_SUMMARY: "Average ease: {avgEase}",
     EASE: "Ease",
     CARD_TYPES: "카드 타입",
     CARD_TYPES_DESC: "여기에는 묻어둔 카드도 포함됩니다.",
     CARD_TYPE_NEW: "New",
     CARD_TYPE_YOUNG: "Young",
     CARD_TYPE_MATURE: "Mature",
-    CARD_TYPES_SUMMARY: "전체 카드 수: ${totalCardsCount}",
+    CARD_TYPES_SUMMARY: "전체 카드 수: {totalCardsCount}",
     SEARCH: "Search",
     PREVIOUS: "Previous",
     NEXT: "Next",
@@ -317,7 +319,7 @@ export default {
     REVIEWED_TODAY_DESC: "counts of cards/notes you have reviewed today",
     NEW_LEARNED: "New Learned",
     DUE_REVIEWED: "due Reviewed",
-    REVIEWED_TODAY_SUMMARY: "Total Reviewed today: ${totalreviewedCount}",
+    REVIEWED_TODAY_SUMMARY: "Total Reviewed today: {totalreviewedCount}",
     DATE: "Date",
     // cardBlockIDSetting.ts
     CARD_BLOCK_ID: "Card Block ID",
@@ -388,7 +390,7 @@ export default {
     DATA_LOCATION_WARNING_TO_TRACKED:
         "BE CAREFUL!!! \n if you confirm this, it will converte all your scheduling informations on note(which will be deleted in the same time) TO `tracked_files.json`.",
     POST_ISSUE_MODIFIED_PLUGIN:
-        'Post an <a href="${issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
+        'Post an <a href="{issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
     // donation.ts
     DONATION_TEXT:
         "This is a hobby project. If it helps you, you can buy me a drink or bubble tea~",
@@ -415,7 +417,7 @@ export default {
     CMD_PRINT_DATA: "Print Data",
     CMD_UPDATE_ITEMS: "Update Items",
     CMD_INPUT_POSITIVE_NUMBER: "please input positive number",
-    CMD_NOTE_POSTPONED: "This note has been postponed ${days} days",
+    CMD_NOTE_POSTPONED: "This note has been postponed {days} days",
     // trackFileEvents.ts
     MENU_TRACK_ALL_NOTES: "Track All Notes",
     MENU_UNTRACK_ALL_NOTES: "Untrack All Notes",
@@ -424,23 +426,23 @@ export default {
     // data.ts
     DATA_TAGGED_FILE_CANT_UNTRACK:
         "it is taged file, can't untrack by this. You can delete the #review tag in note file.",
-    DATA_UNTRACKED_ITEMS: "Untracked ${numItems} items${nulrstr}",
+    DATA_UNTRACKED_ITEMS: "Untracked {numItems} items{nulrstr}",
     DATA_UNABLE_TO_SAVE: "Unable to save data file!",
     DATA_FOLDER_UNTRACKED:
-        "In folder ${folderPath}, ${totalRemoved} files are no longer tracked for repetition",
-    DATA_ADDED_REMOVED_ITEMS: "Added ${totalAdded} new items, removed ${totalRemoved} items.",
-    DATA_ADDED_REMOVED_ITEMS_SHORT: "Added ${added} new items, removed ${removed} items.",
+        "In folder {folderPath}, {totalRemoved} files are no longer tracked for repetition",
+    DATA_ADDED_REMOVED_ITEMS: "Added {totalAdded} new items, removed {totalRemoved} items.",
+    DATA_ADDED_REMOVED_ITEMS_SHORT: "Added {added} new items, removed {removed} items.",
     DATA_FILE_UPDATE:
-        "${filePath} update - lineNo: ${lineNo}\nAdded: ${added} new card items, removed ${removed} card items.",
+        "{filePath} update - lineNo: {lineNo}\nAdded: {added} new card items, removed {removed} card items.",
     DATA_ALL_ITEMS_UPDATED: "all items have been updated.",
     RECALCULATE_NOTES: "Recalculate notes",
     RECALCULATING_NOTES_NOTICE_START: "Recalculating notes...",
-    RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Recalculation finished. Found ${count} new note(s).",
+    RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Recalculation finished. Found {count} new note(s).",
     RECALCULATING_NOTES_NOTICE_DONE_NONE: "Recalculation finished. No new notes found.",
     NO_FLASHCARD_DECKS_FOUND: "플래시카드 덱을 찾을 수 없습니다.",
     // reviewView.ts
-    NEXT_REVIEW_MINUTES: "You can review in ${interval} minutes",
-    NEXT_REVIEW_HOURS: "You can review in ${interval} hours",
+    NEXT_REVIEW_MINUTES: "You can review in {interval} minutes",
+    NEXT_REVIEW_HOURS: "You can review in {interval} hours",
     // location_switch.ts
     DATA_FILE_MOVED_SUCCESS: "Successfully moved data file!",
     DATA_FILE_DELETE_OLD_FAILED: "Unable to delete old data file, please delete it manually.",
@@ -465,16 +467,16 @@ export default {
     MANAGE_RULES_DESC:
         "Create, edit, and manage rules for flashcards. Each rule can have its own priority and settings.",
     ADD_RULE_BUTTON: "+ Add Rule",
-    RULE_CREATED_NOTICE: 'Rule "${ruleName}" created',
-    RULE_UPDATED_NOTICE: 'Rule "${ruleName}" updated',
-    RULE_DELETED_NOTICE: 'Rule "${ruleName}" deleted',
+    RULE_CREATED_NOTICE: 'Rule "{ruleName}" created',
+    RULE_UPDATED_NOTICE: 'Rule "{ruleName}" updated',
+    RULE_DELETED_NOTICE: 'Rule "{ruleName}" deleted',
     NO_RULES_CONFIGURED: "No rules configured yet. Add a rule to get started.",
     INLINE_RULES_SECTION_TITLE: "Inline Rules",
     HEADER_BASED_RULES_SECTION_TITLE: "Header-Based Rules",
     MULTILINE_RULES_SECTION_TITLE: "Multiline Rules",
     CLOZE_RULES_SECTION_TITLE: "Cloze Rules",
     DELETE_RULE_CONFIRMATION_MSG:
-        'Are you sure you want to delete the rule "${ruleName}"?\n\nTag: ${tag}\nThis action cannot be undone.',
+        'Are you sure you want to delete the rule "{ruleName}"?\n\nTag: {tag}\nThis action cannot be undone.',
 
     CLOZE_SETTINGS_TITLE: "Cloze Settings",
     DEFAULT_CARD_SEPARATORS_ADVANCED_TITLE: "Default Card Separators (Advanced)",
@@ -523,7 +525,7 @@ export default {
     PATTERNS: "Patterns",
     PATTERNS_DESC: "Enter one cloze pattern per line. Check the wiki for guidance.",
     CREATE: "Create",
-    FLASHCARD_RULE_ERRORS: "Please fix the following errors:\n${errors}",
+    FLASHCARD_RULE_ERRORS: "Please fix the following errors:\n{errors}",
     TAG: "Tag",
     TAG_DESC: "The tag to trigger this rule, e.g., #cards.",
 

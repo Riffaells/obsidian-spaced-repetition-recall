@@ -107,9 +107,7 @@ describe("Result Type - Property Tests", () => {
 
         test("simulated storage operations should return Result types", () => {
             // Simulate storage read operation
-            const simulateRead = (
-                shouldSucceed: boolean,
-            ): Result<string, StorageError> => {
+            const simulateRead = (shouldSucceed: boolean): Result<string, StorageError> => {
                 if (shouldSucceed) {
                     return new Ok("data from storage");
                 } else {
@@ -118,9 +116,7 @@ describe("Result Type - Property Tests", () => {
             };
 
             // Simulate storage write operation
-            const simulateWrite = (
-                shouldSucceed: boolean,
-            ): Result<void, StorageError> => {
+            const simulateWrite = (shouldSucceed: boolean): Result<void, StorageError> => {
                 if (shouldSucceed) {
                     return new Ok(undefined);
                 } else {
@@ -171,12 +167,8 @@ describe("Result Type - Property Tests", () => {
         test("multiple Result operations should compose correctly", () => {
             // Simulate a chain of operations
             const operation1 = (): Result<number, Error> => new Ok(10);
-            const operation2 = (
-                value: number,
-            ): Result<number, Error> => new Ok(value * 2);
-            const operation3 = (
-                value: number,
-            ): Result<string, Error> => new Ok(`Result: ${value}`);
+            const operation2 = (value: number): Result<number, Error> => new Ok(value * 2);
+            const operation3 = (value: number): Result<string, Error> => new Ok(`Result: ${value}`);
 
             const result1 = operation1();
             expect(result1.isOk).toBe(true);

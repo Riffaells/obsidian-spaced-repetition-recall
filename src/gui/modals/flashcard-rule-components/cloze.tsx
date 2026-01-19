@@ -10,10 +10,7 @@ import { t } from "src/lang/helpers";
 /**
  * Render cloze settings (optional for all rule types)
  */
-export function renderClozeSettings(
-    containerEl: HTMLElement,
-    rule: FlashcardRule,
-): void {
+export function renderClozeSettings(containerEl: HTMLElement, rule: FlashcardRule): void {
     const clozeSection = containerEl.createDiv("sr-cloze-section");
     clozeSection.createEl("h4", { text: t("CLOZE_SETTINGS") });
 

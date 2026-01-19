@@ -23,39 +23,39 @@ export default {
     NO_INPUT: "Se ha proveído entrada.",
     CURRENT_EASE_HELP_TEXT: "Facilidad Actual: ",
     CURRENT_INTERVAL_HELP_TEXT: "Intervalo Actual: ",
-    CARD_GENERATED_FROM: "Generado Desde: ${notePath}",
+    CARD_GENERATED_FROM: "Generado Desde: {notePath}",
     OPEN_NOTE: "Open Note",
     FAILED_TO_EDIT_QUESTION_TEXT: "Failed to edit question text:", // New entry
 
     // main.ts
     OPEN_NOTE_FOR_REVIEW: "Abrir nota para revisión",
     REVIEW_CARDS: "Revisar Tarjetas",
-    REVIEW_DIFFICULTY_FILE_MENU: "Revisar: ${difficulty}",
-    REVIEW_NOTE_DIFFICULTY_CMD: "Revisar nota como ${difficulty}",
+    REVIEW_DIFFICULTY_FILE_MENU: "Revisar: {difficulty}",
+    REVIEW_NOTE_DIFFICULTY_CMD: "Revisar nota como {difficulty}",
     CRAM_ALL_CARDS: "Selecciona un mazo a memorizar",
     REVIEW_ALL_CARDS: "Revisar tarjetas de todas las notas",
     REVIEW_CARDS_IN_NOTE: "Revisar tarjetas en esta nota",
     CRAM_CARDS_IN_NOTE: "Memorizar tarjetas en esta nota",
     VIEW_STATS: "Ver estadísticas",
     OPEN_REVIEW_QUEUE_VIEW: "Open Notes Review Queue in sidebar",
-    STATUS_BAR: "Revisar: ${dueNotesCount} nota(s), ${dueFlashcardsCount} tarjetas vencidas",
-    SYNC_TIME_TAKEN: "La sincronización tomó ${t} milisegundos",
+    STATUS_BAR: "Revisar: {dueNotesCount} nota(s), {dueFlashcardsCount} tarjetas vencidas",
+    SYNC_TIME_TAKEN: "La sincronización tomó {t} milisegundos",
     NOTE_IN_IGNORED_FOLDER: "La nota está guardada en un directorio ignorado (revisa los ajustes).",
     PLEASE_TAG_NOTE: "Por favor etiquete apropiadamente la nota para revisión (en los ajustes).",
     RESPONSE_RECEIVED: "Respuesta Recibida",
-    NO_DECK_EXISTS: "No existen mazos para: ${deckName}",
+    NO_DECK_EXISTS: "No existen mazos para: {deckName}",
     ALL_CAUGHT_UP: "¡Estás al día! 😃",
     // scheduling.ts
-    DAYS_STR_IVL: "${interval} día(s)",
-    MONTHS_STR_IVL: "${interval} mes(es)",
-    YEARS_STR_IVL: "${interval} año(s)",
-    DAYS_STR_IVL_MOBILE: "${interval}d",
-    MONTHS_STR_IVL_MOBILE: "${interval}m",
-    YEARS_STR_IVL_MOBILE: "${interval}a",
-    HOURS_STR_IVL: "${interval}hour(s)",
-    MINUTES_STR_IVL: "${interval}minute(s)",
-    HOURS_STR_IVL_MOBILE: "${interval}h",
-    MINUTES_STR_IVL_MOBILE: "${interval}min",
+    DAYS_STR_IVL: "{interval} día(s)",
+    MONTHS_STR_IVL: "{interval} mes(es)",
+    YEARS_STR_IVL: "{interval} año(s)",
+    DAYS_STR_IVL_MOBILE: "{interval}d",
+    MONTHS_STR_IVL_MOBILE: "{interval}m",
+    YEARS_STR_IVL_MOBILE: "{interval}a",
+    HOURS_STR_IVL: "{interval}hour(s)",
+    MINUTES_STR_IVL: "{interval}minute(s)",
+    HOURS_STR_IVL_MOBILE: "{interval}h",
+    MINUTES_STR_IVL_MOBILE: "{interval}min",
     // settings.ts
     SETTINGS_HEADER: "Extensión de Repetición Espaciada",
     GROUP_TAGS_FOLDERS: "Tags & Folders",
@@ -65,19 +65,19 @@ export default {
     GROUP_DATA_STORAGE_DESC: "Choose where to store the scheduling data",
     GROUP_FLASHCARDS_NOTES: "Flashcards & Notes",
     GROUP_CONTRIBUTING: "Contributing",
-    CHECK_WIKI: 'Para más información revisa la <a href="${wikiUrl}">wiki</a>.',
+    CHECK_WIKI: 'Para más información revisa la <a href="{wikiUrl}">wiki</a>.',
     GITHUB_DISCUSSIONS:
-        'Visit the <a href="${discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
+        'Visit the <a href="{discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
     GITHUB_ISSUES:
-        'Raise an <a href="${issuesUrl}">issue</a> if you have a feature request or a bug report.',
+        'Raise an <a href="{issuesUrl}">issue</a> if you have a feature request or a bug report.',
     GITHUB_ISSUES_MODIFIED_PLUGIN:
-        'Raise an <a href="${issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
+        'Raise an <a href="{issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
     GITHUB_SOURCE_CODE:
-        'The project\'s source code is available on <a href="${githubProjectUrl}">GitHub</a>.',
+        'The project\'s source code is available on <a href="{githubProjectUrl}">GitHub</a>.',
     CODE_CONTRIBUTION_INFO:
-        '<a href="${codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
+        '<a href="{codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
     TRANSLATION_CONTRIBUTION_INFO:
-        '<a href="${translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
+        '<a href="{translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
     FOLDERS_TO_IGNORE: "Directorios a ignorar",
     FOLDERS_TO_IGNORE_DESC:
         "Enter folder paths or glob patterns on separate lines e.g. Templates/Scripts or **/*.excalidraw.md. This setting is common to both flashcards and notes.",
@@ -132,16 +132,16 @@ export default {
     DISABLE_CLOZE_CARDS: "¿Deshabilitar deletreo de huecos en las tarjetas?",
     CONVERT_HIGHLIGHTS_TO_CLOZES: "¿Convertir ==resaltados== a deletreo de huecos?",
     CONVERT_HIGHLIGHTS_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+        'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_BOLD_TEXT_TO_CLOZES: "¿Convertir **texto en negrita** a deletreo de huecos?",
     CONVERT_BOLD_TEXT_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+        'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_CURLY_BRACKETS_TO_CLOZES: "¿Convertir {{llaves rizadas}} a deletreo de huecos?",
     CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+        'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
     CLOZE_PATTERNS: "Patrones de deletreo de huecos",
     CLOZE_PATTERNS_DESC:
-        'Enter cloze patterns separated by newlines. Check the <a href="${docsUrl}">wiki</a> for guidance.',
+        'Enter cloze patterns separated by newlines. Check the <a href="{docsUrl}">wiki</a> for guidance.',
     INLINE_CARDS_SEPARATOR: "Separador de tarjetas de memorización en línea",
     FIX_SEPARATORS_MANUALLY_WARNING:
         "Note that after changing this you have to manually edit any flashcards you already have.",
@@ -177,7 +177,7 @@ export default {
         "Turn this off to collapse nested decks in the same card. Useful if you have cards which belong to many decks in the same file.",
     ALGORITHM: "Algoritmo",
     CHECK_ALGORITHM_WIKI:
-        'For more information, check the <a href="${algoUrl}">algorithm details</a>.',
+        'For more information, check the <a href="{algoUrl}">algorithm details</a>.',
     SM2_OSR_VARIANT: "OSR's variant of SM-2",
     BASE_EASE: "Base ease",
     BASE_EASE_DESC: "El mínimo es 130, es preferible que esté aproximado a 250.",
@@ -270,8 +270,8 @@ export default {
     SORT_NAME_DESC: "By name: Z → A",
     SORT_PATH_ASC: "By path: A → Z",
     SORT_PATH_DESC: "By path: Z → A",
-    OVERDUE_BY_DAYS: "Overdue by ${count} days",
-    IN_DAYS: "In ${count} days",
+    OVERDUE_BY_DAYS: "Overdue by {count} days",
+    IN_DAYS: "In {count} days",
     SIDEBAR_DATE_FORMAT: "Sidebar date format",
     SIDEBAR_DATE_FORMAT_DESC:
         "Date format for the new sidebar. Use moment.js format. Example: ddd MMM DD.YY",
@@ -286,6 +286,8 @@ export default {
     YESTERDAY: "Ayer",
     TODAY: "Hoy",
     TOMORROW: "Mañana",
+    TODAY_LATER_HOURS: "Hoy (en {hours}h)",
+    TODAY_LATER_MINUTES: "Hoy (en {minutes}min)",
     // stats-modal.tsx
     STATS_TITLE: "Estadísticas",
     MONTH: "Mes",
@@ -297,20 +299,20 @@ export default {
     SCHEDULED: "Programado",
     DAYS: "Días",
     NUMBER_OF_CARDS: "Número de tarjetas",
-    REVIEWS_PER_DAY: "Carga: ${avg} Revisiones por día",
+    REVIEWS_PER_DAY: "Carga: {avg} Revisiones por día",
     INTERVALS: "Intervalos",
     INTERVALS_DESC: "Retrasos hasta que las revisiones se muestren de nuevo",
     COUNT: "Conteo",
-    INTERVALS_SUMMARY: "Intervalo de carga: ${avg}, Intervalo mayor: ${longest}",
+    INTERVALS_SUMMARY: "Intervalo de carga: {avg}, Intervalo mayor: {longest}",
     EASES: "Facilidad",
-    EASES_SUMMARY: "Carga de Facilidad: ${avgEase}",
+    EASES_SUMMARY: "Carga de Facilidad: {avgEase}",
     EASE: "Ease",
     CARD_TYPES: "Tipos de tarjetas",
     CARD_TYPES_DESC: "Esto incluye también a las tarjetas enterradas, si las hay",
     CARD_TYPE_NEW: "Nueva",
     CARD_TYPE_YOUNG: "Joven",
     CARD_TYPE_MATURE: "Madura",
-    CARD_TYPES_SUMMARY: "Tarjetas Totales: ${totalCardsCount}",
+    CARD_TYPES_SUMMARY: "Tarjetas Totales: {totalCardsCount}",
     SEARCH: "Search",
     PREVIOUS: "Previous",
     NEXT: "Next",
@@ -318,7 +320,7 @@ export default {
     REVIEWED_TODAY_DESC: "counts of cards/notes you have reviewed today",
     NEW_LEARNED: "New Learned",
     DUE_REVIEWED: "due Reviewed",
-    REVIEWED_TODAY_SUMMARY: "Total Reviewed today: ${totalreviewedCount}",
+    REVIEWED_TODAY_SUMMARY: "Total Reviewed today: {totalreviewedCount}",
     DATE: "Date",
     // cardBlockIDSetting.ts
     CARD_BLOCK_ID: "Card Block ID",
@@ -389,7 +391,7 @@ export default {
     DATA_LOCATION_WARNING_TO_TRACKED:
         "BE CAREFUL!!! \n if you confirm this, it will converte all your scheduling informations on note(which will be deleted in the same time) TO `tracked_files.json`.",
     POST_ISSUE_MODIFIED_PLUGIN:
-        'Post an <a href="${issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
+        'Post an <a href="{issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
     // donation.ts
     DONATION_TEXT:
         "This is a hobby project. If it helps you, you can buy me a drink or bubble tea~",
@@ -416,7 +418,7 @@ export default {
     CMD_PRINT_DATA: "Print Data",
     CMD_UPDATE_ITEMS: "Update Items",
     CMD_INPUT_POSITIVE_NUMBER: "please input positive number",
-    CMD_NOTE_POSTPONED: "This note has been postponed ${days} days",
+    CMD_NOTE_POSTPONED: "This note has been postponed {days} days",
     // trackFileEvents.ts
     MENU_TRACK_ALL_NOTES: "Track All Notes",
     MENU_UNTRACK_ALL_NOTES: "Untrack All Notes",
@@ -425,23 +427,23 @@ export default {
     // data.ts
     DATA_TAGGED_FILE_CANT_UNTRACK:
         "it is taged file, can't untrack by this. You can delete the #review tag in note file.",
-    DATA_UNTRACKED_ITEMS: "Untracked ${numItems} items${nulrstr}",
+    DATA_UNTRACKED_ITEMS: "Untracked {numItems} items{nulrstr}",
     DATA_UNABLE_TO_SAVE: "Unable to save data file!",
     DATA_FOLDER_UNTRACKED:
-        "In folder ${folderPath}, ${totalRemoved} files are no longer tracked for repetition",
-    DATA_ADDED_REMOVED_ITEMS: "Added ${totalAdded} new items, removed ${totalRemoved} items.",
-    DATA_ADDED_REMOVED_ITEMS_SHORT: "Added ${added} new items, removed ${removed} items.",
+        "In folder {folderPath}, {totalRemoved} files are no longer tracked for repetition",
+    DATA_ADDED_REMOVED_ITEMS: "Added {totalAdded} new items, removed {totalRemoved} items.",
+    DATA_ADDED_REMOVED_ITEMS_SHORT: "Added {added} new items, removed {removed} items.",
     DATA_FILE_UPDATE:
-        "${filePath} update - lineNo: ${lineNo}\nAdded: ${added} new card items, removed ${removed} card items.",
+        "{filePath} update - lineNo: {lineNo}\nAdded: {added} new card items, removed {removed} card items.",
     DATA_ALL_ITEMS_UPDATED: "all items have been updated.",
     RECALCULATE_NOTES: "Recalculate notes",
     RECALCULATING_NOTES_NOTICE_START: "Recalculating notes...",
-    RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Recalculation finished. Found ${count} new note(s).",
+    RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Recalculation finished. Found {count} new note(s).",
     RECALCULATING_NOTES_NOTICE_DONE_NONE: "Recalculation finished. No new notes found.",
     NO_FLASHCARD_DECKS_FOUND: "No se encontraron mazos de tarjetas",
     // reviewView.ts
-    NEXT_REVIEW_MINUTES: "You can review in ${interval} minutes",
-    NEXT_REVIEW_HOURS: "You can review in ${interval} hours",
+    NEXT_REVIEW_MINUTES: "You can review in {interval} minutes",
+    NEXT_REVIEW_HOURS: "You can review in {interval} hours",
     // location_switch.ts
     DATA_FILE_MOVED_SUCCESS: "Successfully moved data file!",
     DATA_FILE_DELETE_OLD_FAILED: "Unable to delete old data file, please delete it manually.",
@@ -466,16 +468,16 @@ export default {
     MANAGE_RULES_DESC:
         "Create, edit, and manage rules for flashcards. Each rule can have its own priority and settings.",
     ADD_RULE_BUTTON: "+ Add Rule",
-    RULE_CREATED_NOTICE: 'Rule "${ruleName}" created',
-    RULE_UPDATED_NOTICE: 'Rule "${ruleName}" updated',
-    RULE_DELETED_NOTICE: 'Rule "${ruleName}" deleted',
+    RULE_CREATED_NOTICE: 'Rule "{ruleName}" created',
+    RULE_UPDATED_NOTICE: 'Rule "{ruleName}" updated',
+    RULE_DELETED_NOTICE: 'Rule "{ruleName}" deleted',
     NO_RULES_CONFIGURED: "No rules configured yet. Add a rule to get started.",
     INLINE_RULES_SECTION_TITLE: "Inline Rules",
     HEADER_BASED_RULES_SECTION_TITLE: "Header-Based Rules",
     MULTILINE_RULES_SECTION_TITLE: "Multiline Rules",
     CLOZE_RULES_SECTION_TITLE: "Cloze Rules",
     DELETE_RULE_CONFIRMATION_MSG:
-        'Are you sure you want to delete the rule "${ruleName}"?\n\nTag: ${tag}\nThis action cannot be undone.',
+        'Are you sure you want to delete the rule "{ruleName}"?\n\nTag: {tag}\nThis action cannot be undone.',
 
     CLOZE_SETTINGS_TITLE: "Cloze Settings",
     DEFAULT_CARD_SEPARATORS_ADVANCED_TITLE: "Default Card Separators (Advanced)",
@@ -524,7 +526,7 @@ export default {
     PATTERNS: "Patterns",
     PATTERNS_DESC: "Enter one cloze pattern per line. Check the wiki for guidance.",
     CREATE: "Create",
-    FLASHCARD_RULE_ERRORS: "Please fix the following errors:\n${errors}",
+    FLASHCARD_RULE_ERRORS: "Please fix the following errors:\n{errors}",
     TAG: "Tag",
     TAG_DESC: "The tag to trigger this rule, e.g., #cards.",
 

@@ -42,14 +42,24 @@ class MockSRFile implements ISRFile {
         this.content = content;
     }
 
-    getQuestionContext(cardLine: number): string[] { return []; }
-    getAllTagsFromCache(): string[] { 
-        return this.content.match(/#[^\s#]+/g) || []; 
+    getQuestionContext(cardLine: number): string[] {
+        return [];
     }
-    getAllTagsFromText(): any[] { return []; }
-    getTextDirection(): TextDirection { return TextDirection.Ltr; }
-    async read(): Promise<string> { return this.content; }
-    async write(content: string): Promise<void> { this.content = content; }
+    getAllTagsFromCache(): string[] {
+        return this.content.match(/#[^\s#]+/g) || [];
+    }
+    getAllTagsFromText(): any[] {
+        return [];
+    }
+    getTextDirection(): TextDirection {
+        return TextDirection.Ltr;
+    }
+    async read(): Promise<string> {
+        return this.content;
+    }
+    async write(content: string): Promise<void> {
+        this.content = content;
+    }
 }
 
 // Minimal mock settings
@@ -66,7 +76,7 @@ describe("NoteFileLoader - Convert Folders to Decks", () => {
     test("should assign folder deck when convertFoldersToDecks is enabled", async () => {
         const settings = { ...MOCK_SETTINGS } as SRSettings;
         settings.convertFoldersToDecks = true;
-        
+
         const defaultRule: FlashcardRule = {
             id: "default-inline",
             name: "Default Inline",
@@ -77,22 +87,22 @@ describe("NoteFileLoader - Convert Folders to Decks", () => {
             config: {
                 separator: "::",
                 separatorReverse: ":::",
-                startOfLineOnly: false
-            }
+                startOfLineOnly: false,
+            },
         };
         settings.flashcardRules = [defaultRule];
 
         const loader = new NoteFileLoader(settings);
         const noteContent = "#flashcards Question::Answer";
         const noteFile = new MockSRFile("Folder/Subfolder/Note.md", noteContent);
-        
+
         const folderTopicPath = TopicPath.getFolderPathFromFilename(noteFile, settings);
 
         const note = await loader.load(noteFile, TextDirection.Ltr, folderTopicPath);
 
         expect(note).not.toBeNull();
         expect(note!.questionList.length).toBe(1);
-        
+
         const question = note!.questionList[0];
         expect(question.topicPathList.list.length).toBe(1);
         expect(question.topicPathList.list[0].path).toEqual(["Folder", "Subfolder"]);
@@ -101,7 +111,7 @@ describe("NoteFileLoader - Convert Folders to Decks", () => {
     test("should NOT assign folder deck when convertFoldersToDecks is disabled", async () => {
         const settings = { ...MOCK_SETTINGS } as SRSettings;
         settings.convertFoldersToDecks = false;
-        
+
         const defaultRule: FlashcardRule = {
             id: "default-inline",
             name: "Default Inline",
@@ -112,27 +122,27 @@ describe("NoteFileLoader - Convert Folders to Decks", () => {
             config: {
                 separator: "::",
                 separatorReverse: ":::",
-                startOfLineOnly: false
-            }
+                startOfLineOnly: false,
+            },
         };
         settings.flashcardRules = [defaultRule];
 
         const loader = new NoteFileLoader(settings);
         const noteContent = "Question::Answer";
         const noteFile = new MockSRFile("Folder/Subfolder/Note.md", noteContent);
-        
+
         const folderTopicPath = TopicPath.getFolderPathFromFilename(noteFile, settings);
 
         const note = await loader.load(noteFile, TextDirection.Ltr, folderTopicPath);
 
         expect(note).not.toBeNull();
-        expect(note!.questionList.length).toBe(0); 
+        expect(note!.questionList.length).toBe(0);
     });
 
     test("should prioritize folder deck over tag when convertFoldersToDecks is enabled", async () => {
         const settings = { ...MOCK_SETTINGS } as SRSettings;
         settings.convertFoldersToDecks = true;
-        
+
         const defaultRule: FlashcardRule = {
             id: "default-inline",
             name: "Default Inline",
@@ -143,8 +153,8 @@ describe("NoteFileLoader - Convert Folders to Decks", () => {
             config: {
                 separator: "::",
                 separatorReverse: ":::",
-                startOfLineOnly: false
-            }
+                startOfLineOnly: false,
+            },
         };
         settings.flashcardRules = [defaultRule];
 
@@ -152,14 +162,14 @@ describe("NoteFileLoader - Convert Folders to Decks", () => {
         // Card has a tag #mytag, but folder path should take priority
         const noteContent = "#flashcards Question::Answer #mytag";
         const noteFile = new MockSRFile("Folder/Subfolder/Note.md", noteContent);
-        
+
         const folderTopicPath = TopicPath.getFolderPathFromFilename(noteFile, settings);
 
         const note = await loader.load(noteFile, TextDirection.Ltr, folderTopicPath);
 
         expect(note).not.toBeNull();
         expect(note!.questionList.length).toBe(1);
-        
+
         const question = note!.questionList[0];
         // Should have only 1 topic path: folder path takes priority over tags
         expect(question.topicPathList.list.length).toBe(1);

@@ -3,10 +3,12 @@ import { Deck } from "./Deck";
 import { Question } from "./Question";
 import { ISRFile } from "src/core/services/SRFile";
 import { Multi_cloze } from "src/utils/multi-cloze-util";
+import { ParsedFlashcard } from "src/parser/rule-based/types";
 
 export class Note {
     file: ISRFile;
     questionList: Question[];
+    parsedFlashcards?: ParsedFlashcard[];
 
     get hasChanged(): boolean {
         return this.questionList.some((question) => question.hasChanged);

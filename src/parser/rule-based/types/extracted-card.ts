@@ -23,4 +23,7 @@ export interface ExtractedCard {
 
     /** Hierarchical path of parent headings */
     headersPath: string[];
+
+    /** Additional metadata */
+    metadata?: Record<string, unknown>;
 }

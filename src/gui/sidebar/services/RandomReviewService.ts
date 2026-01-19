@@ -2,7 +2,7 @@ import type SRPlugin from "src/main";
 import { SchedNote } from "src/core/models/ReviewDeck";
 import { Deck } from "src/core/models/Deck";
 import { Card } from "src/core/models/Card";
-import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewSequencer";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewMode";
 
 /**
  * Handles opening random notes and flashcards for review
@@ -127,22 +127,23 @@ export class RandomReviewService {
     }
 
     private async openFlashcardReview(card: Card, deck: Deck, isNew: boolean): Promise<void> {
-        await this.plugin.sync();
-
-        const tempDeck = new Deck(deck.deckName, null);
-        if (isNew) {
-            tempDeck.newFlashcards.push(card);
-        } else {
-            tempDeck.dueFlashcards.push(card);
-        }
-
-        const rootDeck = new Deck(deck.deckName, null);
-        rootDeck.subdecks.push(tempDeck);
-
         if (this.plugin.data.settings.openViewInNewTab) {
+            await this.plugin.sync();
             await this.plugin.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
         } else {
-            this.plugin.openFlashcardModal(rootDeck, rootDeck, FlashcardReviewMode.Review);
+            // Get the full deck tree from plugin instead of creating a single-card deck
+            const fullDeckTree = this.plugin.deckTree;
+            const remainingDeckTree = this.plugin.remainingDeckTree;
+
+            if (fullDeckTree && remainingDeckTree) {
+                // Open modal with full deck tree for better queue management
+                this.plugin.openFlashcardModal(
+                    fullDeckTree,
+                    remainingDeckTree,
+                    FlashcardReviewMode.Review,
+                    deck,
+                );
+            }
         }
     }
 }

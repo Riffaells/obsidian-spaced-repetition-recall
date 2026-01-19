@@ -321,16 +321,20 @@ export class DeckComponent {
 
         // Determine how many groups to show
         const groupsLimit = this.plugin.data.settings.sidebarInitialGroupsLimit;
-        
+
         // Calculate current limit based on state
         if (this.showAllGroups) {
             this.currentGroupsLimit = groupsData.length;
-        } else if (this.currentGroupsLimit === 0) {
+        } else if (this.currentGroupsLimit === 0 || this.currentGroupsLimit < groupsLimit) {
+            // Reset to default limit if it's 0 or less than default
             this.currentGroupsLimit = groupsLimit;
         }
-        
-        const shouldLimitGroups = !this.showAllGroups && groupsData.length > this.currentGroupsLimit;
-        const groupsToShow = shouldLimitGroups ? groupsData.slice(0, this.currentGroupsLimit) : groupsData;
+
+        const shouldLimitGroups =
+            !this.showAllGroups && groupsData.length > this.currentGroupsLimit;
+        const groupsToShow = shouldLimitGroups
+            ? groupsData.slice(0, this.currentGroupsLimit)
+            : groupsData;
 
         // 3. Reconcile
         const newGroupKeys = new Set(groupsToShow.map((g) => g.key));
@@ -354,11 +358,11 @@ export class DeckComponent {
         for (let i = 0; i < groupsToShow.length; i++) {
             const data = groupsToShow[i];
             let component = this.groupComponents.get(data.key);
-            
+
             if (component) {
                 // Update existing component
                 component.update(this.activeFile, data.notes, this.shouldAutoExpand);
-                
+
                 // Ensure component is in correct position
                 const componentEl = component.getElement();
                 if (componentEl) {
@@ -396,7 +400,7 @@ export class DeckComponent {
                     const rendered = component.render();
                     if (rendered) {
                         this.groupComponents.set(data.key, component);
-                        
+
                         // Insert in correct position
                         if (i === 0) {
                             content.prepend(rendered);
@@ -416,7 +420,12 @@ export class DeckComponent {
         }
 
         // Show/hide "Show more" buttons
-        this.updateShowMoreButtons(content, shouldLimitGroups, groupsData.length, this.currentGroupsLimit);
+        this.updateShowMoreButtons(
+            content,
+            shouldLimitGroups,
+            groupsData.length,
+            this.currentGroupsLimit,
+        );
     }
 
     private updateShowMoreButtons(
@@ -428,13 +437,15 @@ export class DeckComponent {
         if (shouldShow) {
             const remainingCount = totalCount - currentLimit;
             const batchSize = this.plugin.data.settings.sidebarInitialGroupsLimit;
-            
+
             if (!this.showMoreButton) {
                 const buttonsContainer = content.createDiv("sr-show-more-buttons");
-                
+
                 // If remaining is less than or equal to batch size, show only "Show all" button
                 if (remainingCount <= batchSize) {
-                    const showAllButton = buttonsContainer.createDiv("sr-show-more-groups sr-show-all sr-single-button");
+                    const showAllButton = buttonsContainer.createDiv(
+                        "sr-show-more-groups sr-show-all sr-single-button",
+                    );
                     showAllButton.setText(t("SHOW_ALL_GROUPS", { count: remainingCount }));
                     showAllButton.addEventListener("click", () => {
                         this.showAllGroups = true;
@@ -444,7 +455,9 @@ export class DeckComponent {
                 } else {
                     // Show both buttons
                     // Button 1: Show next batch
-                    const showBatchButton = buttonsContainer.createDiv("sr-show-more-groups sr-show-batch");
+                    const showBatchButton = buttonsContainer.createDiv(
+                        "sr-show-more-groups sr-show-batch",
+                    );
                     const nextBatchCount = Math.min(batchSize, remainingCount);
                     showBatchButton.setText(t("SHOW_MORE_GROUPS_BATCH", { count: nextBatchCount }));
                     showBatchButton.addEventListener("click", () => {
@@ -453,9 +466,11 @@ export class DeckComponent {
                         const currentFile = this.plugin.app.workspace.getActiveFile();
                         this.update(currentFile, this.filter, false, this.noteSort);
                     });
-                    
+
                     // Button 2: Show all remaining
-                    const showAllButton = buttonsContainer.createDiv("sr-show-more-groups sr-show-all");
+                    const showAllButton = buttonsContainer.createDiv(
+                        "sr-show-more-groups sr-show-all",
+                    );
                     showAllButton.setText(t("SHOW_ALL_GROUPS", { count: remainingCount }));
                     showAllButton.addEventListener("click", () => {
                         this.showAllGroups = true;
@@ -463,13 +478,13 @@ export class DeckComponent {
                         this.update(currentFile, this.filter, false, this.noteSort);
                     });
                 }
-                
+
                 this.showMoreButton = buttonsContainer;
             } else {
                 // Update button texts and visibility
                 const batchButton = this.showMoreButton.querySelector(".sr-show-batch");
                 const allButton = this.showMoreButton.querySelector(".sr-show-all");
-                
+
                 if (remainingCount <= batchSize) {
                     // Hide batch button, show only all button
                     if (batchButton) batchButton.addClass("sr-hidden");
@@ -491,7 +506,7 @@ export class DeckComponent {
                         allButton.setText(t("SHOW_ALL_GROUPS", { count: remainingCount }));
                     }
                 }
-                
+
                 this.showMoreButton.removeClass("sr-hidden");
             }
         } else {
@@ -530,7 +545,7 @@ export class DeckComponent {
 
     public resetShowAllGroups(): void {
         this.showAllGroups = false;
-        this.currentGroupsLimit = 0;
+        this.currentGroupsLimit = this.plugin.data.settings.sidebarInitialGroupsLimit;
     }
 
     public expandAllGroups(): void {

@@ -5,12 +5,11 @@ import { SRSettings } from "src/settings/settings";
 import { ReviewResponse, textInterval } from "src/core/scheduling/scheduling";
 import { t } from "src/lang/helpers";
 import { Card } from "../../core/models/Card";
-import { CardListType, Deck } from "../../core/models/Deck";
+import { Deck } from "../../core/models/Deck";
+import { CardListType } from "../../core/models/CardListType";
 import { CardType, Question } from "../../core/models/Question";
-import {
-    FlashcardReviewMode,
-    IFlashcardReviewSequencer as IFlashcardReviewSequencer,
-} from "src/core/scheduling/FlashcardReviewSequencer";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewMode";
+import { IFlashcardReviewSequencer as IFlashcardReviewSequencer } from "src/core/scheduling/FlashcardReviewSequencer";
 import { Note } from "src/core/models/Note";
 import { RenderMarkdownWrapper } from "src/utils/RenderMarkdownWrapper";
 import { CardScheduleInfo } from "src/core/scheduling/CardSchedule";
@@ -171,9 +170,7 @@ export class CardUI {
         }
         this.view.removeClass("sr-is-hidden");
         this.backButton.removeClass("sr-is-hidden");
-        if (this.closeButton) {
-            this.closeButton.removeClass("sr-is-hidden");
-        }
+        // Стандартная кнопка закрытия от Obsidian всегда видна
         document.addEventListener("keydown", this._keydownHandler);
     }
 
@@ -187,9 +184,7 @@ export class CardUI {
         }
         this.view.addClass("sr-is-hidden");
         this.backButton.addClass("sr-is-hidden");
-        if (this.closeButton) {
-            this.closeButton.addClass("sr-is-hidden");
-        }
+        // Стандартная кнопка закрытия от Obsidian всегда видна
         document.removeEventListener("keydown", this._keydownHandler);
     }
 
@@ -454,17 +449,9 @@ export class CardUI {
     }
 
     private _createCloseButton() {
-        if (!this.closeModalHandler) return;
-
-        this.closeButton = this.parentEl.createDiv();
-        this.closeButton.addClasses(["sr-close-button", "sr-is-hidden"]);
-        setIcon(this.closeButton, "x");
-        this.closeButton.setAttribute("aria-label", "Close");
-        this.closeButton.addEventListener("click", () => {
-            if (this.closeModalHandler) {
-                this.closeModalHandler();
-            }
-        });
+        // Не создаём свою кнопку закрытия - используем стандартную от Obsidian
+        // Стандартная кнопка modal-close-button уже добавляется автоматически
+        return;
     }
 
     private _setTitle(deck: Deck) {

@@ -11,7 +11,7 @@ import { TouchOnMobile } from "src/events/touchEvent";
 import { IAdapter } from "src/dataStore/adapter";
 import SRPlugin from "src/main";
 import { MixQueSet } from "src/dataStore/mixQueSet";
-import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewSequencer";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewMode";
 
 export class reviewResponseModal {
     private static instance: reviewResponseModal;
@@ -272,9 +272,7 @@ export class reviewResponseModal {
         setIcon(this.infoButton, "info");
         this.infoButton.setAttribute("aria-label", "View Card Info");
         this.infoButton.addEventListener("click", () => {
-            const id = "obsidian-spaced-repetition-recall:view-item-info";
-            // eslint-disable-next-line
-            // @ts-ignore
+            const id = "obsidian-spaced-repetition-flow:view-item-info";
             this.app.commands.executeCommandById(id);
         });
     }

@@ -1,22 +1,17 @@
 import { t } from "src/lang/helpers";
 import type SRPlugin from "src/main";
 import { SchedNote } from "src/core/models/ReviewDeck";
-import { DataLocation } from "src/dataStore/dataLocation";
 import { globalDateProvider } from "src/utils/DateProvider";
 import { SidebarStats } from "./types";
-import { moment } from "obsidian";
 import { DEFAULT_SETTINGS } from "src/settings/settings";
 
 /**
  * Calculates the number of days until the note is repeated
+ * Always uses end of today for consistent grouping regardless of storage mode
  */
 export function calculateDaysUntilDue(dueUnix: number, plugin: SRPlugin): number {
-    const now =
-        plugin.data.settings.dataLocation === DataLocation.SaveOnNoteFile
-            ? Date.now()
-            : globalDateProvider.endOfToday.valueOf();
-
-    return Math.ceil((dueUnix - now) / (24 * 3600 * 1000));
+    const endOfToday = globalDateProvider.endOfToday.valueOf();
+    return Math.ceil((dueUnix - endOfToday) / (24 * 3600 * 1000));
 }
 
 /**
@@ -37,7 +32,55 @@ export function getGroupTitle(nDays: number, dueUnix: number, plugin: SRPlugin):
         return t("IN_DAYS", { count: nDays });
     } else {
         const format = plugin.data.settings.sidebarDateFormat || DEFAULT_SETTINGS.sidebarDateFormat;
-        return moment(dueUnix).format(format);
+        return window.moment(dueUnix).format(format);
+    }
+}
+
+/**
+ * Gets the group title for flashcards with time information
+ * For cards due today but later, shows time remaining
+ */
+export function getFlashcardGroupTitle(dueUnix: number, isDue: boolean, plugin: SRPlugin): string {
+    const now = Date.now();
+    const showRelativeDays = plugin.data.settings.sidebarShowRelativeDays;
+
+    // Calculate days until due
+    const endOfToday = globalDateProvider.endOfToday.valueOf();
+    const nDays = Math.ceil((dueUnix - endOfToday) / (24 * 3600 * 1000));
+
+    // If card is due now
+    if (isDue) {
+        return t("DUE_CARDS");
+    }
+
+    // If card is due today but later (within the same day)
+    if (dueUnix > now && dueUnix <= endOfToday) {
+        const hoursUntilDue = Math.floor((dueUnix - now) / (3600 * 1000));
+        const minutesUntilDue = Math.ceil((dueUnix - now) / (60 * 1000));
+
+        if (hoursUntilDue >= 1) {
+            return t("TODAY_LATER_HOURS", { hours: hoursUntilDue });
+        } else if (minutesUntilDue > 0) {
+            return t("TODAY_LATER_MINUTES", { minutes: minutesUntilDue });
+        } else {
+            return t("TODAY");
+        }
+    }
+
+    // For future dates, use the standard logic
+    if (nDays === -1) {
+        return t("YESTERDAY");
+    } else if (nDays === 0) {
+        return t("TODAY");
+    } else if (nDays === 1) {
+        return t("TOMORROW");
+    } else if (showRelativeDays && nDays < -1) {
+        return t("OVERDUE_BY_DAYS", { count: Math.abs(nDays) });
+    } else if (showRelativeDays && nDays > 1) {
+        return t("IN_DAYS", { count: nDays });
+    } else {
+        const format = plugin.data.settings.sidebarDateFormat || DEFAULT_SETTINGS.sidebarDateFormat;
+        return window.moment(dueUnix).format(format);
     }
 }
 

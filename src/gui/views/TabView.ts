@@ -8,10 +8,8 @@ import SRPlugin from "src/main";
 import { Question } from "src/core/models/Question";
 import { SRSettings } from "src/settings/settings";
 import { FlashcardEditModal } from "../modals/EditModal";
-import {
-    FlashcardReviewMode,
-    IFlashcardReviewSequencer,
-} from "src/core/scheduling/FlashcardReviewSequencer";
+import { IFlashcardReviewSequencer } from "src/core/scheduling/FlashcardReviewSequencer";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewMode";
 
 /**
  * Represents a tab view for spaced repetition plugin.
@@ -22,6 +20,7 @@ export class TabView extends ItemView {
     private plugin: SRPlugin;
     private reviewMode: FlashcardReviewMode;
     private singleNotePath?: string;
+    private startDeckPath?: string[];
     private viewContainerEl: HTMLElement;
     private viewContentEl: HTMLElement;
     private reviewSequencer: IFlashcardReviewSequencer;
@@ -83,6 +82,7 @@ export class TabView extends ItemView {
         if (state && typeof state === "object") {
             this.reviewMode = state.reviewMode ?? FlashcardReviewMode.Review;
             this.singleNotePath = state.singleNotePath;
+            this.startDeckPath = state.startDeckPath;
         }
         // Don't call super.setState as it expects different parameters
     }
@@ -92,6 +92,7 @@ export class TabView extends ItemView {
             type: this.getViewType(),
             reviewMode: this.reviewMode,
             singleNotePath: this.singleNotePath,
+            startDeckPath: this.startDeckPath,
         };
     }
 
@@ -134,7 +135,23 @@ export class TabView extends ItemView {
                 this.isInitialized = true;
             }
 
-            this._showDecksList();
+            if (this.startDeckPath && this.reviewSequencer) {
+                // Import TopicPath dynamically or assuming it's available or we construct it
+                const { TopicPath } = await import("src/core/services/TopicPath");
+                const topicPath = new TopicPath(this.startDeckPath);
+
+                // Find the deck in the sequencer's original deck tree
+                // Use originalDeckTree because we need the deck object to pass to _startReviewOfDeck
+                const deck = this.reviewSequencer.originalDeckTree.getDeck(topicPath);
+
+                if (deck) {
+                    this._startReviewOfDeck(deck);
+                } else {
+                    this._showDecksList();
+                }
+            } else {
+                this._showDecksList();
+            }
         } catch (e) {
             console.error("SR: Error initializing tab view:", e);
         }

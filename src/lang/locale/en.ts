@@ -5,6 +5,8 @@ export default {
     DECKS: "Decks",
     DUE_CARDS: "Due Cards",
     NEW_CARDS: "New Cards",
+    DUE_NOTES: "Due Notes",
+    NEW_NOTES: "New Notes",
     TOTAL_CARDS: "Total Cards",
     BACK: "Back",
     SKIP: "Skip",
@@ -24,40 +26,44 @@ export default {
     NO_INPUT: "No input provided.",
     CURRENT_EASE_HELP_TEXT: "Current Ease: ",
     CURRENT_INTERVAL_HELP_TEXT: "Current Interval: ",
-    CARD_GENERATED_FROM: "Generated from: ${notePath}",
+    CARD_GENERATED_FROM: "Generated from: {notePath}",
     OPEN_NOTE: "Open Note",
     FAILED_TO_EDIT_QUESTION_TEXT: "Failed to edit question text:", // New entry
+    PREVIOUS_DECK: "Previous Deck",
+    NEXT_DECK: "Next Deck",
+    PREVIOUS_CARD: "Previous Card",
+    NEXT_CARD: "Next Card",
 
     // main.ts
     OPEN_NOTE_FOR_REVIEW: "Open a note for review",
     REVIEW_CARDS: "Review flashcards",
-    REVIEW_DIFFICULTY_FILE_MENU: "Review: ${difficulty}",
-    REVIEW_NOTE_DIFFICULTY_CMD: "Review note as ${difficulty}",
+    REVIEW_DIFFICULTY_FILE_MENU: "Review: {difficulty}",
+    REVIEW_NOTE_DIFFICULTY_CMD: "Review note as {difficulty}",
     CRAM_ALL_CARDS: "Select a deck to cram",
     REVIEW_ALL_CARDS: "Review flashcards from all notes",
     REVIEW_CARDS_IN_NOTE: "Review flashcards in this note",
     CRAM_CARDS_IN_NOTE: "Cram flashcards in this note",
     VIEW_STATS: "View statistics",
     OPEN_REVIEW_QUEUE_VIEW: "Open Notes Review Queue in sidebar",
-    STATUS_BAR: "Review: ${dueNotesCount} note(s), ${dueFlashcardsCount} card(s) due",
-    SYNC_TIME_TAKEN: "Sync took ${t}ms",
+    STATUS_BAR: "Review: {dueNotesCount} note(s), {dueFlashcardsCount} card(s) due",
+    SYNC_TIME_TAKEN: "Sync took {t}ms",
     NOTE_IN_IGNORED_FOLDER: "Note is saved under ignored folder (check settings).",
     PLEASE_TAG_NOTE: "Please tag the note appropriately for reviewing (in settings).",
     RESPONSE_RECEIVED: "Response received.",
-    NO_DECK_EXISTS: "No deck exists for ${deckName}",
+    NO_DECK_EXISTS: "No deck exists for {deckName}",
     ALL_CAUGHT_UP: "You're all caught up now :D.",
 
     // scheduling.ts
-    DAYS_STR_IVL: "${interval} day(s)",
-    MONTHS_STR_IVL: "${interval} month(s)",
-    YEARS_STR_IVL: "${interval} year(s)",
-    DAYS_STR_IVL_MOBILE: "${interval}d",
-    MONTHS_STR_IVL_MOBILE: "${interval}m",
-    YEARS_STR_IVL_MOBILE: "${interval}y",
-    HOURS_STR_IVL: "${interval}hour(s)",
-    MINUTES_STR_IVL: "${interval}minute(s)",
-    HOURS_STR_IVL_MOBILE: "${interval}h",
-    MINUTES_STR_IVL_MOBILE: "${interval}min",
+    DAYS_STR_IVL: "{interval} day(s)",
+    MONTHS_STR_IVL: "{interval} month(s)",
+    YEARS_STR_IVL: "{interval} year(s)",
+    DAYS_STR_IVL_MOBILE: "{interval}d",
+    MONTHS_STR_IVL_MOBILE: "{interval}m",
+    YEARS_STR_IVL_MOBILE: "{interval}y",
+    HOURS_STR_IVL: "{interval}hour(s)",
+    MINUTES_STR_IVL: "{interval}minute(s)",
+    HOURS_STR_IVL_MOBILE: "{interval}h",
+    MINUTES_STR_IVL_MOBILE: "{interval}min",
 
     // settings.ts
     SETTINGS_HEADER: "Spaced Repetition Flow",
@@ -68,19 +74,19 @@ export default {
     GROUP_DATA_STORAGE_DESC: "Choose where to store the scheduling data",
     GROUP_FLASHCARDS_NOTES: "Flashcards & Notes",
     GROUP_CONTRIBUTING: "Contributing",
-    CHECK_WIKI: 'For more information, check the <a href="${wikiUrl}">wiki</a>.',
+    CHECK_WIKI: 'For more information, check the <a href="{wikiUrl}">wiki</a>.',
     GITHUB_DISCUSSIONS:
-        'Visit the <a href="${discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
+        'Visit the <a href="{discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
     GITHUB_ISSUES:
-        'Raise an <a href="${issuesUrl}">issue</a> if you have a feature request or a bug report.',
+        'Raise an <a href="{issuesUrl}">issue</a> if you have a feature request or a bug report.',
     GITHUB_ISSUES_MODIFIED_PLUGIN:
-        'Raise an <a href="${issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
+        'Raise an <a href="{issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
     GITHUB_SOURCE_CODE:
-        'The project\'s source code is available on <a href="${githubProjectUrl}">GitHub</a>.',
+        'The project\'s source code is available on <a href="{githubProjectUrl}">GitHub</a>.',
     CODE_CONTRIBUTION_INFO:
-        '<a href="${codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
+        '<a href="{codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
     TRANSLATION_CONTRIBUTION_INFO:
-        '<a href="${translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
+        '<a href="{translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
     FOLDERS_TO_IGNORE: "Folders to ignore",
     FOLDERS_TO_IGNORE_DESC:
         "Enter folder paths or glob patterns on separate lines e.g. Templates/Scripts or **/*.excalidraw.md. This setting is common to both flashcards and notes.",
@@ -136,16 +142,16 @@ export default {
     DISABLE_CLOZE_CARDS: "Disable cloze cards?",
     CONVERT_HIGHLIGHTS_TO_CLOZES: "Convert ==highlights== to clozes",
     CONVERT_HIGHLIGHTS_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+        'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_BOLD_TEXT_TO_CLOZES: "Convert **bolded text** to clozes",
     CONVERT_BOLD_TEXT_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+        'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
     CONVERT_CURLY_BRACKETS_TO_CLOZES: "Convert {{curly brackets}} to clozes",
     CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC:
-        'Add/remove the <code>${defaultPattern}</code> from your "Cloze Patterns"',
+        'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
     CLOZE_PATTERNS: "Cloze Patterns",
     CLOZE_PATTERNS_DESC:
-        'Enter cloze patterns separated by newlines. Check the <a href="${docsUrl}">wiki</a> for guidance.',
+        'Enter cloze patterns separated by newlines. Check the <a href="{docsUrl}">wiki</a> for guidance.',
     INLINE_CARDS_SEPARATOR: "Separator for inline flashcards",
     FIX_SEPARATORS_MANUALLY_WARNING:
         "Note that after changing this you have to manually edit any flashcards you already have.",
@@ -181,7 +187,7 @@ export default {
         "Turn this off to collapse nested decks in the same card. Useful if you have cards which belong to many decks in the same file.",
     ALGORITHM: "Algorithm",
     CHECK_ALGORITHM_WIKI:
-        'For more information, check the <a href="${algoUrl}">algorithm details</a>.',
+        'For more information, check the <a href="{algoUrl}">algorithm details</a>.',
     SM2_OSR_VARIANT: "OSR's variant of SM-2",
     BASE_EASE: "Base ease",
     BASE_EASE_DESC: "minimum = 130, preferrably approximately 250.",
@@ -269,11 +275,11 @@ export default {
     COLLAPSE_ALL: "Collapse all",
     EXPAND_ALL: "Expand all",
     SHOW_MORE_GROUPS: "Show more groups",
-    SHOW_MORE_GROUPS_BATCH: "Show +${count} more",
-    SHOW_ALL_GROUPS: "Show all ${count}",
+    SHOW_MORE_GROUPS_BATCH: "Show +{count} more",
+    SHOW_ALL_GROUPS: "Show all {count}",
     SHOW_MORE_NOTES: "Show more notes",
-    SHOW_MORE_NOTES_BATCH: "Show +${count} more",
-    SHOW_ALL_NOTES: "Show all ${count}",
+    SHOW_MORE_NOTES_BATCH: "Show +{count} more",
+    SHOW_ALL_NOTES: "Show all {count}",
     SORT: "Sort",
     SORT_DATE_ASC: "Due date: Soonest first",
     SORT_DATE_DESC: "Due date: Latest first",
@@ -290,8 +296,8 @@ export default {
     SORT_FRONT_DESC: "By front: Z → A",
     SORT_DUE_DATE_ASC: "By due date: Earliest first",
     SORT_DUE_DATE_DESC: "By due date: Latest first",
-    OVERDUE_BY_DAYS: "Overdue by ${count} days",
-    IN_DAYS: "In ${count} days",
+    OVERDUE_BY_DAYS: "Overdue by {count} days",
+    IN_DAYS: "In {count} days",
     SIDEBAR_DATE_FORMAT: "Sidebar date format",
     SIDEBAR_DATE_FORMAT_DESC:
         "Date format for the new sidebar. Use moment.js format. Example: ddd MMM DD.YY",
@@ -312,6 +318,8 @@ export default {
     YESTERDAY: "Yesterday",
     TODAY: "Today",
     TOMORROW: "Tomorrow",
+    TODAY_LATER_HOURS: "Today (in {hours}h)",
+    TODAY_LATER_MINUTES: "Today (in {minutes}min)",
 
     // stats-modal.tsx
     STATS_TITLE: "Statistics",
@@ -324,20 +332,20 @@ export default {
     SCHEDULED: "Scheduled",
     DAYS: "Days",
     NUMBER_OF_CARDS: "Number of cards",
-    REVIEWS_PER_DAY: "Average: ${avg} reviews/day",
+    REVIEWS_PER_DAY: "Average: {avg} reviews/day",
     INTERVALS: "Intervals",
     INTERVALS_DESC: "Delays until reviews are shown again",
     COUNT: "Count",
-    INTERVALS_SUMMARY: "Average interval: ${avg}, Longest interval: ${longest}",
+    INTERVALS_SUMMARY: "Average interval: {avg}, Longest interval: {longest}",
     EASES: "Eases",
-    EASES_SUMMARY: "Average ease: ${avgEase}",
+    EASES_SUMMARY: "Average ease: {avgEase}",
     EASE: "Ease",
     CARD_TYPES: "Card Types",
     CARD_TYPES_DESC: "This includes buried cards as well, if any",
     CARD_TYPE_NEW: "New",
     CARD_TYPE_YOUNG: "Young",
     CARD_TYPE_MATURE: "Mature",
-    CARD_TYPES_SUMMARY: "Total cards: ${totalCardsCount}",
+    CARD_TYPES_SUMMARY: "Total cards: {totalCardsCount}",
     SEARCH: "Search",
     PREVIOUS: "Previous",
     NEXT: "Next",
@@ -345,7 +353,7 @@ export default {
     REVIEWED_TODAY_DESC: "counts of cards/notes you have reviewed today",
     NEW_LEARNED: "New Learned",
     DUE_REVIEWED: "due Reviewed",
-    REVIEWED_TODAY_SUMMARY: "Total Reviewed today: ${totalreviewedCount}",
+    REVIEWED_TODAY_SUMMARY: "Total Reviewed today: {totalreviewedCount}",
     DATE: "Date",
 
     // cardBlockIDSetting.ts
@@ -427,7 +435,7 @@ export default {
         "BE CAREFUL!!! \n if you confirm this, it will converte all your scheduling informations on note(which will be deleted in the same time) TO `tracked_files.json`.",
 
     POST_ISSUE_MODIFIED_PLUGIN:
-        'Post an <a href="${issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
+        'Post an <a href="{issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
 
     // donation.ts
     DONATION_TEXT:
@@ -461,7 +469,7 @@ export default {
     CMD_PRINT_DATA: "Print Data",
     CMD_UPDATE_ITEMS: "Update Items",
     CMD_INPUT_POSITIVE_NUMBER: "please input positive number",
-    CMD_NOTE_POSTPONED: "This note has been postponed ${days} days",
+    CMD_NOTE_POSTPONED: "This note has been postponed {days} days",
 
     // trackFileEvents.ts
     MENU_TRACK_ALL_NOTES: "Track All Notes",
@@ -472,25 +480,25 @@ export default {
     // data.ts
     DATA_TAGGED_FILE_CANT_UNTRACK:
         "it is taged file, can't untrack by this. You can delete the #review tag in note file.",
-    DATA_UNTRACKED_ITEMS: "Untracked ${numItems} items${nulrstr}",
+    DATA_UNTRACKED_ITEMS: "Untracked {numItems} items{nulrstr}",
     DATA_UNABLE_TO_SAVE: "Unable to save data file!",
-    DATA_CORRUPTION_FIXED: "Fixed ${count} data corruption issue(s). A backup was created.",
+    DATA_CORRUPTION_FIXED: "Fixed {count} data corruption issue(s). A backup was created.",
     DATA_FOLDER_UNTRACKED:
-        "In folder ${folderPath}, ${totalRemoved} files are no longer tracked for repetition",
-    DATA_ADDED_REMOVED_ITEMS: "Added ${totalAdded} new items, removed ${totalRemoved} items.",
-    DATA_ADDED_REMOVED_ITEMS_SHORT: "Added ${added} new items, removed ${removed} items.",
+        "In folder {folderPath}, {totalRemoved} files are no longer tracked for repetition",
+    DATA_ADDED_REMOVED_ITEMS: "Added {totalAdded} new items, removed {totalRemoved} items.",
+    DATA_ADDED_REMOVED_ITEMS_SHORT: "Added {added} new items, removed {removed} items.",
     DATA_FILE_UPDATE:
-        "${filePath} update - lineNo: ${lineNo}\nAdded: ${added} new card items, removed ${removed} card items.",
+        "{filePath} update - lineNo: {lineNo}\nAdded: {added} new card items, removed {removed} card items.",
     DATA_ALL_ITEMS_UPDATED: "all items have been updated.",
     RECALCULATE_NOTES: "Recalculate notes",
     RECALCULATING_NOTES_NOTICE_START: "Recalculating notes...",
-    RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Recalculation finished. Found ${count} new note(s).",
+    RECALCULATING_NOTES_NOTICE_DONE_ADDED: "Recalculation finished. Found {count} new note(s).",
     RECALCULATING_NOTES_NOTICE_DONE_NONE: "Recalculation finished. No new notes found.",
     NO_FLASHCARD_DECKS_FOUND: "No flashcard decks found",
 
     // reviewView.ts
-    NEXT_REVIEW_MINUTES: "You can review in ${interval} minutes",
-    NEXT_REVIEW_HOURS: "You can review in ${interval} hours",
+    NEXT_REVIEW_MINUTES: "You can review in {interval} minutes",
+    NEXT_REVIEW_HOURS: "You can review in {interval} hours",
 
     // location_switch.ts
     DATA_FILE_MOVED_SUCCESS: "Successfully moved data file!",
@@ -519,16 +527,16 @@ export default {
     MANAGE_RULES_DESC:
         "Create, edit, and manage rules for flashcards. Each rule can have its own priority and settings.",
     ADD_RULE_BUTTON: "+ Add Rule",
-    RULE_CREATED_NOTICE: 'Rule "${ruleName}" created',
-    RULE_UPDATED_NOTICE: 'Rule "${ruleName}" updated',
-    RULE_DELETED_NOTICE: 'Rule "${ruleName}" deleted',
-    DELETE_RULE_CONFIRMATION_MSG: 'Are you sure you want to delete the rule "${ruleName}" (${tag})?',
+    RULE_CREATED_NOTICE: 'Rule "{ruleName}" created',
+    RULE_UPDATED_NOTICE: 'Rule "{ruleName}" updated',
+    RULE_DELETED_NOTICE: 'Rule "{ruleName}" deleted',
+    DELETE_RULE_CONFIRMATION_MSG: 'Are you sure you want to delete the rule "{ruleName}" ({tag})?',
     NO_RULES_CONFIGURED: "No rules configured yet. Click '+ Add Rule' to create your first rule.",
     INLINE_RULES_SECTION_TITLE: "Inline Cards",
     HEADER_BASED_RULES_SECTION_TITLE: "Header-Based Cards",
     MULTILINE_RULES_SECTION_TITLE: "Multiline Cards",
     CLOZE_RULES_SECTION_TITLE: "Cloze Cards",
-    
+
     // Rule modal
     CREATE_FLASHCARD_RULE: "Create Flashcard Rule",
     EDIT_FLASHCARD_RULE: "Edit Flashcard Rule",
@@ -536,12 +544,13 @@ export default {
     HEADER_TAB: "Header",
     MULTILINE_TAB: "Multiline",
     TYPE_SPECIFIC_SETTINGS: "Type-Specific Settings",
-    FLASHCARD_RULE_MODAL_DESC: "Configure how this rule creates flashcards from your notes. Choose a card type below and customize its settings.",
+    FLASHCARD_RULE_MODAL_DESC:
+        "Configure how this rule creates flashcards from your notes. Choose a card type below and customize its settings.",
     SETTINGS_MODAL_SECTION_INLINE: "Inline",
     SETTINGS_MODAL_SECTION_HEADER: "Header",
     SETTINGS_MODAL_SECTION_MULTILINE: "Multiline",
     SETTINGS_MODAL_SECTION_CLOZE: "Cloze",
-    
+
     // Section headers
     COMMON_SETTINGS: "General Settings",
     COMMON_SETTINGS_DESC: "Basic configuration that applies to this rule",
@@ -553,7 +562,7 @@ export default {
     MULTILINE_SETTINGS_DESC: "Configure multi-line question and answer format",
     CLOZE_SETTINGS: "Cloze Card Settings",
     CLOZE_SETTINGS_DESC: "Configure cloze deletion patterns for hiding parts of text",
-    
+
     // Common settings
     RULE_NAME: "Rule Name",
     RULE_NAME_DESC: "A descriptive name for this rule",
@@ -580,7 +589,7 @@ export default {
     FOLDER_PATH_PATTERN: "Folder Path Pattern",
     FOLDER_PATH_PATTERN_DESC: "Regex to match file path",
     FOLDER_PATH_PLACEHOLDER: "^notes/.*",
-    
+
     // Inline settings
     SEPARATOR: "Separator",
     SEPARATOR_DESC: "Text that separates question from answer (e.g., ::)",
@@ -591,15 +600,16 @@ export default {
     REVERSED_SEPARATOR_DESC_INLINE: "Creates bidirectional cards (e.g., :::)",
     START_OF_LINE_ONLY: "Start of Line Only",
     START_OF_LINE_ONLY_DESC: "Only match if the separator starts at the beginning of the line",
-    
+
     // Cloze settings
     ENABLE_CLOZE: "Enable Cloze",
     ENABLE_CLOZE_DESC: "Process cloze deletions in this rule",
-    CLOZE_INFO_TEXT: "Cloze cards hide parts of text for recall. Enter patterns below, one per line.",
+    CLOZE_INFO_TEXT:
+        "Cloze cards hide parts of text for recall. Enter patterns below, one per line.",
     PATTERNS: "Cloze Patterns",
     PATTERNS_DESC: "Enter cloze deletion patterns, one per line",
     PATTERN: "Pattern",
-    
+
     // Multiline settings
     QUESTION_LINE_PATTERN: "Question Line Pattern",
     QUESTION_LINE_PATTERN_DESC: "Regex pattern to identify the question line (e.g., ^Q: (.*))",
@@ -613,7 +623,7 @@ export default {
     CUSTOM_PATTERN: "Custom Pattern",
     STOP_CUSTOM_PATTERN: "Custom Pattern",
     SEPARATOR_PLACEHOLDER: "e.g., ---",
-    
+
     // Header settings
     SELECTION_SETTINGS: "Selection Settings",
     CONTENT_SETTINGS: "Content Settings",
@@ -665,7 +675,7 @@ export default {
     END_MARKER_DESC: "Optional text to mark the end of a multiline card.",
     END_MARKER_PLACEHOLDER: "e.g., ---",
     CREATE: "Create",
-    FLASHCARD_RULE_ERRORS: "Please fix the following errors:\n${errors}",
+    FLASHCARD_RULE_ERRORS: "Please fix the following errors:\n{errors}",
     TAG: "Tag",
     TAG_DESC: "The tag to trigger this rule, e.g., #cards.",
     POSITIONAL_SELECTORS: "Positional Selectors",
@@ -679,14 +689,14 @@ export default {
     ADD_STEP: "Add Step",
     DELETE_STEP: "Delete Step",
 
-    CMD_CARDS_POSTPONED: "Cards postponed ${days} days",
+    CMD_CARDS_POSTPONED: "Cards postponed {days} days",
 
     // Missing keys (auto-added)
     FLASHCARD_: "FLASHCARD_",
     HIDE_REVIEW_BUTTONS: "Hide Review Buttons",
     NOTE_IN_IGNORED_TAGS: "Note is in ignored tags",
-    REVIEW_BUTTON_TOOLTIP: "Review: ${label}",
-    REVIEW_BUTTON_TOOLTIP_WITH_INTERVAL: "Review: ${label} (Interval: ${interval})",
+    REVIEW_BUTTON_TOOLTIP: "Review: {label}",
+    REVIEW_BUTTON_TOOLTIP_WITH_INTERVAL: "Review: {label} (Interval: {interval})",
     REVIEW_EASY_FILE_MENU: "Review: Easy",
     SHOW_REVIEW_BUTTONS: "Show Review Buttons",
     TAGS_TO_IGNORE: "Tags to ignore",

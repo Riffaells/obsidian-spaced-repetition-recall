@@ -17,16 +17,11 @@ import { t } from "src/lang/helpers";
 import { DataValidator } from "./DataValidator";
 import { BackupManager } from "./BackupManager";
 
-import { 
-    IDataStore, 
-    SrsData, 
-    ReviewedCounts, 
-    DEFAULT_SRS_DATA, 
-    DEFAULT_QUEUE_DATA,
-    IQueue
-} from "./interfaces";
+import type { IDataStore, SrsData, ReviewedCounts, IQueue } from "./interfaces";
+import { DEFAULT_SRS_DATA, DEFAULT_QUEUE_DATA } from "./interfaces";
 
-export { SrsData, ReviewedCounts, DEFAULT_SRS_DATA, DEFAULT_QUEUE_DATA, IQueue };
+export type { SrsData, ReviewedCounts, IQueue };
+export { DEFAULT_SRS_DATA, DEFAULT_QUEUE_DATA };
 
 /**
  * DataStore.
@@ -49,6 +44,11 @@ export class DataStore implements IDataStore {
      */
     dataPath: string;
 
+    /**
+     * Shared BackupManager instance to maintain backup throttling state
+     */
+    private backupManager: BackupManager;
+
     public static getInstance(): DataStore {
         if (!DataStore.instance) {
             // DataStore.instance = new DataStore();
@@ -67,6 +67,7 @@ export class DataStore implements IDataStore {
         this.settings = settings;
         // this.manifestDir = manifestDir;
         this.dataPath = getStorePath(manifestDir, settings);
+        this.backupManager = new BackupManager(this.dataPath);
         DataStore.instance = this;
     }
 
@@ -120,14 +121,15 @@ export class DataStore implements IDataStore {
         const validation = validator.validateSrsData(this.data);
 
         if (!validation.valid) {
-            console.error(`[DataStore] Data validation failed with ${validation.errors.length} error(s):`);
+            console.error(
+                `[DataStore] Data validation failed with ${validation.errors.length} error(s):`,
+            );
             validation.errors.forEach((error) => {
                 console.error(`  - ${error.message}`);
             });
 
-            // Create backup of corrupted data
-            const backupManager = new BackupManager(path);
-            await backupManager.createCorruptedBackup(path);
+            // Create backup of corrupted data (forced, ignoring throttle)
+            await this.backupManager.createCorruptedBackup(path);
 
             // Auto-fix the data
             this.data = validator.autoFix(this.data, validation.errors);
@@ -141,6 +143,14 @@ export class DataStore implements IDataStore {
                 }) || `Fixed ${validation.errors.length} data corruption issue(s)`,
             );
         }
+    }
+
+    /**
+     * Schedule a delayed backup after plugin startup
+     * @param delayMs - Delay in milliseconds (default: 5 minutes)
+     */
+    scheduleStartupBackup(delayMs: number = 5 * 60 * 1000): void {
+        this.backupManager.scheduleDelayedBackup(this.dataPath, delayMs);
     }
 
     /**
@@ -162,10 +172,9 @@ export class DataStore implements IDataStore {
      */
     async save(path = this.dataPath) {
         try {
-            // Create backup before saving
-            const backupManager = new BackupManager(path);
+            // Create backup before saving (throttled to once per day)
             if (await IAdapter.instance.adapter.exists(path)) {
-                await backupManager.createBackup(path);
+                await this.backupManager.createBackup(path);
             }
 
             await IAdapter.instance.adapter.write(path, JSON.stringify(this.data));

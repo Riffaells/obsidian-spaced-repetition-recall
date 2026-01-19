@@ -21,7 +21,12 @@ export interface IQueue extends IQueueData {
     queueSize(key?: string): number;
     getNextId(key?: string): number | null;
     isInRepeatQueue(item: number): boolean;
-    updateWhenReview(item: RepetitionItem, correct: boolean, repeatItems: boolean, store: IDataStore): void;
+    updateWhenReview(
+        item: RepetitionItem,
+        correct: boolean,
+        repeatItems: boolean,
+        store: IDataStore,
+    ): void;
     remove(item: RepetitionItem, queue?: number[]): void;
     clearQueue(queue?: unknown): void;
     buildQueue(store: IDataStore): Promise<void>;
@@ -64,6 +69,11 @@ export interface SrsData {
      * @type {number}
      */
     version?: number;
+
+    /**
+     * @type {string} hash of flashcard rules to invalidate cache
+     */
+    settingsHash?: string;
 }
 
 export const DEFAULT_QUEUE_DATA: IQueueData = {
@@ -88,7 +98,7 @@ export interface IDataStore {
     settings: SRSettings;
     data: SrsData;
     items: RepetitionItem[];
-    
+
     verify(path: string): Promise<boolean>;
     updateMovedFile(trackedFile: TrackedFile): boolean;
     untrackFile(path: string, save?: boolean): number;

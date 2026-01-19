@@ -11,7 +11,7 @@ export class HelpTab {
         containerEl.createEl("p").insertAdjacentHTML(
             "beforeend",
             t("CHECK_WIKI", {
-                wikiUrl: "https://www.stephenmwangi.com/obsidian-spaced-repetition/",
+                wikiUrl: "https://riffaells.github.io/obsidian-spaced-repetition-flow/",
             }),
         );
 
@@ -19,14 +19,14 @@ export class HelpTab {
             "beforeend",
             t("GITHUB_DISCUSSIONS", {
                 discussionsUrl:
-                    "https://github.com/st3v3nmw/obsidian-spaced-repetition/discussions/",
+                    "https://github.com/Riffaells/obsidian-spaced-repetition-flow/discussions/",
             }),
         );
 
         containerEl.createEl("p").insertAdjacentHTML(
             "beforeend",
             t("GITHUB_ISSUES", {
-                issuesUrl: "https://github.com/st3v3nmw/obsidian-spaced-repetition/issues/",
+                issuesUrl: "https://github.com/Riffaells/obsidian-spaced-repetition-flow/issues/",
             }),
         );
 
@@ -56,7 +56,7 @@ export class HelpTab {
         containerEl.createEl("p").insertAdjacentHTML(
             "beforeend",
             t("GITHUB_SOURCE_CODE", {
-                githubProjectUrl: "https://github.com/st3v3nmw/obsidian-spaced-repetition",
+                githubProjectUrl: "https://github.com/Riffaells/obsidian-spaced-repetition-flow",
             }),
         );
 
@@ -64,7 +64,7 @@ export class HelpTab {
             "beforeend",
             t("CODE_CONTRIBUTION_INFO", {
                 codeContributionUrl:
-                    "https://www.stephenmwangi.com/obsidian-spaced-repetition/contributing/#code",
+                    "https://riffaells.github.io/obsidian-spaced-repetition-flow/contributing/#code",
             }),
         );
 
@@ -72,12 +72,11 @@ export class HelpTab {
             "beforeend",
             t("TRANSLATION_CONTRIBUTION_INFO", {
                 translationContributionUrl:
-                    "https://www.stephenmwangi.com/obsidian-spaced-repetition/contributing/#translating",
+                    "https://riffaells.github.io/obsidian-spaced-repetition-flow/contributing/#translating",
             }),
         );
 
-        const issue_url =
-            "https://github.com/open-spaced-repetition/obsidian-spaced-repetition-recall/issues";
+        const issue_url = "https://github.com/Riffaells/obsidian-spaced-repetition-flow/issues";
         containerEl.createEl("p").insertAdjacentHTML(
             "beforeend",
             t("GITHUB_ISSUES_MODIFIED_PLUGIN", {

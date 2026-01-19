@@ -1,7 +1,7 @@
 import type SRPlugin from "src/main";
 import { Card } from "src/core/models/Card";
 import { Deck } from "src/core/models/Deck";
-import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewSequencer";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewMode";
 import { MarkdownFormatter } from "src/utils/markdown-formatter";
 
 import { CardSortType } from "./types";
@@ -214,36 +214,46 @@ export class CardGroupComponent {
     }
 
     private async openCardReview(card: Card): Promise<void> {
-        await this.plugin.sync();
-
-        const tempDeck = this.createSingleCardDeck(card);
-        const rootDeck = new Deck(this.deck.deckName, null);
-        rootDeck.subdecks.push(tempDeck);
+        // Run sync in background to avoid blocking UI
+        const syncPromise = this.plugin.sync();
 
         if (this.plugin.data.settings.openViewInNewTab) {
-            await this.plugin.tabViewManager.openSRTabView(FlashcardReviewMode.Review);
+            await syncPromise;
+            // TODO: Support filtering in tab view
+            await this.plugin.tabViewManager.openSRTabView(
+                FlashcardReviewMode.Review,
+                undefined,
+                this.deck,
+            );
         } else {
-            // Use the plugin's method to open flashcard modal
-            (this.plugin as any).openFlashcardModal(rootDeck, rootDeck, FlashcardReviewMode.Review);
+            // Get the full deck tree from plugin
+            const fullDeckTree = this.plugin.deckTree;
+            const remainingDeckTree = this.plugin.remainingDeckTree;
+
+            if (fullDeckTree && remainingDeckTree) {
+                // Wait for sync to complete
+                await syncPromise;
+
+                // Create a filtered remaining tree that only contains cards from this group
+                // This ensures the user only reviews the cards they clicked on
+                const groupCardIds = new Set(this.cards.map((c) => c.Id));
+                const filteredRemainingTree = remainingDeckTree.copyWithCardFilter((c) =>
+                    groupCardIds.has(c.Id),
+                );
+
+                this.plugin.openFlashcardModal(
+                    fullDeckTree,
+                    filteredRemainingTree,
+                    FlashcardReviewMode.Review,
+                    this.deck,
+                );
+            }
         }
-    }
-
-    private createSingleCardDeck(card: Card): Deck {
-        const tempDeck = new Deck(this.deck.deckName, null);
-
-        // Add card to appropriate list based on status
-        if (card.isDue || card.scheduleInfo) {
-            tempDeck.dueFlashcards.push(card);
-        } else {
-            tempDeck.newFlashcards.push(card);
-        }
-
-        return tempDeck;
     }
 
     public setCardSort(sort: CardSortType): void {
         this.cardSort = sort;
-        
+
         // Re-render cards with new sort
         if (this.cardsList) {
             this.cardsList.empty();

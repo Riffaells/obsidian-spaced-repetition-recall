@@ -70,7 +70,7 @@ export class DataValidator {
             // Validate FSRS-specific data
             if (item.isFsrs && item.data) {
                 const fsrsData = item.data as FsrsData;
-                
+
                 if (fsrsData.due) {
                     const dueValue = fsrsData.due.valueOf();
                     if (dueValue > maxFuture || dueValue < minPast) {
@@ -120,23 +120,29 @@ export class DataValidator {
                 case ValidationErrorType.INVALID_DATE:
                     // Reset to current time
                     item.nextReview = now;
-                    console.warn(`[DataValidator] Auto-fixed invalid nextReview for item ${item.ID}: ${error.value} -> ${now}`);
+                    console.warn(
+                        `[DataValidator] Auto-fixed invalid nextReview for item ${item.ID}: ${error.value} -> ${now}`,
+                    );
                     break;
 
                 case ValidationErrorType.INVALID_FSRS_DATE:
                     if (item.isFsrs) {
                         const fsrsData = item.data as FsrsData;
-                        
+
                         if (error.field === "data.due") {
                             // Create a NEW Date object to avoid reference issues
                             fsrsData.due = new Date(now);
-                            console.warn(`[DataValidator] Auto-fixed invalid FSRS due for item ${item.ID}`);
+                            console.warn(
+                                `[DataValidator] Auto-fixed invalid FSRS due for item ${item.ID}`,
+                            );
                         }
-                        
+
                         if (error.field === "data.last_review") {
                             // Create a NEW Date object to avoid reference issues
                             fsrsData.last_review = new Date(now);
-                            console.warn(`[DataValidator] Auto-fixed invalid FSRS last_review for item ${item.ID}`);
+                            console.warn(
+                                `[DataValidator] Auto-fixed invalid FSRS last_review for item ${item.ID}`,
+                            );
                         }
                     }
                     break;
@@ -144,7 +150,9 @@ export class DataValidator {
                 case ValidationErrorType.INVALID_REFERENCE:
                     // Mark as untracked
                     item.fileIndex = -1;
-                    console.warn(`[DataValidator] Auto-fixed invalid fileIndex for item ${item.ID}: ${error.value} -> -1`);
+                    console.warn(
+                        `[DataValidator] Auto-fixed invalid fileIndex for item ${item.ID}: ${error.value} -> -1`,
+                    );
                     break;
             }
         });

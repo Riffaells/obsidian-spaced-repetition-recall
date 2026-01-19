@@ -1,17 +1,24 @@
-import { App, Modal } from "obsidian";
-
+import { App, Modal, Notice } from "obsidian";
 import type SRPlugin from "src/main";
 import { SRSettings } from "src/settings/settings";
+import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewMode";
+import { IFlashcardReviewSequencer } from "src/core/scheduling/FlashcardReviewSequencer";
+import { RenderMarkdownWrapper } from "src/utils/RenderMarkdownWrapper";
+import { ItemInfoModal } from "../utils/info";
+import { SrTFile } from "src/core/services/SRFile";
+import { t } from "src/lang/helpers";
+import { textInterval } from "src/core/scheduling/scheduling";
+import { TextDirection } from "src/utils/TextDirection";
 
-import { Deck } from "src/core/models/Deck";
-import { Question } from "src/core/models/Question";
-import {
-    FlashcardReviewMode,
-    IFlashcardReviewSequencer as IFlashcardReviewSequencer,
-} from "src/core/scheduling/FlashcardReviewSequencer";
-import { FlashcardEditModal } from "./EditModal";
-import { DeckUI } from "../components/DeckUI";
-import { CardUI } from "../components/CardUI";
+// New Rewrite Imports
+import { ModalController } from "../flashcard-modal-rewrite/ModalController";
+import { EventBus } from "../flashcard-modal-rewrite/utils/EventBus";
+import { ServiceContainer } from "../flashcard-modal-rewrite/services/ServiceContainer";
+import { CardView } from "../flashcard-modal-rewrite/components/CardView";
+import { DeckView } from "../flashcard-modal-rewrite/components/DeckView";
+import { SessionView } from "../flashcard-modal-rewrite/components/SessionView";
+import { ModalState, IMarkdownRenderer, ReviewResponse } from "../flashcard-modal-rewrite/types";
+import { ErrorLogger } from "../flashcard-modal-rewrite/services/ErrorLogger";
 
 export enum FlashcardMode {
     Deck,
@@ -25,8 +32,14 @@ export class FlashcardModal extends Modal {
     private reviewSequencer: IFlashcardReviewSequencer;
     private settings: SRSettings;
     private reviewMode: FlashcardReviewMode;
-    private deckView: DeckUI;
-    private flashcardView: CardUI;
+
+    // Rewrite Components
+    private controller: ModalController;
+    private eventBus: EventBus;
+    private services: ServiceContainer;
+    private cardView: CardView;
+    private deckView: DeckView;
+    private sessionView: SessionView;
 
     constructor(
         app: App,
@@ -36,111 +49,241 @@ export class FlashcardModal extends Modal {
         reviewMode: FlashcardReviewMode,
     ) {
         super(app);
-
         this.plugin = plugin;
         this.settings = settings;
         this.reviewSequencer = reviewSequencer;
         this.reviewMode = reviewMode;
 
         this.setupModalStyles();
-
-        this.deckView = new DeckUI(
-            this.plugin,
-            this.settings,
-            this.reviewSequencer,
-            this.contentEl,
-            this.startReviewOfDeck,
-        );
-
-        this.flashcardView = new CardUI(
-            this.app,
-            this.plugin,
-            this.settings,
-            this.reviewSequencer,
-            this.reviewMode,
-            this.contentEl,
-            this.modalEl,
-            this.showDecksList,
-            this.doEditQuestionText,
-            this.closeModal,
-        );
     }
 
     private setupModalStyles(): void {
         const heightPercent = `${this.settings.flashcardHeightPercentage}%`;
         const widthPercent = `${this.settings.flashcardWidthPercentage}%`;
 
-        this.modalEl.style.height = heightPercent;
-        this.modalEl.style.maxHeight = heightPercent;
-        this.modalEl.style.width = widthPercent;
-        this.modalEl.style.maxWidth = widthPercent;
+        // Use setProperty with 'important' to override Obsidian's default modal styles
+        this.modalEl.style.setProperty("height", heightPercent, "important");
+        this.modalEl.style.setProperty("max-height", heightPercent, "important");
+        this.modalEl.style.setProperty("width", widthPercent, "important");
+        this.modalEl.style.setProperty("max-width", widthPercent, "important");
         this.modalEl.setAttribute("id", "sr-modal");
-
+        this.modalEl.addClass("sr-flashcard-modal");
         this.contentEl.addClass("sr-modal-content");
     }
 
     onOpen(): void {
-        if (this.reviewSequencer.hasCurrentCard) {
-            this.showFlashcard();
-        } else {
-            this.showDecksList();
+        this.initializeSystem();
+        this.setupViews();
+        this.bindEvents();
+
+        const options: any = { mode: this.reviewMode };
+        if (this.reviewSequencer.currentDeck) {
+            options.deckPath = this.reviewSequencer.currentDeck.getTopicPath();
         }
+
+        this.controller.open(options);
     }
 
     onClose(): void {
         this.plugin.setSRViewInFocus(false);
-        this.deckView.close();
-        this.flashcardView.close();
+        if (this.controller) {
+            this.controller.close();
+        }
+        if (this.cardView) this.cardView.destroy();
+        if (this.deckView) this.deckView.destroy();
+        if (this.sessionView) this.sessionView.destroy();
     }
 
-    private showDecksList = (): void => {
-        this.hideFlashcard();
-        this.deckView.show();
-    };
+    private initializeSystem(): void {
+        this.eventBus = new EventBus();
+        this.services = new ServiceContainer();
 
-    public closeModal = (): void => {
-        this.close();
-    };
+        this.services.register("reviewSequencer", this.reviewSequencer);
+        this.services.register("settings", this.settings);
+        this.services.register("plugin", this.plugin);
+        this.services.register("errorLogger", ErrorLogger.getInstance());
 
-    private hideDecksList(): void {
-        this.deckView.hide();
-    }
-
-    private showFlashcard(): void {
+        this.controller = new ModalController(this.app, this.eventBus, this.services);
         this.plugin.setSRViewInFocus(true);
-        this.hideDecksList();
-        this.flashcardView.show();
     }
 
-    private hideFlashcard(): void {
-        this.flashcardView.hide();
+    private setupViews(): void {
+        this.contentEl.empty();
+
+        this.deckView = new DeckView(this.contentEl);
+
+        const rendererAdapter = new MarkdownRendererAdapter(this.app, this.plugin);
+        this.cardView = new CardView(this.app, this.contentEl, rendererAdapter);
+
+        this.sessionView = new SessionView(this.contentEl, this.eventBus, this.services);
+
+        this.controller.initializeFullscreenToggle(
+            this.modalEl,
+            this.cardView.getFullscreenButton(),
+        );
+        this.controller.initializeCustomization(this.modalEl);
+        const labels = this.controller.getCustomButtonLabels();
+        this.cardView.setButtonLabels(labels);
+        this.cardView.setContextVisibility(this.controller.shouldShowContext());
     }
 
-    private startReviewOfDeck = (deck: Deck): void => {
-        this.reviewSequencer.setCurrentDeck(deck.getTopicPath());
-        if (this.reviewSequencer.hasCurrentCard) {
-            this.showFlashcard();
-        } else {
-            this.showDecksList();
-        }
-    };
+    private bindEvents(): void {
+        this.deckView.onDeckSelected((deck) => {
+            this.controller.startReview(deck.getTopicPath());
+        });
 
-    private doEditQuestionText = async (): Promise<void> => {
-        const currentQ: Question = this.reviewSequencer.currentQuestion;
-        const textPrompt = currentQ.questionText.actualQuestion;
+        this.cardView.onShowAnswer(() => this.controller.showAnswer());
+        this.cardView.onReviewSubmit((response) => this.controller.submitReview(response));
+        this.cardView.onSkip(() => this.controller.skipCard());
+        this.cardView.onEdit(() => this.controller.editCard());
+        this.cardView.onOpenSource(() => this.controller.openSourceNote());
+        this.cardView.onDeckNavigate((dir) => this.controller.navigateToDeck(dir));
+        this.cardView.onBreadcrumbClick((path) => this.controller.navigateToBreadcrumb(path));
+        this.cardView.onFullscreenToggle(() => this.controller.toggleFullscreen());
+        this.cardView.onBack(() => this.controller.returnToDeckList());
+        this.cardView.onInfo(() => this.showCardInfo());
 
-        try {
-            const modifiedCardText = await FlashcardEditModal.Prompt(
-                this.app,
-                textPrompt,
-                currentQ.questionText.textDirection,
+        this.eventBus.on(
+            "state-changed",
+            (data: { from: ModalState; to: ModalState; context?: any }) => {
+                this.handleStateChange(data.to, data.context);
+            },
+        );
+
+        this.eventBus.on("card-reviewed", (data: any) => {
+            const stats = this.controller.getSessionStats();
+            this.cardView.updateStats(
+                stats.cardsReviewed,
+                stats.cardsReviewed + stats.remainingCards,
             );
-            this.reviewSequencer.updateCurrentQuestionText(modifiedCardText);
-        } catch (error) {
-            // User cancelled the edit modal
-            if (error !== undefined) {
-                console.error("Failed to edit question text:", error);
-            }
+            this.sessionView.updateStats(stats);
+        });
+
+        this.eventBus.on("deck-navigated", () => {
+            this.refreshCardView();
+        });
+
+        this.eventBus.on("card-edited", () => {
+            this.refreshCardView();
+        });
+
+        this.eventBus.on("fullscreen-changed", (data: { isFullscreen: boolean }) => {});
+    }
+
+    private handleStateChange(state: ModalState, context?: any): void {
+        this.deckView.hide();
+        this.cardView.hide();
+        this.sessionView.hide();
+
+        switch (state) {
+            case ModalState.DECK_SELECTION:
+                this.deckView.show();
+                if (this.reviewSequencer.originalDeckTree) {
+                    this.deckView.render([this.reviewSequencer.originalDeckTree], (deck) => {
+                        const s = this.reviewSequencer.getDeckStats(deck.getTopicPath());
+                        return {
+                            dueCount: s.dueCount,
+                            newCount: s.newCount,
+                            totalCount: s.totalCount,
+                        };
+                    });
+                }
+                break;
+
+            case ModalState.CARD_FRONT:
+                this.cardView.show();
+                this.refreshCardView();
+                this.cardView.renderFront(this.reviewSequencer.currentCard);
+                break;
+
+            case ModalState.CARD_BACK:
+                this.cardView.show();
+                this.cardView.renderBack(this.reviewSequencer.currentCard);
+                this.updateCardIntervals();
+                break;
+
+            case ModalState.SESSION_COMPLETE:
+                this.sessionView.show();
+                this.sessionView.displayStats(this.controller.getSessionStats());
+                break;
+
+            case ModalState.CLOSED:
+                this.close();
+                break;
         }
-    };
+    }
+
+    private refreshCardView(): void {
+        const card = this.reviewSequencer.currentCard;
+        const deck = this.reviewSequencer.currentDeck;
+        if (deck) {
+            this.cardView.updateDeckInfo(deck.deckName, deck.getTopicPath());
+            this.cardView.renderBreadcrumb(deck.getTopicPath());
+        }
+
+        this.cardView.updateNavigationControls(
+            this.controller.canNavigatePrevDeck(),
+            this.controller.canNavigateNextDeck(),
+        );
+
+        const stats = this.controller.getSessionStats();
+        this.cardView.updateStats(stats.cardsReviewed, stats.cardsReviewed + stats.remainingCards);
+    }
+
+    private updateCardIntervals(): void {
+        try {
+            const card = this.reviewSequencer.currentCard;
+            if (!card) return;
+            const cardItem = this.plugin.store.getItembyID(card.Id);
+            if (cardItem) {
+                const intervals = this.plugin.algorithm.calcAllOptsIntervals(cardItem);
+                this.cardView.showReviewButtons(intervals);
+            }
+        } catch (e) {
+            console.error("Error calculating intervals", e);
+        }
+    }
+
+    private showCardInfo(): void {
+        const card = this.reviewSequencer.currentCard;
+        if (!card) return;
+
+        const schedule = card.scheduleInfo;
+        const currentEaseStr = t("CURRENT_EASE_HELP_TEXT") + (schedule?.ease ?? t("NEW"));
+        const currentIntervalStr =
+            t("CURRENT_INTERVAL_HELP_TEXT") + textInterval(schedule?.interval, false);
+        const generatedFromStr = t("CARD_GENERATED_FROM", {
+            notePath: card.question.note.filePath,
+        });
+
+        new Notice(currentEaseStr + "\n" + currentIntervalStr + "\n" + generatedFromStr);
+
+        const srfile = card.question.note.file as SrTFile;
+        const store = this.plugin.store;
+        const id = card.Id;
+        const infoM = new ItemInfoModal(this.plugin, srfile.file, store.getItembyID(id));
+        infoM.open();
+    }
+}
+
+class MarkdownRendererAdapter implements IMarkdownRenderer {
+    private notePath: string = "";
+
+    constructor(
+        private app: App,
+        private plugin: SRPlugin,
+    ) {}
+
+    setNotePath(path: string): void {
+        this.notePath = path;
+    }
+
+    async render(content: string, container: HTMLElement, direction: string): Promise<void> {
+        const wrapper = new RenderMarkdownWrapper(this.app, this.plugin, this.notePath);
+        await wrapper.renderMarkdownWrapper(
+            content,
+            container,
+            direction as unknown as TextDirection,
+        );
+    }
 }

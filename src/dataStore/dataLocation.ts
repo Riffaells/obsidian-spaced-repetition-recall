@@ -2,7 +2,7 @@ import { SRSettings } from "src/settings/settings";
 import { t } from "src/lang/helpers";
 
 const ROOT_DATA_PATH = "./tracked_files.json";
-// const PLUGIN_DATA_PATH = "./.obsidian/plugins/obsidian-spaced-repetition-recall/tracked_files.json";
+// const PLUGIN_DATA_PATH = "./.obsidian/plugins/obsidian-spaced-repetition-flow/tracked_files.json";
 
 // recall trackfile
 export enum DataLocation {

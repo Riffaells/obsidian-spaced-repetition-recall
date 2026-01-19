@@ -53,7 +53,13 @@ export class DeckReconciler {
             const component = this.deckComponents.get(deck.deckName);
 
             if (component) {
-                component.update(activeFile, currentFilter, shouldAutoExpand, currentNoteSort, deck);
+                component.update(
+                    activeFile,
+                    currentFilter,
+                    shouldAutoExpand,
+                    currentNoteSort,
+                    deck,
+                );
             } else {
                 this.createNoteComponent(
                     deck,
@@ -239,7 +245,7 @@ export class DeckReconciler {
 
     public setCardSort(sort: CardSortType): void {
         this.cardSort = sort;
-        
+
         // Update all flashcard deck components with new sort
         for (const component of this.flashcardDeckComponents.values()) {
             component.setCardSort(sort);

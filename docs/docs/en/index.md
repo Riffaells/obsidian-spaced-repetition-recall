@@ -1,6 +1,6 @@
 # Obsidian Spaced Repetition - Flow
 
-<img src="https://img.shields.io/github/downloads/martin-jw/obsidian-recall/total" /> <img src="https://img.shields.io/github/downloads/martin-jw/obsidian-recall/latest/total?style=flat-square" /> <img src="https://img.shields.io/github/manifest-json/v/martin-jw/obsidian-recall?style=flat-square" />
+<img src="https://img.shields.io/github/downloads/Riffaells/obsidian-spaced-repetition-flow/total" /> <img src="https://img.shields.io/github/downloads/Riffaells/obsidian-spaced-repetition-flow/latest/total?style=flat-square" /> <img src="https://img.shields.io/github/manifest-json/v/Riffaells/obsidian-spaced-repetition-flow?style=flat-square" />
 
 **Flow** is a comprehensive fork of Obsidian Spaced Repetition with 15+ major enhancements for improved user experience, modern UI, and advanced spaced repetition capabilities.
 
@@ -34,8 +34,8 @@ Fight the forgetting curve by reviewing flashcards & notes using spaced repetiti
 
 !!! tip "Help & Support"
 
-    :material-circle-medium: Visit the [discussions](https://github.com/martin-jw/obsidian-recall/discussions/) section for Q&A help, feedback, and general discussion.<br/>
-    :material-circle-medium: Raise an issue [here](https://github.com/martin-jw/obsidian-recall/issues/) if you have a feature request or a bug-report.
+    :material-circle-medium: Visit the [discussions](https://github.com/Riffaells/obsidian-spaced-repetition-flow/discussions/) section for Q&A help, feedback, and general discussion.<br/>
+    :material-circle-medium: Raise an issue [here](https://github.com/Riffaells/obsidian-spaced-repetition-flow/issues/) if you have a feature request or a bug-report.
 
 !!! tip "Contributing"
 :material-circle-medium: The plugin has been translated into over [10 languages](contributing.md#translating) by the
@@ -79,8 +79,8 @@ the [translation guide here](contributing.md#translating).<br/>
 !!! note "Flow Installation"
 Flow is currently available through manual installation. Follow these steps:
 
-    1. Download the latest release from the [Flow releases page](https://github.com/martin-jw/obsidian-recall/releases)
-    2. Create an `obsidian-spaced-repetition-recall` folder under `.obsidian/plugins` in your vault
+    1. Download the latest release from the [Flow releases page](https://github.com/Riffaells/obsidian-spaced-repetition-flow/releases)
+    2. Create an `obsidian-spaced-repetition-flow` folder under `.obsidian/plugins` in your vault
     3. Extract and add the `main.js`, `manifest.json`, and `styles.css` files to the folder
     4. Restart Obsidian
     5. Enable the plugin in Settings → Community Plugins
@@ -94,7 +94,7 @@ Flow is currently available through manual installation. Follow these steps:
     1. **BACKUP YOUR VAULT** - This is critical!
     2. Disable the original Spaced Repetition plugin
     3. Close Obsidian
-    4. Copy `obsidian-spaced-repetition/data.json` to `obsidian-spaced-repetition-recall/data.json`
+    4. Copy `obsidian-spaced-repetition/data.json` to `obsidian-spaced-repetition-flow/data.json`
     5. Reopen Obsidian and enable Flow
     6. Review the [Flow Features](flow-features.md) documentation to understand new capabilities
 

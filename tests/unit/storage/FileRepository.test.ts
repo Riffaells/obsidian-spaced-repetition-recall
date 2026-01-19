@@ -335,8 +335,7 @@ describe("FileRepository", () => {
         it("should return error if storage write fails", async () => {
             // Setup: mock storage to fail on write
             const failingStorage = {
-                read: async () =>
-                    createOk({ items: [], trackedFiles: [], version: 1 }),
+                read: async () => createOk({ items: [], trackedFiles: [], version: 1 }),
                 write: async () => createErr(new StorageError("Write failed")),
                 exists: async () => true,
             };
@@ -486,8 +485,7 @@ describe("FileRepository", () => {
 
             // Mock storage to fail on write
             const failingStorage = {
-                read: async () =>
-                    createOk({ items: [], trackedFiles: [file], version: 1 }),
+                read: async () => createOk({ items: [], trackedFiles: [file], version: 1 }),
                 write: async () => createErr(new StorageError("Write failed")),
                 exists: async () => true,
             };

@@ -43,7 +43,7 @@ Store scheduling information in `tracked_files.json` instead of modifying your n
 
 **File location:**
 
--   Default: `.obsidian/plugins/obsidian-spaced-repetition-recall/tracked_files.json`
+-   Default: `.obsidian/plugins/obsidian-spaced-repetition-flow/tracked_files.json`
 -   Custom: Configure your preferred location in settings
 
 ---

@@ -105,7 +105,7 @@ export class FileRepository implements IFileRepository {
                 return createErr(new RepositoryError("Failed to read data for saving", err.error));
             }
         }
-        
+
         const index = data.trackedFiles.findIndex((f) => f.path === file.path);
 
         if (index >= 0) {
@@ -126,9 +126,7 @@ export class FileRepository implements IFileRepository {
         // Save
         const writeResult = await this.storage.write(data);
         if (writeResult.isErr) {
-            return createErr(
-                new RepositoryError("Failed to write data", writeResult.error),
-            );
+            return createErr(new RepositoryError("Failed to write data", writeResult.error));
         }
 
         // Emit event
@@ -176,7 +174,9 @@ export class FileRepository implements IFileRepository {
 
             return createOk(undefined);
         } else {
-            return createErr(new RepositoryError("Failed to read data", (readResult as Err<any>).error));
+            return createErr(
+                new RepositoryError("Failed to read data", (readResult as Err<any>).error),
+            );
         }
     }
 }
