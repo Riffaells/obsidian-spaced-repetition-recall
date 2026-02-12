@@ -11,7 +11,7 @@
  */
 
 // Core settings types and defaults
-export { SRSettings } from "./SRSettings";
+export type { SRSettings } from "./SRSettings";
 export { DEFAULT_SETTINGS } from "./DefaultSettings";
 
 // Settings migration
