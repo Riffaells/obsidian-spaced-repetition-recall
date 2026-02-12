@@ -14,6 +14,9 @@ import { Tags } from "src/utils/tags";
 import { SRSettings } from "src/settings/settings";
 import { INoteEaseList } from "src/core/scheduling/NoteEaseList";
 import { algorithmNames } from "src/algorithms/algorithms";
+import { Logger } from "src/utils/Logger";
+
+const logger = Logger.create("ItemTrans");
 
 export class ItemTrans {
     settings: SRSettings;
@@ -95,7 +98,10 @@ export class ItemTrans {
         if (item == null) {
             // store._updateItem(fileid, ind, RPITEMTYPE.NOTE, rdeck.deckName);
             // item = store.getItembyID(fileid);
-            console.debug("syncRCDataToSRrevDeck update null item:", item, trackedFile);
+            logger.debug("syncRCDataToSRrevDeck update null item", { 
+                item, 
+                trackedFile: trackedFile?.path 
+            });
             return;
         }
         if (!trackedFile.isDefault && !item.isTracked) {
@@ -115,6 +121,11 @@ export class ItemTrans {
     }
 
     static updateCardsSchedbyItems(note: Note, topicPath: TopicPath) {
+        if (!note || !note.file) {
+            // Skip if note or file is null (failed to load)
+            return;
+        }
+        
         const store = DataStore.getInstance();
         const settings = store.settings;
         const noteFile: SrTFile = note.file as SrTFile;

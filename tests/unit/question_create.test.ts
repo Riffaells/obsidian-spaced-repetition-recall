@@ -145,4 +145,92 @@ describe("Question.Create", () => {
         expect(question.topicPathList.list.length).toBe(1);
         expect(question.topicPathList.list[0].formatAsTag()).toBe("#Folder");
     });
+
+    test("should assign default deck for cards with only #flashcards tag", () => {
+        const settings = { convertFoldersToDecks: false, editLaterTag: "#edit-later" } as SRSettings;
+        const flashcard: ParsedFlashcard = {
+            id: "1",
+            front: "Q",
+            back: "A",
+            tags: ["#flashcards"],
+            ruleId: "rule1",
+            context: {
+                lineNumber: 1,
+                text: "Q::A",
+                filePath: "Note.md",
+                fileName: "Note.md",
+                folderPath: "",
+                tags: [],
+            },
+        };
+        const rule: FlashcardRule = {
+            id: "rule1",
+            name: "Rule",
+            type: "inline",
+            enabled: true,
+            priority: 0,
+            tagPattern: "",
+            config: {},
+        };
+        const noteFile = new MockSRFile("Note.md");
+        const folderTopicPath = TopicPath.emptyPath;
+
+        const question = Question.Create(
+            settings,
+            flashcard,
+            CardType.SingleLineBasic,
+            rule,
+            noteFile,
+            TextDirection.Ltr,
+            folderTopicPath,
+        );
+
+        // Should have default deck assigned
+        expect(question.topicPathList.list.length).toBe(1);
+        expect(question.topicPathList.list[0].path).toEqual(["default_name"]);
+    });
+
+    test("should prefer subdeck tag over default deck", () => {
+        const settings = { convertFoldersToDecks: false, editLaterTag: "#edit-later" } as SRSettings;
+        const flashcard: ParsedFlashcard = {
+            id: "1",
+            front: "Q",
+            back: "A",
+            tags: ["#flashcards", "#flashcards/math"],
+            ruleId: "rule1",
+            context: {
+                lineNumber: 1,
+                text: "Q::A",
+                filePath: "Note.md",
+                fileName: "Note.md",
+                folderPath: "",
+                tags: [],
+            },
+        };
+        const rule: FlashcardRule = {
+            id: "rule1",
+            name: "Rule",
+            type: "inline",
+            enabled: true,
+            priority: 0,
+            tagPattern: "",
+            config: {},
+        };
+        const noteFile = new MockSRFile("Note.md");
+        const folderTopicPath = TopicPath.emptyPath;
+
+        const question = Question.Create(
+            settings,
+            flashcard,
+            CardType.SingleLineBasic,
+            rule,
+            noteFile,
+            TextDirection.Ltr,
+            folderTopicPath,
+        );
+
+        // Should use subdeck tag, not default deck
+        expect(question.topicPathList.list.length).toBe(1);
+        expect(question.topicPathList.list[0].formatAsTag()).toBe("#flashcards/math");
+    });
 });

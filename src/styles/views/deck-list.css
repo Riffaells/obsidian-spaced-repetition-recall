@@ -1,0 +1,50 @@
+/* === Deck List View === */
+.sr-deck-list .sr-header {
+    gap: 8px;
+    padding-bottom: 14px;
+    margin-bottom: 24px;
+}
+
+.sr-deck-list .sr-header-stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sr-deck-list .sr-header-stats-count {
+    display: flex;
+    color: #fff;
+    padding: 4px;
+    gap: 4px;
+}
+
+.sr-deck-list .sr-header-stats-count > *:first-child {
+    min-width: 10ch;
+}
+
+.sr-deck-list .sr-header-stats-count > *:last-child {
+    min-width: 3ch;
+    text-align: right;
+}
+
+.sr-deck-list .sr-tree-item-row {
+    padding: 2px 0;
+    margin-bottom: 0;
+}
+
+.sr-deck-list .sr-tree-stats-container {
+    display: flex;
+    gap: 4px;
+}
+
+.collapse-icon.sr-collapsed svg {
+    transform: rotate(-90deg);
+}
+
+.sr-deck-list .sr-tree-stats-count {
+    min-width: 3ch;
+    padding: 4px;
+    box-sizing: content-box;
+    text-align: center;
+    color: #fff !important;
+}

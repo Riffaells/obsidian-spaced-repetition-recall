@@ -203,6 +203,34 @@ export class UiPreferencesTab {
             );
 
         new Setting(containerEl)
+            .setName(t("SIDEBAR_SMART_GROUPS"))
+            .setDesc(t("SIDEBAR_SMART_GROUPS_DESC"))
+            .addToggle((toggle) =>
+                toggle.setValue(plugin.data.settings.sidebarSmartGroups).onChange(async (value) => {
+                    plugin.data.settings.sidebarSmartGroups = value;
+                    await plugin.savePluginData();
+                    const leaves = app.workspace.getLeavesOfType("review-queue-list-view");
+                    leaves.forEach((leaf) => {
+                        if (leaf.view && "redraw" in leaf.view) {
+                            (leaf.view as { redraw: () => void }).redraw();
+                        }
+                    });
+                }),
+            );
+
+        new Setting(containerEl)
+            .setName(t("SHOW_NEXT_REVIEW_IN_NOTICE"))
+            .setDesc(t("SHOW_NEXT_REVIEW_IN_NOTICE_DESC"))
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(plugin.data.settings.showNextReviewInNotice)
+                    .onChange(async (value) => {
+                        plugin.data.settings.showNextReviewInNotice = value;
+                        await plugin.savePluginData();
+                    }),
+            );
+
+        new Setting(containerEl)
             .setName(t("SIDEBAR_INITIAL_GROUPS_LIMIT"))
             .setDesc(t("SIDEBAR_INITIAL_GROUPS_LIMIT_DESC"))
             .addSlider((slider) =>

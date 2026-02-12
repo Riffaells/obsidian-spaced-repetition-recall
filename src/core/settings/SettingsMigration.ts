@@ -1,5 +1,4 @@
 import { SRSettings } from "./SRSettings";
-import { FlashcardRule } from "../../parser/rule-based/types";
 
 export class SettingsMigration {
     /**

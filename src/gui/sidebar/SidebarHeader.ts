@@ -26,6 +26,7 @@ export class SidebarHeader {
     private readonly filterButtons: Map<FilterType, HTMLElement> = new Map();
     private readonly viewModeButtons: Map<SidebarViewMode, HTMLElement> = new Map();
     private activeCountChip: HTMLElement | null = null;
+    private sortButton: HTMLElement | null = null;
     private abortController: AbortController | null = null;
 
     constructor(
@@ -69,6 +70,7 @@ export class SidebarHeader {
         this.filterButtons.clear();
         this.viewModeButtons.clear();
         this.activeCountChip = null;
+        this.sortButton = null;
         this.isRendered = false;
     }
 
@@ -101,15 +103,8 @@ export class SidebarHeader {
             t("EXPAND_ALL"),
             this.onExpandAll,
         );
-        this.createIconButton(
-            controlsContainer,
-            "maximize-2",
-            t("EXPAND_FULL_BRANCH"),
-            this.onExpandFullBranch,
-        );
-        this.createSortButton(controlsContainer);
-        this.createNoteSortButton(controlsContainer);
-        this.createCardSortButton(controlsContainer);
+
+        this.createUnifiedSortButton(controlsContainer);
         this.createIconButton(
             controlsContainer,
             "refresh-cw",
@@ -205,30 +200,38 @@ export class SidebarHeader {
         return button;
     }
 
-    private createSortButton(container: HTMLElement): void {
+    private createUnifiedSortButton(container: HTMLElement): void {
         if (!this.abortController) return;
 
-        const sortButton = container.createEl("button", {
+        this.sortButton = container.createEl("button", {
             cls: "sr-control-btn",
             attr: { "aria-label": t("SORT") },
         });
 
-        setIcon(sortButton, "arrow-up-down");
+        // Initial icon based on current sort
+        this.updateSortButtonIcon();
 
-        sortButton.addEventListener(
+        this.sortButton.addEventListener(
             "click",
             (e) => {
                 e.stopPropagation();
-                this.showSortMenu(e as MouseEvent);
+                this.showUnifiedSortMenu(e as MouseEvent);
             },
             { signal: this.abortController.signal },
         );
     }
 
-    private showSortMenu(e: MouseEvent): void {
+    private showUnifiedSortMenu(e: MouseEvent): void {
         const menu = new Menu();
 
-        const sortOptions = [
+        // Deck Sort Section
+        menu.addItem((item) => {
+            item.setTitle(t("SORT_DECKS"))
+                .setIcon("folder")
+                .setDisabled(true);
+        });
+
+        const deckSortOptions = [
             { type: SortType.DATE_ASC, label: t("SORT_DATE_ASC"), icon: "calendar-arrow-up" },
             { type: SortType.DATE_DESC, label: t("SORT_DATE_DESC"), icon: "calendar-arrow-down" },
             {
@@ -241,7 +244,7 @@ export class SidebarHeader {
             { type: SortType.NAME_DESC, label: t("SORT_NAME_DESC"), icon: "sort-desc" },
         ];
 
-        sortOptions.forEach((option) => {
+        deckSortOptions.forEach((option) => {
             menu.addItem((item) => {
                 item.setTitle(option.label)
                     .setIcon(option.icon)
@@ -249,45 +252,29 @@ export class SidebarHeader {
                     .onClick(() => {
                         this.currentSort = option.type;
                         this.onSortChange(option.type);
+                        this.updateSortButtonIcon();
                     });
             });
         });
 
-        menu.showAtMouseEvent(e);
-    }
+        menu.addSeparator();
 
-    private createNoteSortButton(container: HTMLElement): void {
-        if (!this.abortController) return;
-
-        const noteSortButton = container.createEl("button", {
-            cls: "sr-control-btn",
-            attr: { "aria-label": t("SORT_NOTES") },
+        // Note Sort Section
+        menu.addItem((item) => {
+            item.setTitle(t("SORT_NOTES"))
+                .setIcon("file-text")
+                .setDisabled(true);
         });
 
-        setIcon(noteSortButton, "list-ordered");
-
-        noteSortButton.addEventListener(
-            "click",
-            (e) => {
-                e.stopPropagation();
-                this.showNoteSortMenu(e as MouseEvent);
-            },
-            { signal: this.abortController.signal },
-        );
-    }
-
-    private showNoteSortMenu(e: MouseEvent): void {
-        const menu = new Menu();
-
-        const sortOptions = [
+        const noteSortOptions = [
             { type: NoteSortType.DEFAULT, label: t("DEFAULT"), icon: "arrow-up-down" },
             { type: NoteSortType.NAME_ASC, label: t("SORT_NAME_ASC"), icon: "sort-asc" },
             { type: NoteSortType.NAME_DESC, label: t("SORT_NAME_DESC"), icon: "sort-desc" },
-            { type: NoteSortType.PATH_ASC, label: t("SORT_PATH_ASC"), icon: "sort-asc" },
-            { type: NoteSortType.PATH_DESC, label: t("SORT_PATH_DESC"), icon: "sort-desc" },
+            { type: NoteSortType.PATH_ASC, label: t("SORT_PATH_ASC"), icon: "folder" },
+            { type: NoteSortType.PATH_DESC, label: t("SORT_PATH_DESC"), icon: "folder" },
         ];
 
-        sortOptions.forEach((option) => {
+        noteSortOptions.forEach((option) => {
             menu.addItem((item) => {
                 item.setTitle(option.label)
                     .setIcon(option.icon)
@@ -299,43 +286,26 @@ export class SidebarHeader {
             });
         });
 
-        menu.showAtMouseEvent(e);
-    }
+        menu.addSeparator();
 
-    private createCardSortButton(container: HTMLElement): void {
-        if (!this.abortController) return;
-
-        const cardSortButton = container.createEl("button", {
-            cls: "sr-control-btn",
-            attr: { "aria-label": t("SORT_CARDS") },
+        // Card Sort Section
+        menu.addItem((item) => {
+            item.setTitle(t("SORT_CARDS"))
+                .setIcon("layers")
+                .setDisabled(true);
         });
 
-        setIcon(cardSortButton, "layers");
-
-        cardSortButton.addEventListener(
-            "click",
-            (e) => {
-                e.stopPropagation();
-                this.showCardSortMenu(e as MouseEvent);
-            },
-            { signal: this.abortController.signal },
-        );
-    }
-
-    private showCardSortMenu(e: MouseEvent): void {
-        const menu = new Menu();
-
-        const sortOptions = [
+        const cardSortOptions = [
             { type: CardSortType.DEFAULT, label: t("DEFAULT"), icon: "arrow-up-down" },
             { type: CardSortType.FRONT_ASC, label: t("SORT_FRONT_ASC"), icon: "sort-asc" },
             { type: CardSortType.FRONT_DESC, label: t("SORT_FRONT_DESC"), icon: "sort-desc" },
-            { type: CardSortType.PATH_ASC, label: t("SORT_PATH_ASC"), icon: "sort-asc" },
-            { type: CardSortType.PATH_DESC, label: t("SORT_PATH_DESC"), icon: "sort-desc" },
+            { type: CardSortType.PATH_ASC, label: t("SORT_PATH_ASC"), icon: "folder" },
+            { type: CardSortType.PATH_DESC, label: t("SORT_PATH_DESC"), icon: "folder" },
             { type: CardSortType.DUE_DATE_ASC, label: t("SORT_DUE_DATE_ASC"), icon: "calendar" },
             { type: CardSortType.DUE_DATE_DESC, label: t("SORT_DUE_DATE_DESC"), icon: "calendar" },
         ];
 
-        sortOptions.forEach((option) => {
+        cardSortOptions.forEach((option) => {
             menu.addItem((item) => {
                 item.setTitle(option.label)
                     .setIcon(option.icon)
@@ -433,5 +403,21 @@ export class SidebarHeader {
         if (relevantCount !== currentRelevantCount) {
             this.updateActiveCount();
         }
+    }
+
+    private updateSortButtonIcon(): void {
+        if (!this.sortButton) return;
+
+        const sortIconMap: Record<SortType, string> = {
+            [SortType.DATE_ASC]: "calendar-arrow-up",
+            [SortType.DATE_DESC]: "calendar-arrow-down",
+            [SortType.COUNT_DESC]: "arrow-down-wide-narrow",
+            [SortType.COUNT_ASC]: "arrow-up-narrow-wide",
+            [SortType.NAME_ASC]: "sort-asc",
+            [SortType.NAME_DESC]: "sort-desc",
+        };
+
+        const icon = sortIconMap[this.currentSort] || "arrow-up-down";
+        setIcon(this.sortButton, icon);
     }
 }

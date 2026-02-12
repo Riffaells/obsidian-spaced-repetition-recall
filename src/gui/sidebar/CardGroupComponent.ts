@@ -3,6 +3,8 @@ import { Card } from "src/core/models/Card";
 import { Deck } from "src/core/models/Deck";
 import { FlashcardReviewMode } from "src/core/scheduling/FlashcardReviewMode";
 import { MarkdownFormatter } from "src/utils/markdown-formatter";
+import { Menu, MenuItem } from "obsidian";
+import { t } from "src/lang/helpers";
 
 import { CardSortType } from "./types";
 
@@ -73,10 +75,47 @@ export class CardGroupComponent {
                 signal: this.abortController.signal,
             });
 
+            // Add context menu for group header
+            this.groupHeader.addEventListener(
+                "contextmenu",
+                (event: MouseEvent) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.showGroupContextMenu(event);
+                },
+                { signal: this.abortController.signal },
+            );
+
             this.renderCards(this.cardsList);
         }
 
         return this.groupEl;
+    }
+
+    private showGroupContextMenu(event: MouseEvent): void {
+        const menu = new Menu();
+
+        menu.addItem((item: MenuItem) => {
+            item.setTitle(t("REVIEW_ALL_IN_GROUP"))
+                .setIcon("play")
+                .onClick(async () => {
+                    if (this.cards.length > 0) {
+                        await this.openCardReview(this.cards[0]);
+                    }
+                });
+        });
+
+        menu.addSeparator();
+
+        menu.addItem((item: MenuItem) => {
+            item.setTitle(this.expandedGroups.has(this.groupKey) ? t("COLLAPSE") : t("EXPAND"))
+                .setIcon(this.expandedGroups.has(this.groupKey) ? "chevron-up" : "chevron-down")
+                .onClick(() => {
+                    this.onToggleGroup(this.groupKey);
+                });
+        });
+
+        menu.showAtPosition({ x: event.pageX, y: event.pageY });
     }
 
     private removeElement(): void {
@@ -210,20 +249,74 @@ export class CardGroupComponent {
             signal: this.abortController.signal,
         });
 
+        // Add context menu for card
+        cardEl.addEventListener(
+            "contextmenu",
+            (event: MouseEvent) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.showCardContextMenu(event, card);
+            },
+            { signal: this.abortController.signal },
+        );
+
         return cardEl;
     }
 
-    private async openCardReview(card: Card): Promise<void> {
-        // Run sync in background to avoid blocking UI
-        const syncPromise = this.plugin.sync();
+    private showCardContextMenu(event: MouseEvent, card: Card): void {
+        const menu = new Menu();
 
+        menu.addItem((item: MenuItem) => {
+            item.setTitle(t("REVIEW_CARD"))
+                .setIcon("play")
+                .onClick(async () => {
+                    await this.openCardReview(card);
+                });
+        });
+
+        if (card.question?.note?.file) {
+            menu.addSeparator();
+
+            menu.addItem((item: MenuItem) => {
+                item.setTitle(t("OPEN_NOTE"))
+                    .setIcon("file")
+                    .onClick(async () => {
+                        const file = this.plugin.app.vault.getAbstractFileByPath(
+                            card.question.note.file.path,
+                        );
+                        if (file && file instanceof this.plugin.app.vault.adapter.constructor) {
+                            await this.plugin.app.workspace.getLeaf().openFile(file as any);
+                        }
+                    });
+            });
+
+            // Add standard file menu items
+            const file = this.plugin.app.vault.getAbstractFileByPath(card.question.note.file.path);
+            if (file) {
+                this.plugin.app.workspace.trigger(
+                    "file-menu",
+                    menu,
+                    file,
+                    "link-context-menu",
+                    null,
+                );
+            }
+        }
+
+        menu.showAtPosition({ x: event.pageX, y: event.pageY });
+    }
+
+    private async openCardReview(card: Card): Promise<void> {
         if (this.plugin.data.settings.openViewInNewTab) {
-            await syncPromise;
-            // TODO: Support filtering in tab view
+            await this.plugin.sync();
+            
+            // Support filtering in tab view by passing card filter
+            const groupCardIds = new Set(this.cards.map((c) => c.Id));
             await this.plugin.tabViewManager.openSRTabView(
                 FlashcardReviewMode.Review,
                 undefined,
                 this.deck,
+                (card) => groupCardIds.has(card.Id),
             );
         } else {
             // Get the full deck tree from plugin
@@ -231,9 +324,6 @@ export class CardGroupComponent {
             const remainingDeckTree = this.plugin.remainingDeckTree;
 
             if (fullDeckTree && remainingDeckTree) {
-                // Wait for sync to complete
-                await syncPromise;
-
                 // Create a filtered remaining tree that only contains cards from this group
                 // This ensures the user only reviews the cards they clicked on
                 const groupCardIds = new Set(this.cards.map((c) => c.Id));

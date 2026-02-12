@@ -1,0 +1,44 @@
+/* === Flashcard Review View === */
+.sr-flashcard .sr-header {
+    position: relative;
+    gap: 8px;
+    padding-bottom: 8px;
+}
+
+.sr-flashcard .sr-button:disabled {
+    cursor: not-allowed;
+}
+
+.sr-flashcard .sr-back-button {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 21;
+}
+
+.sr-flashcard .sr-controls {
+    display: flex;
+    column-gap: var(--size-4-4);
+}
+
+.sr-flashcard .sr-context {
+    font-style: italic;
+    color: var(--text-faint);
+    display: block;
+    width: 100%;
+    margin: 12px 0 4px 8px;
+}
+
+.sr-flashcard .sr-content {
+    font-size: var(--font-text-size);
+    overflow-y: auto;
+    user-select: text;
+    padding-inline: 8px;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.sr-flashcard .sr-card-divide {
+    backdrop-filter: invert(40%);
+    border-top-style: dashed;
+}

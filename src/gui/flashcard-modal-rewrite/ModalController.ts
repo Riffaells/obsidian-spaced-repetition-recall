@@ -495,13 +495,19 @@ export class ModalController implements IModalController {
     }
 
     getSessionStats(): SessionStats {
+        // Calculate remaining cards from the remaining deck tree
+        const remainingCards = this.reviewSequencer.originalDeckTree
+            ? this.reviewSequencer.originalDeckTree.getDistinctCardCount(CardListType.All, true) -
+              this.cardsReviewedCount
+            : 0;
+
         const stats: SessionStats = {
             cardsReviewed: this.cardsReviewedCount,
             timeSpent: Date.now() - this.sessionStartTime,
             responses: { ...this.sessionResponses }, // clone
             deckName: this.reviewSequencer.currentDeck?.deckName ?? "Unknown",
             deckPath: this.reviewSequencer.currentDeck?.getTopicPath() ?? TopicPath.emptyPath,
-            remainingCards: 0, // TODO: Get from sequencer
+            remainingCards: Math.max(0, remainingCards),
         };
 
         // Add per-deck statistics for multi-deck sessions (Requirements 7.5)

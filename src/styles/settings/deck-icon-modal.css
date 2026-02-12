@@ -1,0 +1,184 @@
+/* Deck Icon Modal Styles */
+
+.sr-deck-icon-modal {
+    padding: 16px;
+}
+
+.sr-deck-icon-modal h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.sr-deck-icon-modal-deck-name {
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    font-size: 0.9em;
+}
+
+/* Preview Section */
+.sr-deck-icon-preview-section {
+    margin-bottom: 20px;
+}
+
+.sr-deck-icon-preview-section h4 {
+    margin-bottom: 8px;
+    font-size: 0.85em;
+    color: var(--text-muted);
+}
+
+.sr-deck-icon-preview {
+    background: var(--background-secondary);
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.sr-deck-icon-preview-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 4px;
+    background: var(--background-primary);
+}
+
+.sr-deck-icon-preview-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Icon Section */
+.sr-deck-icon-section {
+    margin-bottom: 16px;
+}
+
+.sr-deck-icon-section h4 {
+    margin-bottom: 8px;
+    font-size: 0.85em;
+    color: var(--text-muted);
+}
+
+/* Icon Select Button */
+.sr-icon-select-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border: 1px dashed var(--background-modifier-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--text-muted);
+    font-size: 0.85em;
+}
+
+.sr-icon-select-btn:hover {
+    border-color: var(--interactive-accent);
+    background: var(--background-modifier-hover);
+}
+
+.sr-icon-select-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Buttons */
+.sr-deck-icon-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+.sr-deck-icon-buttons button {
+    padding: 6px 16px;
+}
+
+/* Icon Picker Modal */
+.sr-icon-picker-modal {
+    padding: 16px;
+    max-width: 500px;
+}
+
+.sr-icon-picker-modal h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.sr-icon-search-container {
+    margin-bottom: 12px;
+}
+
+.sr-icon-search-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    background: var(--background-primary);
+    font-size: 14px;
+}
+
+.sr-icon-search-input:focus {
+    border-color: var(--interactive-accent);
+    outline: none;
+}
+
+.sr-icon-clear-btn {
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    font-size: 0.9em;
+}
+
+.sr-icon-picker-scroll {
+    height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--background-secondary);
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.sr-icon-picker-grid {
+    position: relative;
+    width: 100%;
+}
+
+.sr-icon-picker-row {
+    display: flex;
+    gap: 4px;
+}
+
+.sr-icon-picker-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    color: var(--text-normal);
+    flex-shrink: 0;
+}
+
+.sr-icon-picker-btn:hover {
+    background: var(--background-modifier-hover);
+}
+
+.sr-icon-picker-btn.sr-selected {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.sr-icon-picker-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.sr-icon-picker-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}

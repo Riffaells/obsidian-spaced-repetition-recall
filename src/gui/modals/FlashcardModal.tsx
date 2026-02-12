@@ -40,6 +40,9 @@ export class FlashcardModal extends Modal {
     private cardView: CardView;
     private deckView: DeckView;
     private sessionView: SessionView;
+    
+    // Optimization: track if views are initialized
+    private viewsInitialized: boolean = false;
 
     constructor(
         app: App,
@@ -71,10 +74,34 @@ export class FlashcardModal extends Modal {
         this.contentEl.addClass("sr-modal-content");
     }
 
+    /**
+     * Update review session parameters for modal reuse
+     * Optimization: allows reusing the same modal instance with different review sessions
+     */
+    updateReviewSession(
+        reviewSequencer: IFlashcardReviewSequencer,
+        reviewMode: FlashcardReviewMode,
+    ): void {
+        this.reviewSequencer = reviewSequencer;
+        this.reviewMode = reviewMode;
+        
+        // Update services if already initialized
+        if (this.viewsInitialized && this.services) {
+            this.services.register("reviewSequencer", reviewSequencer);
+        }
+    }
+
     onOpen(): void {
-        this.initializeSystem();
-        this.setupViews();
-        this.bindEvents();
+        // Optimization: only initialize views once, reuse on subsequent opens
+        if (!this.viewsInitialized) {
+            this.initializeSystem();
+            this.setupViews();
+            this.bindEvents();
+            this.viewsInitialized = true;
+        } else {
+            // Just update the sequencer and reopen
+            this.services.register("reviewSequencer", this.reviewSequencer);
+        }
 
         const options: any = { mode: this.reviewMode };
         if (this.reviewSequencer.currentDeck) {
@@ -82,6 +109,7 @@ export class FlashcardModal extends Modal {
         }
 
         this.controller.open(options);
+        this.plugin.setSRViewInFocus(true);
     }
 
     onClose(): void {
@@ -89,9 +117,8 @@ export class FlashcardModal extends Modal {
         if (this.controller) {
             this.controller.close();
         }
-        if (this.cardView) this.cardView.destroy();
-        if (this.deckView) this.deckView.destroy();
-        if (this.sessionView) this.sessionView.destroy();
+        // Optimization: don't destroy views, just hide them for reuse
+        // Views will be destroyed when modal is completely disposed
     }
 
     private initializeSystem(): void {
@@ -108,14 +135,17 @@ export class FlashcardModal extends Modal {
     }
 
     private setupViews(): void {
-        this.contentEl.empty();
+        // Optimization: only clear and create views if not already initialized
+        if (!this.deckView) {
+            this.contentEl.empty();
 
-        this.deckView = new DeckView(this.contentEl);
+            this.deckView = new DeckView(this.contentEl);
 
-        const rendererAdapter = new MarkdownRendererAdapter(this.app, this.plugin);
-        this.cardView = new CardView(this.app, this.contentEl, rendererAdapter);
+            const rendererAdapter = new MarkdownRendererAdapter(this.app, this.plugin);
+            this.cardView = new CardView(this.app, this.contentEl, rendererAdapter);
 
-        this.sessionView = new SessionView(this.contentEl, this.eventBus, this.services);
+            this.sessionView = new SessionView(this.contentEl, this.eventBus, this.services);
+        }
 
         this.controller.initializeFullscreenToggle(
             this.modalEl,

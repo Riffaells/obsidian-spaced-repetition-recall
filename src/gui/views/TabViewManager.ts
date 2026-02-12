@@ -41,6 +41,7 @@ export default class TabViewManager {
      * @param reviewMode - The mode of flashcard review.
      * @param singleNote - Optional parameter specifying a single note to review.
      * @param startDeck - Optional parameter specifying the deck to start with.
+     * @param cardFilter - Optional filter function to limit which cards are shown.
      *
      * @returns {Promise<void>} - A promise that resolves when the tab view is opened.
      */
@@ -48,6 +49,7 @@ export default class TabViewManager {
         reviewMode: FlashcardReviewMode,
         singleNote?: TFile,
         startDeck?: Deck,
+        cardFilter?: (card: import("src/core/models/Card").Card) => boolean,
     ): Promise<void> {
         const state: any = {
             reviewMode,
@@ -56,6 +58,18 @@ export default class TabViewManager {
 
         if (startDeck) {
             state.startDeckPath = startDeck.getTopicPath().path;
+        }
+
+        if (cardFilter) {
+            // Store card IDs to filter by (since functions can't be serialized in state)
+            const fullDeckTree = this.plugin.deckTree;
+            const remainingDeckTree = this.plugin.remainingDeckTree;
+            
+            if (fullDeckTree && remainingDeckTree) {
+                const filteredTree = remainingDeckTree.copyWithCardFilter(cardFilter);
+                const cardIds = this.extractAllCardIds(filteredTree);
+                state.filteredCardIds = cardIds;
+            }
         }
 
         await this.openTabView(SR_TAB_VIEW, true, state);
@@ -106,6 +120,25 @@ export default class TabViewManager {
         });
 
         this.isRegistered = false;
+    }
+
+    /**
+     * Extracts all card IDs from a deck tree for filtering purposes.
+     */
+    private extractAllCardIds(deck: Deck): string[] {
+        const cardIds: string[] = [];
+        
+        // Add cards from this deck
+        for (const card of [...deck.newFlashcards, ...deck.dueFlashcards]) {
+            cardIds.push(String(card.Id));
+        }
+        
+        // Recursively add cards from subdecks
+        for (const subdeck of deck.subdecks) {
+            cardIds.push(...this.extractAllCardIds(subdeck));
+        }
+        
+        return cardIds;
     }
 
     public async openTabView(type: string, newLeaf?: PaneType | boolean, state?: any) {

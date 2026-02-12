@@ -9,6 +9,10 @@ import { ReviewView } from "../gui/views/reviewView";
 import { t } from "src/lang/helpers";
 import { FileTrackService } from "../core/services/FileTrackService";
 import { RPITEMTYPE } from "../dataStore/repetitionItem";
+import { Logger } from "../utils/Logger";
+import { handleError } from "../utils/ErrorHandler";
+
+const logger = Logger.create("CommandManager");
 
 export default class CommandManager {
     plugin: ObsidianSrsPlugin;
@@ -51,15 +55,20 @@ export default class CommandManager {
                                 .trackFile(file.path, RPITEMTYPE.NOTE, "default")
                                 .then((result) => {
                                     if (result.isErr) {
-                                        console.error("Failed to track file:", result.error);
+                                        handleError(result.error, `Failed to track file: ${file.path}`, {
+                                            logLevel: "error",
+                                        });
                                         new Notice(t("CMD_TRACK_FAILED"));
                                     } else {
+                                        logger.info("File tracked successfully", { path: file.path });
                                         new Notice(t("CMD_NOTE_TRACKED"));
                                         plugin.sync();
                                     }
                                 })
                                 .catch((error) => {
-                                    console.error("Error tracking file:", error);
+                                    handleError(error, `Error tracking file: ${file.path}`, {
+                                        logLevel: "error",
+                                    });
                                     new Notice(t("CMD_TRACK_FAILED"));
                                 });
                         } else {
@@ -90,15 +99,20 @@ export default class CommandManager {
                                 .untrackFile(file.path)
                                 .then((result) => {
                                     if (result.isErr) {
-                                        console.error("Failed to untrack file:", result.error);
+                                        handleError(result.error, `Failed to untrack file: ${file.path}`, {
+                                            logLevel: "error",
+                                        });
                                         new Notice(t("CMD_UNTRACK_FAILED"));
                                     } else {
+                                        logger.info("File untracked successfully", { path: file.path });
                                         new Notice(t("CMD_NOTE_UNTRACKED"));
                                         plugin.sync();
                                     }
                                 })
                                 .catch((error) => {
-                                    console.error("Error untracking file:", error);
+                                    handleError(error, `Error untracking file: ${file.path}`, {
+                                        logLevel: "error",
+                                    });
                                     new Notice(t("CMD_UNTRACK_FAILED"));
                                 });
                         } else {
@@ -198,7 +212,7 @@ export default class CommandManager {
     }
 
     addDebugCommands() {
-        console.log("Injecting debug commands...");
+        logger.info("Injecting debug commands...");
         const plugin = this.plugin;
 
         plugin.addCommand({

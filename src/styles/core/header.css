@@ -1,0 +1,21 @@
+/* === Header === */
+.sr-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    border-bottom: 1px solid var(--hr-color);
+}
+
+.sr-title {
+    font-size: var(--font-ui-large);
+    font-weight: var(--font-semibold);
+    text-align: center;
+    line-height: var(--line-height-tight);
+}
+
+/* === Content === */
+.sr-content {
+    overflow-y: auto;
+}

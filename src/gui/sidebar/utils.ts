@@ -19,6 +19,11 @@ export function calculateDaysUntilDue(dueUnix: number, plugin: SRPlugin): number
  */
 export function getGroupTitle(nDays: number, dueUnix: number, plugin: SRPlugin): string {
     const showRelativeDays = plugin.data.settings.sidebarShowRelativeDays;
+    const smartGroups = plugin.data.settings.sidebarSmartGroups;
+
+    if (smartGroups && showRelativeDays) {
+        return getSmartGroupTitle(nDays);
+    }
 
     if (nDays === -1) {
         return t("YESTERDAY");
@@ -34,6 +39,62 @@ export function getGroupTitle(nDays: number, dueUnix: number, plugin: SRPlugin):
         const format = plugin.data.settings.sidebarDateFormat || DEFAULT_SETTINGS.sidebarDateFormat;
         return window.moment(dueUnix).format(format);
     }
+}
+
+/**
+ * Gets smart group title based on time ranges
+ */
+export function getSmartGroupTitle(nDays: number): string {
+    // Overdue
+    if (nDays < -30) {
+        return t("OVERDUE_MORE_THAN_MONTH");
+    } else if (nDays < -14) {
+        return t("OVERDUE_MORE_THAN_2_WEEKS");
+    } else if (nDays < -7) {
+        return t("OVERDUE_MORE_THAN_WEEK");
+    } else if (nDays < -1) {
+        return t("OVERDUE_BY_DAYS", { count: Math.abs(nDays) });
+    } else if (nDays === -1) {
+        return t("YESTERDAY");
+    }
+
+    // Today
+    if (nDays === 0) {
+        return t("TODAY");
+    }
+
+    // Tomorrow
+    if (nDays === 1) {
+        return t("TOMORROW");
+    }
+
+    // Future - within a week
+    if (nDays <= 7) {
+        return t("IN_DAYS", { count: nDays });
+    }
+
+    // Future - within 2 weeks
+    if (nDays <= 14) {
+        return t("IN_ABOUT_WEEK");
+    }
+
+    // Future - within a month
+    if (nDays <= 30) {
+        return t("IN_ABOUT_MONTH");
+    }
+
+    // Future - within 2 months
+    if (nDays <= 60) {
+        return t("IN_ABOUT_2_MONTHS");
+    }
+
+    // Future - within 3 months
+    if (nDays <= 90) {
+        return t("IN_ABOUT_3_MONTHS");
+    }
+
+    // Future - more than 3 months
+    return t("IN_MORE_THAN_3_MONTHS");
 }
 
 /**

@@ -1,6 +1,7 @@
 import { Card } from "./Card";
 import { CardScheduleInfo, NoteCardScheduleParser } from "src/core/scheduling/CardSchedule";
 import {
+    DEFAULT_DECK_NAME,
     OBSIDIAN_BLOCK_ID_ENDOFLINE_REGEX,
     OBSIDIAN_TAG_AT_STARTOFLINE_REGEX,
     SR_HTML_COMMENT_BEGIN,
@@ -412,6 +413,14 @@ export class Question {
             if (topicTags.length > 0) {
                 // If multiple tags are present, use the first one.
                 finalTopicPath = topicTags[0];
+            }
+        }
+
+        // Priority 4: Default deck for cards with only #flashcards tag
+        if (!finalTopicPath) {
+            const hasFlashcardsTag = flashcard.tags.some((tag) => tag === "#flashcards");
+            if (hasFlashcardsTag) {
+                finalTopicPath = new TopicPath([DEFAULT_DECK_NAME]);
             }
         }
 

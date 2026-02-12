@@ -1,0 +1,115 @@
+/* === Compact Review Buttons (Neon Style) === */
+.sr-compact-review-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sr-compact-review-container:has(.sr-collapsed) {
+    justify-content: center;
+}
+
+/* Toggle button */
+.sr-compact-review-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 6px;
+    opacity: 0.8;
+}
+
+.sr-compact-review-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sr-compact-review-container:has(.sr-collapsed) .sr-compact-review-toggle {
+    opacity: 0.4;
+}
+
+.sr-compact-review-container:has(.sr-collapsed) .sr-compact-review-toggle:hover {
+    opacity: 0.8;
+}
+
+.sr-compact-toggle-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+}
+
+/* Buttons container */
+.sr-compact-review-buttons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.sr-compact-review-buttons.sr-collapsed {
+    display: none;
+}
+
+/* Button base */
+.sr-compact-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border: 2px solid;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+}
+
+.sr-compact-btn-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Hard - Red */
+.sr-compact-btn-hard {
+    border-color: rgba(192, 34, 74, 0.8);
+    box-shadow: 0 0 8px rgba(192, 34, 74, 0.4);
+}
+
+.sr-compact-btn-hard svg {
+    color: #ff5078;
+    filter: drop-shadow(0 0 4px #ff3264);
+}
+
+.sr-compact-btn-hard:hover {
+    background: rgba(255, 50, 100, 0.5);
+    box-shadow: 0 0 15px rgba(255, 50, 100, 0.6);
+}
+
+/* Good - Yellow */
+.sr-compact-btn-good {
+    border-color: rgba(255, 200, 0, 0.8);
+    box-shadow: 0 0 8px rgba(255, 200, 0, 0.4);
+}
+
+.sr-compact-btn-good svg {
+    color: #ffd232;
+    filter: drop-shadow(0 0 4px #ffc800);
+}
+
+.sr-compact-btn-good:hover {
+    background: rgba(255, 200, 0, 0.5);
+    box-shadow: 0 0 15px rgba(255, 200, 0, 0.6);
+}
+
+/* Easy - Green */
+.sr-compact-btn-easy {
+    border-color: rgba(0, 255, 150, 0.6);
+    box-shadow: 0 0 8px rgba(0, 255, 150, 0.4);
+}
+
+.sr-compact-btn-easy svg {
+    color: #32ffaa;
+    filter: drop-shadow(0 0 4px #00ff96);
+}
+
+.sr-compact-btn-easy:hover {
+    background: rgba(0, 255, 150, 0.5);
+    box-shadow: 0 0 15px rgba(0, 255, 150, 0.6);
+}

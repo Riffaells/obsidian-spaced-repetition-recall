@@ -1,0 +1,156 @@
+export default {
+    SETTINGS_HEADER: "Spaced Repetition Flow",
+    GROUP_TAGS_FOLDERS: "Tags & Folders",
+    GROUP_FLASHCARD_REVIEW: "Flashcard Review",
+    GROUP_FLASHCARD_SEPARATORS: "Flashcard Separators",
+    GROUP_DATA_STORAGE: "Storage of Scheduling Data",
+    GROUP_DATA_STORAGE_DESC: "Choose where to store the scheduling data",
+    GROUP_FLASHCARDS_NOTES: "Flashcards & Notes",
+    GROUP_CONTRIBUTING: "Contributing",
+    CHECK_WIKI: 'For more information, check the <a href="{wikiUrl}">wiki</a>.',
+    GITHUB_DISCUSSIONS:
+    'Visit the <a href="{discussionsUrl}">discussions</a> section for Q&A help, feedback, and general discussion.',
+    GITHUB_ISSUES:
+    'Raise an <a href="{issuesUrl}">issue</a> if you have a feature request or a bug report.',
+    GITHUB_ISSUES_MODIFIED_PLUGIN:
+    'Raise an <a href="{issuesUrl}">issue</a> about this modified sr-plugin if you have a feature request or a bug report.',
+    GITHUB_SOURCE_CODE:
+    'The project\'s source code is available on <a href="{githubProjectUrl}">GitHub</a>.',
+    CODE_CONTRIBUTION_INFO:
+    '<a href="{codeContributionUrl}">Here\'s</a> how to contribute code to the plugin.',
+    TRANSLATION_CONTRIBUTION_INFO:
+    '<a href="{translationContributionUrl}">Here\'s</a> how to translate the plugin to another language.',
+    FOLDERS_TO_IGNORE: "Folders to ignore",
+    FOLDERS_TO_IGNORE_DESC:
+    "Enter folder paths or glob patterns on separate lines e.g. Templates/Scripts or **/*.excalidraw.md. This setting is common to both flashcards and notes.",
+    OBSIDIAN_INTEGRATION: "Integration into Obsidian",
+    FLASHCARDS: "Flashcards",
+    FLASHCARD_EASY_LABEL: "Easy Button Text",
+    FLASHCARD_GOOD_LABEL: "Good Button Text",
+    FLASHCARD_HARD_LABEL: "Hard Button Text",
+    FLASHCARD_EASY_DESC: 'Customize the label for the "Easy" Button',
+    FLASHCARD_GOOD_DESC: 'Customize the label for the "Good" Button',
+    FLASHCARD_HARD_DESC: 'Customize the label for the "Hard" Button',
+    REVIEW_BUTTON_DELAY: "Button Press Delay (ms)",
+    REVIEW_BUTTON_DELAY_DESC: "Add a delay to the review buttons before they can be pressed again.",
+    FLASHCARD_TAGS: "Flashcard tags",
+    FLASHCARD_TAGS_DESC:
+    "Enter tags separated by spaces or newlines i.e. #flashcards #deck2 #deck3.",
+    CONVERT_FOLDERS_TO_DECKS: "Convert folders to decks and subdecks",
+    CONVERT_FOLDERS_TO_DECKS_DESC: "This is an alternative to the Flashcard tags option above.",
+    INLINE_SCHEDULING_COMMENTS:
+    "Save scheduling comment on the same line as the flashcard's last line?",
+    INLINE_SCHEDULING_COMMENTS_DESC:
+    "Turning this on will make the HTML comments not break list formatting.",
+    BURY_SIBLINGS_TILL_NEXT_DAY: "Bury sibling cards until the next day",
+    BURY_SIBLINGS_TILL_NEXT_DAY_DESC:
+    "Siblings are cards generated from the same card text i.e. cloze deletions",
+    BURY_SIBLINGS_TILL_NEXT_DAY_BY_NOTE_REVIEW:
+    "Bury sibling cards until the next day by note review",
+    MULTI_CLOZE: "enable multi-cloze card?",
+    MULTI_CLOZE_DESC: "Combine new/ondue sibling clozes into one card.",
+    SHOW_CARD_CONTEXT: "Show context in cards",
+    SHOW_CARD_CONTEXT_DESC: "i.e. Title > Heading 1 > Subheading > ... > Subheading",
+    SHOW_INTERVAL_IN_REVIEW_BUTTONS: "Show next review time in the review buttons",
+    SHOW_INTERVAL_IN_REVIEW_BUTTONS_DESC:
+    "Useful to know how far in the future your cards are being pushed.",
+    CARD_MODAL_HEIGHT_PERCENT: "Flashcard Height Percentage",
+    CARD_MODAL_SIZE_PERCENT_DESC:
+    "Should be set to 100% on mobile or if you have very large images",
+    RESET_DEFAULT: "Reset to default",
+    CARD_MODAL_WIDTH_PERCENT: "Flashcard Width Percentage",
+    RANDOMIZE_CARD_ORDER: "Randomize card order during review?",
+    REVIEW_CARD_ORDER_WITHIN_DECK: "Order cards in a deck are displayed during review",
+    REVIEW_CARD_ORDER_NEW_FIRST_SEQUENTIAL: "Sequentially within a deck (All new cards first)",
+    REVIEW_CARD_ORDER_DUE_FIRST_SEQUENTIAL: "Sequentially within a deck (All due cards first)",
+    REVIEW_CARD_ORDER_NEW_FIRST_RANDOM: "Randomly within a deck (All new cards first)",
+    REVIEW_CARD_ORDER_DUE_FIRST_RANDOM: "Randomly within a deck (All due cards first)",
+    REVIEW_CARD_ORDER_RANDOM_DECK_AND_CARD: "Random card from random deck",
+    REVIEW_DECK_ORDER: "Order decks are displayed during review",
+    REVIEW_DECK_ORDER_PREV_DECK_COMPLETE_SEQUENTIAL:
+    "Sequentially (once all cards in previous deck reviewed)",
+    REVIEW_DECK_ORDER_PREV_DECK_COMPLETE_RANDOM:
+    "Randomly (once all cards in previous deck reviewed)",
+    REVIEW_DECK_ORDER_RANDOM_DECK_AND_CARD: "Random card from random deck",
+    DISABLE_CLOZE_CARDS: "Disable cloze cards?",
+    CONVERT_HIGHLIGHTS_TO_CLOZES: "Convert ==highlights== to clozes",
+    CONVERT_HIGHLIGHTS_TO_CLOZES_DESC:
+    'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
+    CONVERT_BOLD_TEXT_TO_CLOZES: "Convert **bolded text** to clozes",
+    CONVERT_BOLD_TEXT_TO_CLOZES_DESC:
+    'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
+    CONVERT_CURLY_BRACKETS_TO_CLOZES: "Convert {{curly brackets}} to clozes",
+    CONVERT_CURLY_BRACKETS_TO_CLOZES_DESC:
+    'Add/remove the <code>{defaultPattern}</code> from your "Cloze Patterns"',
+    CLOZE_PATTERNS: "Cloze Patterns",
+    CLOZE_PATTERNS_DESC:
+    'Enter cloze patterns separated by newlines. Check the <a href="{docsUrl}">wiki</a> for guidance.',
+    INLINE_CARDS_SEPARATOR: "Separator for inline flashcards",
+    FIX_SEPARATORS_MANUALLY_WARNING:
+    "Note that after changing this you have to manually edit any flashcards you already have.",
+    INLINE_REVERSED_CARDS_SEPARATOR: "Separator for inline reversed flashcards",
+    MULTILINE_CARDS_SEPARATOR: "Separator for multiline flashcards",
+    MULTILINE_REVERSED_CARDS_SEPARATOR: "Separator for multiline reversed flashcards",
+    MULTILINE_CARDS_END_MARKER: "Characters denoting the end of clozes and multiline flashcards",
+    NOTES: "Notes",
+    NOTE: "Note",
+    REVIEW_PANE_ON_STARTUP: "Enable note review pane on startup",
+    TAGS_TO_REVIEW: "Tags to review",
+    TAGS_TO_REVIEW_DESC: "Enter tags separated by spaces or newlines i.e. #review #tag2 #tag3.",
+    OPEN_RANDOM_NOTE: "Open a random note for review",
+    OPEN_RANDOM_NOTE_DESC: "When you turn this off, notes are ordered by importance (PageRank).",
+    AUTO_NEXT_NOTE: "Open next note automatically after a review",
+    MAX_N_DAYS_REVIEW_QUEUE: "Maximum number of days to display on note review panel",
+    MIN_ONE_DAY: "The number of days must be at least 1.",
+    VALID_NUMBER_WARNING: "Please provide a valid number.",
+    STORE_IN_NOTES: "In the notes",
+    NEW_PER_DAY: "New Per Day",
+    NEW_PER_DAY_DESC:
+    "Maximum number of new (unreviewed) notes to add to the queue each day, set `-1` with unlimit.",
+    NEW_PER_DAY_NAN: "Timeout must be a number",
+    NEW_PER_DAY_NEG: "New per day must be -1 or greater.",
+    REPEAT_ITEMS: "Repeat Items",
+    REPEAT_ITEMS_DESC: "Should items marked as incorrect be repeated until correct?",
+    CONVERT_TRACKED_TO_DECK: "Convert Tracked Notes to decks?",
+    REVIEW_NOTE_DIRECTLY: "Reviewing Note directly?",
+    REVIEW_NOTE_DIRECTLY_DESC:
+    "when reviewing note via click statusbar or command, open it directly without having to select a tag to open a note",
+    INTERVAL_SHOWHIDE: "Display Next Review Interval",
+    INTERVAL_SHOWHIDE_DESC: "whether to display next revivew iterval on the response buttons.",
+    REVLOG_TAGS: "Tags for output review log",
+    REVLOG_TAGS_DESC:
+    "Tags for output review log, could be flashcards tags or/and notes tags(e.g. #review #flashcards #tag1), default empty means it output to the review log file normally without filtered by tags",
+    FLASHCARD_AGAIN_LABEL: "Again Button Text",
+    FLASHCARD_BLACKOUT_LABEL: "Blackout Button Text",
+    FLASHCARD_INCORRECT_LABEL: "Incorrect Button Text",
+    "FLASHCARD_INCORRECT (EASY)_LABEL": "Incorrect (Easy) Button Text",
+    FLASHCARD_AGAIN_DESC: 'Customize the label for the "Again" Button',
+    FLASHCARD_BLACKOUT_DESC: 'Customize the label for the "Blackout" Button',
+    FLASHCARD_INCORRECT_DESC: 'Customize the label for the "Incorrect" Button',
+    "FLASHCARD_INCORRECT (EASY)_DESC": 'Customize the label for the "Incorrect (Easy)" Button',
+    UNTRACK_WITH_REVIEWTAG: "UntrackWithReviewTag",
+    CARD_BLOCK_ID: "Card Block ID",
+    CARD_BLOCK_ID_DESC:
+    "use Card Block ID instead of line number and text hash.<br>  <b>If set True, block id will append after card text. And block id will keep in note after reset to False again.</b>",
+    CARD_BLOCK_ID_CONFIRM:
+    "**If set True, block id will append after card text. And block id will keep in note after reset to False again. ** \n\nSuggestion： backup your vault before set True. Or try it in sandbox vault. \n\nAfter setting is turned on, blockid will be added after all cards. Even if it is turned off again, the added blockid will still remain in the note and will not be deleted.\n\nIt is recommended to **backup first** the note library, or try it in a sandbox library.",
+    MIX_QUEUE: "Mix queue",
+    MIX_QUEUE_DESC:
+    "mix ondue and new notes when review. **first** slider for total count, second slider for ondue count. And new count is (total - ondue).",
+    UNTRACK_WITH_REVIEWTAG_DESC:
+    "When deleting the review tag in the note, synchronously untrack the operation, so that the note will no longer be reviewed<br><b>true</b>: synchronous untrack operation;<br><b>false</b>：After deleting the review tag, you need to untrack again before the note will no longer be reviewed. (same as previous version)",
+    TAGS_TO_IGNORE: "Tags to ignore",
+    TAGS_TO_IGNORE_DESC: "Enter tags separated by spaces or newlines i.e. #ignore #tag2.",
+    POST_ISSUE_MODIFIED_PLUGIN:
+    'Post an <a href="{issue_url}">issue</a> about this modified sr-plugin which has background color for settings.',
+    DONATION_TEXT:
+    "This is a hobby project. If it helps you, you can buy me a drink or bubble tea~",
+    SAVE_BUTTON: "Save",
+    LOGGING: "Logging",
+    DISPLAY_SCHEDULING_DEBUG_INFO:
+    "Show the scheduler's debugging information on the developer console",
+    DISPLAY_PARSER_DEBUG_INFO: "Show the parser's debugging information on the developer console",
+    SCHEDULING: "Scheduling",
+    HELP: "Help",
+
+};

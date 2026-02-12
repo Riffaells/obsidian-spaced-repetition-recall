@@ -8,6 +8,10 @@ import { TextDirection } from "../../utils/TextDirection";
 import { RuleBasedParser, NoteContext } from "../../parser/rule-based/RuleBasedParser";
 import { ParsedFlashcard, FlashcardRule, RuleId } from "../../parser/rule-based/types";
 import { deriveCardType } from "../../parser/ParserUtils";
+import { Logger } from "../../utils/Logger";
+import { handleError } from "../../utils/ErrorHandler";
+
+const logger = Logger.create("NoteFileLoader");
 
 export class NoteFileLoader {
     fileText: string;
@@ -30,6 +34,9 @@ export class NoteFileLoader {
      */
     private findRuleById(ruleId: RuleId): FlashcardRule | null {
         const rule = this.settings.flashcardRules.find((r) => r.id === ruleId);
+        if (!rule) {
+            logger.warn("Rule not found", { ruleId });
+        }
         return rule || null;
     }
 
@@ -56,11 +63,19 @@ export class NoteFileLoader {
 
         for (const flashcard of flashcards) {
             // Filter by topic path if needed
+            // Note: Cards with only #flashcards tag are now allowed and will go to default deck
             if (onlyKeepQuestionsWithTopicPath) {
-                const hasTopicPath = flashcard.tags.some(
+                const hasSubdeckTag = flashcard.tags.some(
                     (tag) => tag.startsWith("#") && tag !== "#flashcards",
                 );
-                if (!hasTopicPath && (!folderTopicPath || !folderTopicPath.hasPath)) {
+                const hasFlashcardsTag = flashcard.tags.some((tag) => tag === "#flashcards");
+                const hasFolderPath = folderTopicPath && folderTopicPath.hasPath;
+                
+                // Skip only if there's no way to assign a deck:
+                // - No subdeck tags (like #flashcards/math)
+                // - No base #flashcards tag
+                // - No folder-based deck
+                if (!hasSubdeckTag && !hasFlashcardsTag && !hasFolderPath) {
                     continue;
                 }
             }
@@ -68,9 +83,11 @@ export class NoteFileLoader {
             // Find the rule that created this flashcard
             const rule = this.findRuleById(flashcard.ruleId);
             if (!rule) {
-                console.warn(
-                    `Rule ${flashcard.ruleId} not found for flashcard at line ${flashcard.context.lineNumber} in ${noteFile.path}`,
-                );
+                logger.warn("Rule not found for flashcard", {
+                    ruleId: flashcard.ruleId,
+                    lineNumber: flashcard.context.lineNumber,
+                    filePath: noteFile.path,
+                });
                 continue;
             }
 
@@ -188,6 +205,11 @@ export class NoteFileLoader {
             // Call parser.parse(noteContext) to get ParsedFlashcard[]
             const flashcards = parser.parse(noteContext);
 
+            logger.debug("Parsed flashcards from note", {
+                filePath: noteFile.path,
+                flashcardCount: flashcards.length,
+            });
+
             // Call createQuestionListFromFlashcards() to convert to Question[]
             const onlyKeepQuestionsWithTopicPath = true;
             const questionList = this.createQuestionListFromFlashcards(
@@ -203,7 +225,9 @@ export class NoteFileLoader {
             note.parsedFlashcards = flashcards;
             return note;
         } catch (error) {
-            console.error(`Failed to load note with new parser: ${noteFile.path}`, error);
+            handleError(error, `Failed to load note with new parser: ${noteFile.path}`, {
+                logLevel: "error",
+            });
             return null;
         }
     }

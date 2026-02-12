@@ -4,8 +4,10 @@
     "description": "Fight the forgetting curve by reviewing flashcards & entire notes.",
     "main": "main.js",
     "scripts": {
-        "build": "bun run bundle-css && bun run type-check && bun esbuild.config.mjs production",
+        "build": "bun run bundle-css:quiet && bun run type-check && bun esbuild.config.mjs production",
+        "build:analyze": "bun run bundle-css:quiet && bun run type-check && bun esbuild.config.mjs production analyze",
         "bundle-css": "bun bundle-css.mjs",
+        "bundle-css:quiet": "bun bundle-css.mjs --quiet",
         "type-check": "tsc --noEmit",
         "dev": "bun run bundle-css && bun esbuild.config.mjs",
         "format": "bun prettier --write . && bun eslint src/ tests/ --fix",
@@ -62,9 +64,14 @@
         "pagerank.js": "^1.0.2",
         "short-uuid": "^5.2.0"
     },
-    "pre-commit": [
-        "precommit-msg",
-        "validate"
-    ],
+    "lint-staged": {
+        "*.{ts,tsx}": [
+            "prettier --write",
+            "eslint --fix"
+        ],
+        "*.{json,md,css}": [
+            "prettier --write"
+        ]
+    },
     "packageManager": "bun@1.0.0"
 }

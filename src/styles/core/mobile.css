@@ -1,0 +1,48 @@
+/* === Mobile Landscape === */
+@media only screen and (orientation: landscape) {
+    .is-mobile .sr-flashcard {
+        flex-direction: row;
+    }
+
+    .is-mobile .sr-header,
+    .is-mobile .sr-response {
+        flex-direction: column;
+        flex: 0 1 0;
+    }
+
+    .is-mobile .sr-content {
+        flex: 1 0 0;
+    }
+
+    .is-mobile .sr-controls {
+        flex-direction: column;
+    }
+
+    .is-mobile .sr-title {
+        display: none;
+    }
+
+    .is-mobile .sr-response-button {
+        writing-mode: vertical-lr;
+    }
+}
+
+/* === Mobile Responsive === */
+@media (max-width: 768px) {
+    .sr-new-sidebar-container {
+        gap: 8px;
+    }
+
+    .sr-stat-number {
+        font-size: 16px;
+    }
+
+    .sr-new-deck-header {
+        padding: 6px 10px;
+    }
+
+    .sr-filter-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+}

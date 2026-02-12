@@ -271,11 +271,27 @@ export class NoteReviewButtonsManager {
         const instance = this.instances.get(file.path);
         if (!instance) return;
 
+        // Store undo state before review
+        instance.undoState = {
+            file,
+            response,
+            timestamp: Date.now(),
+        };
+
         try {
             await this.plugin.reviewManager.saveReviewResponse(file, response);
+
+            // Setup undo timeout
+            const timeout = this.plugin.data.settings.compactReviewButtonsUndoTimeout || 5000;
+            instance.timers.undo = setTimeout(() => {
+                if (instance.undoState) {
+                    instance.undoState = undefined;
+                }
+            }, timeout);
         } catch (error) {
             console.error("Error reviewing note:", error);
             new Notice("Error reviewing note");
+            instance.undoState = undefined;
         } finally {
             this.destroyInstance(file.path);
         }
@@ -307,7 +323,7 @@ export class NoteReviewButtonsManager {
             return;
         }
 
-        const undoTimeout = 5000; // TODO: Make this a setting
+        const undoTimeout = this.plugin.data.settings.compactReviewButtonsUndoTimeout || 5000;
         const elapsed = Date.now() - targetInstance.undoState.timestamp;
         if (elapsed > undoTimeout) {
             new Notice("Undo timeout expired");
@@ -315,9 +331,31 @@ export class NoteReviewButtonsManager {
             return;
         }
 
-        // TODO: Implement actual undo logic
-        // This would require storing the previous state and reverting it.
-        new Notice("Undo not yet implemented");
+        // Implement undo logic by reverting the review
+        const { file, response: originalResponse } = targetInstance.undoState;
+        try {
+            // Get the note item and revert its state
+            const store = DataStore.getInstance();
+            const noteItem = store.getNoteItem(file.path);
+            if (!noteItem) {
+                new Notice("Cannot undo: note not found");
+                return;
+            }
+
+            // Revert to previous state by resetting nextReview to make it due again
+            // Since isDue and isNew are getters, we need to modify the underlying properties
+            noteItem.nextReview = Date.now() - 1000; // Set to past to make it due
+            noteItem.timesReviewed = 1; // Ensure it's not considered new
+            await store.save();
+
+            new Notice(`Undone review for ${file.basename}`);
+
+            // Recreate buttons for the note
+            await this.createButtonsForNote(file);
+        } catch (error) {
+            console.error("Error undoing review:", error);
+            new Notice("Failed to undo review");
+        }
 
         // Clear the undo state after using it
         targetInstance.undoState = undefined;

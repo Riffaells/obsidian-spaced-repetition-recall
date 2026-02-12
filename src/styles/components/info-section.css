@@ -1,0 +1,82 @@
+/* === Info Section === */
+.sr-info-section {
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    border: 2px solid var(--background-modifier-border);
+}
+
+.sr-info-title-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.sr-info-icon {
+    color: var(--text-accent);
+    display: flex;
+    align-items: center;
+}
+
+.sr-info-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.sr-info-title {
+    margin: 0;
+    font-size: 1.1em;
+    color: var(--text-normal);
+}
+
+.sr-info-description {
+    font-size: 0.95em;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.sr-info-description p {
+    margin: 0 0 8px 0;
+}
+
+.sr-info-description ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.sr-info-tip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0 0 0;
+    font-size: 0.9em;
+    font-style: italic;
+    color: var(--text-accent);
+}
+
+.sr-info-tip-icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.sr-info-tip-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* === Section Titles === */
+.sr-section-title {
+    margin: 0 0 8px 0;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--text-normal);
+}
+
+.sr-section-description {
+    font-size: 0.9em;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}

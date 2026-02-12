@@ -21,6 +21,7 @@ export class TabView extends ItemView {
     private reviewMode: FlashcardReviewMode;
     private singleNotePath?: string;
     private startDeckPath?: string[];
+    private filteredCardIds?: string[];
     private viewContainerEl: HTMLElement;
     private viewContentEl: HTMLElement;
     private reviewSequencer: IFlashcardReviewSequencer;
@@ -83,6 +84,7 @@ export class TabView extends ItemView {
             this.reviewMode = state.reviewMode ?? FlashcardReviewMode.Review;
             this.singleNotePath = state.singleNotePath;
             this.startDeckPath = state.startDeckPath;
+            this.filteredCardIds = state.filteredCardIds;
         }
         // Don't call super.setState as it expects different parameters
     }
@@ -93,6 +95,7 @@ export class TabView extends ItemView {
             reviewMode: this.reviewMode,
             singleNotePath: this.singleNotePath,
             startDeckPath: this.startDeckPath,
+            filteredCardIds: this.filteredCardIds,
         };
     }
 
@@ -176,11 +179,19 @@ export class TabView extends ItemView {
                 this.reviewMode = result.mode;
             }
         } else {
-            const fullDeckTree: Deck = this.plugin.deckTree;
-            const remainingDeckTree: Deck =
+            let fullDeckTree: Deck = this.plugin.deckTree;
+            let remainingDeckTree: Deck =
                 this.reviewMode === FlashcardReviewMode.Cram
                     ? this.plugin.deckTree
                     : this.plugin.remainingDeckTree;
+
+            // Apply card filtering if filteredCardIds are provided
+            if (this.filteredCardIds && this.filteredCardIds.length > 0) {
+                const cardIdSet = new Set(this.filteredCardIds.map(Number));
+                remainingDeckTree = remainingDeckTree.copyWithCardFilter((card) =>
+                    cardIdSet.has(card.Id),
+                );
+            }
 
             const result = this.plugin.getPreparedReviewSequencer(
                 fullDeckTree,

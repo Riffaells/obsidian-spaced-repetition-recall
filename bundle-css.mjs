@@ -5,52 +5,62 @@ const SRC_DIR = "src";
 const OUT_DIR = "build";
 const OUT_FILE = path.join(OUT_DIR, "styles.css");
 
+// Check for --quiet flag
+const isQuiet = process.argv.includes("--quiet");
+
 // Ensure build directory exists
 if (!fs.existsSync(OUT_DIR)) {
     fs.mkdirSync(OUT_DIR, { recursive: true });
 }
 
-function getAllCssFiles(dir, fileList = []) {
-    const files = fs.readdirSync(dir);
+function resolveImports(filePath, processedFiles = new Set()) {
+    // Prevent circular imports
+    if (processedFiles.has(filePath)) {
+        return "";
+    }
+    processedFiles.add(filePath);
 
-    files.forEach((file) => {
-        const filePath = path.join(dir, file);
-        const stat = fs.statSync(filePath);
-
-        if (stat.isDirectory()) {
-            getAllCssFiles(filePath, fileList);
+    const content = fs.readFileSync(filePath, "utf8");
+    const dir = path.dirname(filePath);
+    
+    // Process @import statements
+    const importRegex = /@import\s+['"]([^'"]+)['"]\s*;/g;
+    let result = content;
+    let match;
+    
+    while ((match = importRegex.exec(content)) !== null) {
+        const importPath = match[1];
+        const resolvedPath = path.resolve(dir, importPath);
+        
+        if (fs.existsSync(resolvedPath)) {
+            const importedContent = resolveImports(resolvedPath, processedFiles);
+            result = result.replace(match[0], `/* Imported from: ${importPath} */\n${importedContent}`);
         } else {
-            if (path.extname(file) === ".css") {
-                fileList.push(filePath);
+            if (!isQuiet) {
+                console.warn(`Warning: Could not resolve import: ${importPath} from ${filePath}`);
             }
         }
-    });
-
-    return fileList;
+    }
+    
+    return result;
 }
 
-console.log(`Scanning for CSS files in ${SRC_DIR}...`);
-const cssFiles = getAllCssFiles(SRC_DIR);
+if (!isQuiet) {
+    console.log(`Building CSS bundle from ${SRC_DIR}/styles/base.css...`);
+}
 
-// Sort files to ensure deterministic output
-// Prioritize base.css if it exists to be first (optional, but good practice)
-cssFiles.sort((a, b) => {
-    // specific check: src/styles/base.css comes first
-    if (a.includes("base.css")) return -1;
-    if (b.includes("base.css")) return 1;
-    return a.localeCompare(b);
-});
+const baseFile = path.join(SRC_DIR, "styles", "base.css");
 
-console.log(`Found ${cssFiles.length} CSS files:`);
-cssFiles.forEach((f) => console.log(` - ${f}`));
+if (!fs.existsSync(baseFile)) {
+    console.error(`Error: base.css not found at ${baseFile}`);
+    process.exit(1);
+}
 
-let bundleContent = "";
-
-cssFiles.forEach((filePath) => {
-    const content = fs.readFileSync(filePath, "utf8");
-    bundleContent += `/* Source: ${filePath} */\n`;
-    bundleContent += content + "\n\n";
-});
+let bundleContent = `/* Obsidian Spaced Repetition Flow - Bundled Styles */\n\n`;
+bundleContent += resolveImports(baseFile);
 
 fs.writeFileSync(OUT_FILE, bundleContent);
-console.log(`Successfully bundled CSS to ${OUT_FILE} (${bundleContent.length} bytes)`);
+
+if (!isQuiet) {
+    console.log(`Successfully bundled CSS to ${OUT_FILE} (${bundleContent.length} bytes)`);
+}

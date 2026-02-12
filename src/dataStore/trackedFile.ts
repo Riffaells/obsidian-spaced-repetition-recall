@@ -3,6 +3,9 @@ import { RuleBasedParser, NoteContext, ParsedFlashcard, DocumentStructureParser 
 import { RPITEMTYPE } from "./repetitionItem";
 import { DEFAULT_DECK_NAME } from "src/constants";
 import { Tags } from "src/utils/tags";
+import { Logger } from "src/utils/Logger";
+
+const logger = Logger.create("TrackedFile");
 
 /**
  * TrackedFile.
@@ -129,7 +132,7 @@ export class TrackedFile implements ITrackedFile {
     rename(newPath: string) {
         const old = this.path;
         this.path = newPath;
-        console.log("Updated tracking: " + old + " -> " + newPath);
+        logger.info("Updated tracking path", { from: old, to: newPath });
     }
 
     /**

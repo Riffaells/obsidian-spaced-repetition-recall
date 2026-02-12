@@ -1,0 +1,120 @@
+/* === Response Buttons === */
+.srs-flex-row,
+.sr-show-response,
+.sr-response {
+    display: flex;
+    width: 100%;
+    column-gap: var(--size-4-4);
+    justify-content: center;
+}
+
+.sr-response-button {
+    height: 48px;
+    width: 100%;
+    flex-grow: 1;
+    margin: auto;
+    line-height: 48px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 4px;
+    user-select: text;
+}
+
+/* === Color Buttons === */
+.sr-bg-blue,
+.sr-bg-green,
+.sr-bg-red {
+    color: #fff !important;
+    transition:
+        background-color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+#sr-easy-btn,
+.sr-bg-green {
+    background: rgba(102, 187, 106, 0.75) !important;
+}
+
+#sr-good-btn,
+.sr-bg-blue {
+    background: rgba(66, 165, 245, 0.75) !important;
+}
+
+#sr-hard-btn,
+.sr-bg-red {
+    background: rgba(239, 154, 154, 0.75) !important;
+}
+
+.sr-deck-list .sr-tree-item-row:hover .sr-bg-green,
+.sr-response-button.sr-bg-green:hover {
+    background: rgba(102, 187, 106, 0.9) !important;
+    box-shadow: 0 2px 8px rgba(102, 187, 106, 0.25);
+}
+
+.sr-deck-list .sr-tree-item-row:hover .sr-bg-blue,
+.sr-response-button.sr-bg-blue:hover {
+    background-color: rgba(66, 165, 245, 0.9) !important;
+    box-shadow: 0 2px 8px rgba(66, 165, 245, 0.25);
+}
+
+.sr-deck-list .sr-tree-item-row:hover .sr-bg-red,
+.sr-response-button.sr-bg-red:hover {
+    background-color: rgba(239, 154, 154, 0.9) !important;
+    box-shadow: 0 2px 8px rgba(239, 154, 154, 0.25);
+}
+
+/* === Response Float Bar === */
+#reviewResponseModalBar {
+    width: 95%;
+    height: auto;
+    padding: 3px;
+    display: grid;
+    user-select: none;
+    border-radius: 6px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 5%;
+    margin: auto;
+    align-items: center;
+    transition: 200ms ease;
+    min-width: fit-content;
+    z-index: var(--layer-status-bar);
+    box-shadow: 0 3px 32px rgba(37, 49, 224, 0.15);
+    border: 1px solid var(--background-modifier-border);
+    background: var(--background-primary-alt);
+}
+
+#sr-reset-btn,
+#sr-again-btn,
+#sr-blackout-btn {
+    background: rgba(158, 158, 158, 0.7);
+    transition: background-color 0.2s ease;
+}
+
+#sr-reset-btn:hover,
+#sr-again-btn:hover,
+#sr-blackout-btn:hover {
+    background: rgba(158, 158, 158, 0.85);
+    box-shadow: 0 2px 8px rgba(158, 158, 158, 0.25);
+}
+
+#sr-incorrect-btn {
+    background: rgba(229, 115, 115, 0.7);
+    transition: background-color 0.2s ease;
+}
+
+#sr-incorrect-btn:hover {
+    background: rgba(229, 115, 115, 0.85);
+    box-shadow: 0 2px 8px rgba(229, 115, 115, 0.25);
+}
+
+#sr-incorrect\ \(easy\)-btn {
+    background: rgba(255, 171, 145, 0.7);
+    transition: background-color 0.2s ease;
+}
+
+#sr-incorrect\ \(easy\)-btn:hover {
+    background: rgba(255, 171, 145, 0.85);
+    box-shadow: 0 2px 8px rgba(255, 171, 145, 0.25);
+}

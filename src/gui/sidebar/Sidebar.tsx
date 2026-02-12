@@ -505,7 +505,7 @@ export class ReviewQueueListView extends ItemView {
 
     private collapseAll(): void {
         this.expandedDecks.clear();
-        this.expandedGroups.clear();
+        // Don't clear expandedGroups - keep group states so they can be opened when deck is expanded
         const currentFile = this.plugin.app.workspace.getActiveFile();
         this.update(currentFile, false, false);
     }

@@ -1,0 +1,170 @@
+/* === Deck Icons & Custom Styling === */
+
+/* Icon container */
+.sr-deck-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+/* Lucide icon styling */
+.sr-deck-lucide-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.sr-deck-lucide-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Emoji icon styling */
+.sr-deck-emoji {
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Custom background for deck header */
+.sr-new-deck-header.sr-deck-custom-bg,
+.sr-flashcard-deck-header.sr-deck-custom-bg {
+    background: var(--deck-bg-color, var(--background-primary-alt));
+}
+
+.sr-new-deck-header.sr-deck-custom-bg:hover,
+.sr-flashcard-deck-header.sr-deck-custom-bg:hover {
+    filter: brightness(0.95);
+}
+
+/* Custom border for deck */
+.sr-new-deck.sr-deck-custom-border,
+.sr-flashcard-deck.sr-deck-custom-border {
+    border-color: var(--deck-border-color, var(--background-modifier-border));
+}
+
+/* Title with icon - flex layout */
+.sr-new-deck-title,
+.sr-flashcard-deck-title {
+    display: flex;
+    align-items: center;
+}
+
+/* === Preset Color Classes === */
+
+/* Red theme */
+.sr-deck-theme-red .sr-new-deck-header,
+.sr-deck-theme-red .sr-flashcard-deck-header {
+    --deck-bg-color: rgba(231, 76, 60, 0.15);
+}
+.sr-deck-theme-red {
+    --deck-border-color: #e74c3c;
+}
+.sr-deck-theme-red .sr-deck-icon {
+    color: #e74c3c;
+}
+
+/* Orange theme */
+.sr-deck-theme-orange .sr-new-deck-header,
+.sr-deck-theme-orange .sr-flashcard-deck-header {
+    --deck-bg-color: rgba(230, 126, 34, 0.15);
+}
+.sr-deck-theme-orange {
+    --deck-border-color: #e67e22;
+}
+.sr-deck-theme-orange .sr-deck-icon {
+    color: #e67e22;
+}
+
+/* Yellow theme */
+.sr-deck-theme-yellow .sr-new-deck-header,
+.sr-deck-theme-yellow .sr-flashcard-deck-header {
+    --deck-bg-color: rgba(241, 196, 15, 0.15);
+}
+.sr-deck-theme-yellow {
+    --deck-border-color: #f1c40f;
+}
+.sr-deck-theme-yellow .sr-deck-icon {
+    color: #f1c40f;
+}
+
+/* Green theme */
+.sr-deck-theme-green .sr-new-deck-header,
+.sr-deck-theme-green .sr-flashcard-deck-header {
+    --deck-bg-color: rgba(46, 204, 113, 0.15);
+}
+.sr-deck-theme-green {
+    --deck-border-color: #2ecc71;
+}
+.sr-deck-theme-green .sr-deck-icon {
+    color: #2ecc71;
+}
+
+/* Teal theme */
+.sr-deck-theme-teal .sr-new-deck-header,
+.sr-deck-theme-teal .sr-flashcard-deck-header {
+    --deck-bg-color: rgba(26, 188, 156, 0.15);
+}
+.sr-deck-theme-teal {
+    --deck-border-color: #1abc9c;
+}
+.sr-deck-theme-teal .sr-deck-icon {
+    color: #1abc9c;
+}
+
+/* Blue theme */
+.sr-deck-theme-blue .sr-new-deck-header,
+.sr-deck-theme-blue .sr-flashcard-deck-header {
+    --deck-bg-color: rgba(52, 152, 219, 0.15);
+}
+.sr-deck-theme-blue {
+    --deck-border-color: #3498db;
+}
+.sr-deck-theme-blue .sr-deck-icon {
+    color: #3498db;
+}
+
+/* Purple theme */
+.sr-deck-theme-purple .sr-new-deck-header,
+.sr-deck-theme-purple .sr-flashcard-deck-header {
+    --deck-bg-color: rgba(155, 89, 182, 0.15);
+}
+.sr-deck-theme-purple {
+    --deck-border-color: #9b59b6;
+}
+.sr-deck-theme-purple .sr-deck-icon {
+    color: #9b59b6;
+}
+
+/* Pink theme */
+.sr-deck-theme-pink .sr-new-deck-header,
+.sr-deck-theme-pink .sr-flashcard-deck-header {
+    --deck-bg-color: rgba(233, 30, 99, 0.15);
+}
+.sr-deck-theme-pink {
+    --deck-border-color: #e91e63;
+}
+.sr-deck-theme-pink .sr-deck-icon {
+    color: #e91e63;
+}
+
+/* Gray theme */
+.sr-deck-theme-gray .sr-new-deck-header,
+.sr-deck-theme-gray .sr-flashcard-deck-header {
+    --deck-bg-color: rgba(149, 165, 166, 0.15);
+}
+.sr-deck-theme-gray {
+    --deck-border-color: #95a5a6;
+}
+.sr-deck-theme-gray .sr-deck-icon {
+    color: #95a5a6;
+}
+
+/* === Dark mode adjustments === */
+.theme-dark .sr-deck-custom-bg {
+    filter: brightness(1.1);
+}
+
+.theme-dark .sr-deck-custom-bg:hover {
+    filter: brightness(1.15);
+}

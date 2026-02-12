@@ -1,0 +1,55 @@
+/* === Sticky Group Header === */
+.sr-sticky-group-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 12px;
+    background: var(--background-primary);
+    border-bottom: 2px solid var(--background-modifier-border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-accent);
+    z-index: 50;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.sr-sticky-group-header.sr-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* === Scroll To Top Button === */
+.sr-scroll-to-top {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 100;
+}
+
+.sr-scroll-to-top.visible {
+    opacity: 0.5;
+    pointer-events: all;
+}
+
+.sr-scroll-to-top:hover {
+    opacity: 1;
+}
+
+.sr-scroll-to-top svg {
+    width: 24px;
+    height: 24px;
+}

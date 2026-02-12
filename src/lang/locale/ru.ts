@@ -49,6 +49,9 @@ export default {
     NOTE_IN_IGNORED_FOLDER: "Заметка сохранена в игнорируемую папку (см. настройки).",
     PLEASE_TAG_NOTE: "Для изучения, пожалуйста, правильно пометьте заметку тегом (см. настройки).",
     RESPONSE_RECEIVED: "Ответ получен.",
+    RESPONSE_RECEIVED_NEXT_REVIEW_DAYS: "Ответ получен. Следующее повторение через {days} дн.",
+    RESPONSE_RECEIVED_NEXT_REVIEW_MONTHS: "Ответ получен. Следующее повторение через {months} мес.",
+    RESPONSE_RECEIVED_NEXT_REVIEW_YEARS: "Ответ получен. Следующее повторение через {years} лет.",
     NO_DECK_EXISTS: "Не существует уровня {deckName}",
     ALL_CAUGHT_UP: "Молодец! Ты справился и дошел до конца! :D",
     NO_FLASHCARD_DECKS_FOUND: "Колоды с карточками не найдены.",
@@ -283,14 +286,31 @@ export default {
     SORT_DATE_DESC: "По дате: Позже → Скоро",
     SORT_COUNT_DESC: "По количеству: Много → Мало",
     SORT_COUNT_ASC: "По количеству: Мало → Много",
+    SORT_DECKS: "Сортировка колод",
     SORT_NOTES: "Сортировка заметок",
+    SORT_CARDS: "Сортировка карточек",
     DEFAULT: "По умолчанию",
     SORT_NAME_ASC: "По имени: А → Я",
     SORT_NAME_DESC: "По имени: Я → А",
     SORT_PATH_ASC: "По пути: А → Я",
     SORT_PATH_DESC: "По пути: Я → А",
+    SORT_FRONT_ASC: "By front: A → Z",
+    SORT_FRONT_DESC: "By front: Z → A",
+    SORT_DUE_DATE_ASC: "By due date: Earliest first",
+    SORT_DUE_DATE_DESC: "By due date: Latest first",
     OVERDUE_BY_DAYS: "Просрочено на {count} дн.",
     IN_DAYS: "Через {count} дн.",
+
+    // Smart groups
+    OVERDUE_MORE_THAN_MONTH: "Просрочено > 1 мес.",
+    OVERDUE_MORE_THAN_2_WEEKS: "Просрочено > 2 нед.",
+    OVERDUE_MORE_THAN_WEEK: "Просрочено > 1 нед.",
+    IN_ABOUT_WEEK: "~через нед.",
+    IN_ABOUT_MONTH: "~через мес.",
+    IN_ABOUT_2_MONTHS: "~через 2 мес.",
+    IN_ABOUT_3_MONTHS: "~через 3 мес.",
+    IN_MORE_THAN_3_MONTHS: "> 3 мес.",
+
     SIDEBAR_DATE_FORMAT: "Формат даты в боковой панели",
     SIDEBAR_DATE_FORMAT_DESC:
         "Формат отображения дат в новой боковой панели. Используйте moment.js формат. Пример: ddd MMM DD.YY",
@@ -298,6 +318,12 @@ export default {
     SIDEBAR_SHOW_RELATIVE_DAYS: "Показывать относительные дни",
     SIDEBAR_SHOW_RELATIVE_DAYS_DESC:
         "Показывать 'Через 2 дн.', 'Просрочено на 3 дн.' вместо дат для групп",
+    SIDEBAR_SMART_GROUPS: "Умные группы",
+    SIDEBAR_SMART_GROUPS_DESC:
+        "Группировать заметки по временным интервалам (неделя, месяц и т.д.) вместо отдельных дней. Работает только при включенной опции 'Показывать относительные дни'.",
+    SHOW_NEXT_REVIEW_IN_NOTICE: "Показывать время следующего повторения",
+    SHOW_NEXT_REVIEW_IN_NOTICE_DESC:
+        "Отображать, когда заметка будет снова доступна для повторения после ответа (например, 'Следующее повторение через 2 дн.').",
     SIDEBAR_INITIAL_GROUPS_LIMIT: "Начальный лимит групп",
     SIDEBAR_INITIAL_GROUPS_LIMIT_DESC:
         "Количество групп для отображения при раскрытии колоды. Нажмите 'Показать еще' чтобы увидеть дополнительные группы.",
@@ -428,6 +454,10 @@ export default {
     CMD_ITEM_INFO: "Информация об элементе",
     CMD_TRACK_NOTE: "Отслеживать заметку",
     CMD_UNTRACK_NOTE: "Не отслеживать заметку",
+    CMD_NOTE_TRACKED: "Note tracked successfully",
+    CMD_NOTE_UNTRACKED: "Note untracked successfully",
+    CMD_TRACK_FAILED: "Failed to track note",
+    CMD_UNTRACK_FAILED: "Failed to untrack note",
     CMD_RESCHEDULE: "Перепланировать",
     CMD_POSTPONE_CARDS: "Отложить карточки",
     CMD_POSTPONE_NOTES: "Отложить заметки",
@@ -517,6 +547,10 @@ export default {
 
     // FlashcardRuleModal.tsx
     EDIT_FLASHCARD_RULE: "Редактировать правило карточки",
+    INLINE_TAB: "Inline",
+    HEADER_TAB: "Header",
+    MULTILINE_TAB: "Multiline",
+    TYPE_SPECIFIC_SETTINGS: "Type-Specific Settings",
     CREATE_FLASHCARD_RULE: "Создать правило карточки",
     FLASHCARD_RULE_MODAL_DESC:
         "Настройте, как это правило создает карточки из ваших заметок. Выберите тип карточки ниже и настройте его параметры.",
@@ -539,7 +573,14 @@ export default {
 
     // Common settings
     RULE_NAME: "Название правила",
+    RULE_NAME_DESC: "A descriptive name for this rule",
     RULE_NAME_PLACEHOLDER: "Мое правило",
+    RULE_ENABLED: "Enabled",
+    RULE_ENABLED_DESC: "Whether this rule is active",
+    RULE_PRIORITY: "Priority",
+    RULE_PRIORITY_DESC: "Higher priority rules are applied first (0-100)",
+    TAG_PATTERN: "Tag Pattern",
+    TAG_PATTERN_DESC: "Specify which tags this rule applies to",
     TAG_MATCHER: "Сопоставление тегов",
     TAG_MATCHER_DESC: "Укажите, к каким тегам применяется это правило",
     EXACT_TAG: "Точный тег",
@@ -550,19 +591,34 @@ export default {
     PRIORITY_HINT: "Правила с более высоким приоритетом применяются первыми (0-100)",
     ENABLED: "Включено",
 
+    SCOPE_SETTINGS: "Scope Settings",
+    ANCESTOR_HEADER_PATTERN: "Ancestor Header Pattern",
+    ANCESTOR_HEADER_PATTERN_DESC: "Regex to match parent header text",
+    ANCESTOR_HEADER_PLACEHOLDER: "^Chapter.*",
+    FOLDER_PATH_PATTERN: "Folder Path Pattern",
+    FOLDER_PATH_PATTERN_DESC: "Regex to match file path",
+    FOLDER_PATH_PLACEHOLDER: "^notes/.*",
+
     // Inline settings
     SEPARATOR: "Разделитель",
+    SEPARATOR_DESC: "Text that separates question from answer (e.g., ::)",
     SEPARATOR_DESC_INLINE: "Текст, разделяющий вопрос и ответ (например, ::)",
+    SEPARATOR_REVERSE: "Reversed Separator",
+    SEPARATOR_REVERSE_DESC: "Creates bidirectional cards (e.g., :::)",
     REVERSED_SEPARATOR: "Обратный разделитель",
     REVERSED_SEPARATOR_DESC_INLINE: "Создает двунаправленные карточки (например, :::)",
     START_OF_LINE_ONLY: "Только в начале строки",
     START_OF_LINE_ONLY_DESC: "Сопоставлять только если разделитель находится в начале строки",
 
+    ENABLE_CLOZE: "Enable Cloze",
+    ENABLE_CLOZE_DESC: "Process cloze deletions in this rule",
     // Cloze settings
     CLOZE_INFO_TEXT:
         "Карточки с пропусками скрывают части текста для запоминания. Введите шаблоны ниже, по одному на строку.",
     PATTERNS: "Шаблоны пропусков",
     PATTERNS_DESC: "Введите шаблоны пропусков, по одному на строку",
+
+    PATTERN: "Pattern",
 
     // Multiline settings
     QUESTION_LINE_PATTERN: "Шаблон строки вопроса",
@@ -570,22 +626,39 @@ export default {
         "Регулярное выражение для определения строки вопроса (например, ^Q: (.*))",
     STOP_CONDITION: "Условие остановки",
     STOP_CONDITION_DESC: "Когда заканчивается блок ответа?",
+    BLANK_LINE: "Blank Line",
     STOP_BLANK_LINE: "Пустая строка",
     STOP_SEPARATOR: "Строка-разделитель",
+    NEXT_QUESTION: "Next Question",
     STOP_NEXT_QUESTION: "Следующий вопрос",
+    CUSTOM_PATTERN: "Custom Pattern",
     STOP_CUSTOM_PATTERN: "Пользовательский шаблон",
     SEPARATOR_PLACEHOLDER: "например, ---",
 
     // Header settings
     SELECTION_SETTINGS: "Настройки выбора",
     CONTENT_SETTINGS: "Настройки содержимого",
+    HEADER_LEVELS: "Header Levels",
+    HEADER_LEVELS_DESC: "Select which heading levels to convert to flashcards",
     HEADING_LEVELS: "Уровни заголовков",
-    HEADING_LEVELS_DESC: "Выберите, какие уровни заголовков преобразовывать в карточки",
+// ORPHANED:     HEADING_LEVELS_DESC: "Выберите, какие уровни заголовков преобразовывать в карточки",
     STRICT_PRIORITY: "Строгий приоритет",
     STRICT_PRIORITY_DESC:
         "Приоритет более высоких уровней заголовков (например, если есть H1, игнорировать H2)",
+    LIMIT_STRATEGY: "Limit Strategy",
+    LIMIT_STRATEGY_DESC: "Limit the number of headers to process",
+    NO_LIMIT: "No Limit",
+    COUNT_LIMIT: "Count",
+    RANGE_LIMIT: "Range",
+    RANDOM_LIMIT: "Random",
+    FIRST: "First",
+    LAST: "Last",
+    FROM: "From",
+    TO: "To",
     CONTENT_SCOPE: "Область содержимого",
     CONTENT_SCOPE_DESC: "Сколько содержимого включать в ответ карточки",
+    FULL_SECTION: "Full Section",
+    FIRST_PARAGRAPH: "First Paragraph",
     SCOPE_FULL_SECTION: "Полная секция (до следующего заголовка)",
     SCOPE_FIRST_PARAGRAPH: "Только первый абзац",
     INCLUDE_SUBHEADERS: "Включить подзаголовки",
@@ -625,6 +698,8 @@ export default {
     STEP: "Шаг",
     ADD_STEP: "Добавить шаг",
     DELETE_STEP: "Удалить шаг",
+    CMD_CARDS_POSTPONED: "Cards postponed {days} days",
+
     FLASHCARD_: "КАРТОЧКА_",
     HIDE_REVIEW_BUTTONS: "Скрыть кнопки повторения",
     NOTE_IN_IGNORED_TAGS: "Заметка находится среди игнорируемых тегов (проверьте настройки).",
@@ -635,4 +710,10 @@ export default {
     TAGS_TO_IGNORE: "Теги для игнорирования",
     TAGS_TO_IGNORE_DESC:
         "Введите теги, разделенные пробелами или новыми строками, например, #tag1 #tag2.",
+    REVIEW_HARD: "Сложно",
+    REVIEW_GOOD: "Хорошо",
+    REVIEW_EASY: "Легко",
+    COMPACT_REVIEW_HARD_TOOLTIP: "Трудно вспомнить. Повторить раньше. {interval}",
+    COMPACT_REVIEW_GOOD_TOOLTIP: "Вспомнил правильно с усилием. {interval}",
+    COMPACT_REVIEW_EASY_TOOLTIP: "Вспомнил легко. Повторить позже. {interval}",
 };

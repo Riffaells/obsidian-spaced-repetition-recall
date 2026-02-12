@@ -5,6 +5,7 @@ import { t } from "src/lang/helpers";
 
 export function registerTrackFileEvents(plugin: SRPlugin) {
     const settings = plugin.data.settings;
+    
     plugin.registerEvent(
         plugin.app.vault.on("rename", async (file, old) => {
             const trackFile = plugin.store.getTrackedFile(old);
@@ -16,35 +17,47 @@ export function registerTrackFileEvents(plugin: SRPlugin) {
     );
 
     plugin.registerEvent(
-        plugin.app.vault.on("delete", (file) => {
+        plugin.app.vault.on("delete", async (file) => {
             plugin.store.untrackFile(file.path);
-            plugin.store.save();
+            await plugin.store.save();
         }),
     );
 
+    
     plugin.registerEvent(
         plugin.app.vault.on("modify", async (file: TFile) => {
-            if (file.extension === "md") {
-                if (plugin.data.settings.dataLocation === DataLocation.SaveOnNoteFile) {
-                    return;
-                }
-                if (settings.cardBlockID) {
-                    return;
-                }
-                if (plugin.store.isTrackedCardfile(file.path)) {
-                    const trackFile = plugin.store.getTrackedFile(file.path);
-                    const fileText = await plugin.app.vault.read(file);
-                    // Get tags from Obsidian's metadata cache using getAllTags
-                    const fileCachedData = plugin.app.metadataCache.getFileCache(file) || {};
-                    const tags = getAllTags(fileCachedData) || [];
-                    trackFile.syncNoteCardsIndex(
-                        fileText,
-                        file.path,
-                        plugin.data.settings,
-                        undefined,
-                        tags,
-                    );
-                }
+            // Only process markdown files
+            if (file.extension !== "md") {
+                return;
+            }
+
+            // Skip if using in-note storage or block IDs are enabled
+            if (settings.dataLocation === DataLocation.SaveOnNoteFile || settings.cardBlockID) {
+                return;
+            }
+
+            // Only sync if this is a tracked card file
+            if (!plugin.store.isTrackedCardfile(file.path)) {
+                return;
+            }
+
+            try {
+                const trackFile = plugin.store.getTrackedFile(file.path);
+                const fileText = await plugin.app.vault.read(file);
+                
+                // Get tags from Obsidian's metadata cache
+                const fileCachedData = plugin.app.metadataCache.getFileCache(file) || {};
+                const tags = getAllTags(fileCachedData) || [];
+                
+                trackFile.syncNoteCardsIndex(
+                    fileText,
+                    file.path,
+                    settings,
+                    undefined,
+                    tags,
+                );
+            } catch (error) {
+                console.error(`Failed to sync note cards for ${file.path}:`, error);
             }
         }),
     );

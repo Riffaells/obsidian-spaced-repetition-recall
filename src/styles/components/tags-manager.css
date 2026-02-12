@@ -1,0 +1,190 @@
+/* === Tags Manager === */
+
+/* Force vertical layout for setting-item containing tags */
+.setting-item:has(.tags-manager-controls) {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.setting-item:has(.tags-manager-controls) .setting-item-info {
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.setting-item:has(.tags-manager-controls) .setting-item-control {
+    width: 100%;
+}
+
+.setting-item .tags-manager-controls {
+    min-width: 0;
+    width: 100%;
+}
+
+.tags-manager-controls {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tags-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.tags-input-wrapper {
+    flex: 1;
+}
+
+.tags-input-wrapper input {
+    width: 100%;
+}
+
+.tags-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 32px;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    align-content: flex-start;
+}
+
+.tag-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background-color: var(--background-modifier-border);
+    border-radius: 8px;
+    font-size: 0.9em;
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    max-width: 100%;
+}
+
+.tag-item:hover {
+    background-color: var(--background-modifier-border-hover);
+}
+
+.tag-item .tag-text {
+    color: var(--text-normal);
+    user-select: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 250px;
+}
+
+.tag-item .tag-action-btn {
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tag-item .tag-action-btn:hover {
+    color: var(--text-normal);
+}
+
+.tag-item .tag-remove-btn {
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.tag-item .tag-remove-btn:hover {
+    color: var(--text-error);
+}
+
+.tags-empty-message {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    font-style: italic;
+    padding: 4px 0;
+}
+
+/* === Custom Tags Manager === */
+.custom-tags-container {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.custom-tags-add-button-container {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.custom-tags-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.custom-tags-empty-message {
+    padding: 12px;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.custom-tag-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    background-color: var(--background-secondary);
+    transition: background-color 0.2s;
+}
+
+.custom-tag-item:hover {
+    background-color: var(--background-secondary-alt);
+}
+
+.custom-tag-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.custom-tag-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--text-normal);
+}
+
+.custom-tag-details {
+    font-size: 0.9em;
+    color: var(--text-muted);
+}
+
+.custom-tag-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.custom-tag-actions .clickable-icon {
+    padding: 4px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.custom-tag-actions .clickable-icon:hover {
+    opacity: 1;
+}

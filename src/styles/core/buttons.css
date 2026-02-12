@@ -1,0 +1,36 @@
+/* === Buttons === */
+.sr-button {
+    box-shadow: none !important;
+    cursor: pointer;
+}
+
+.sr-close-button,
+.sr-back-button {
+    z-index: 21;
+    cursor: var(--cursor);
+    position: absolute;
+    top: 0;
+    font-size: 26px;
+    line-height: 22px;
+    height: 26px;
+    width: 26px;
+    padding: 0 var(--size-2-2);
+    border-radius: var(--radius-s);
+    color: var(--text-muted);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sr-back-button {
+    left: 12px;
+}
+
+.sr-close-button {
+    right: 12px;
+}
+
+.sr-back-button:hover,
+.sr-button:hover {
+    background-color: var(--background-modifier-hover);
+}

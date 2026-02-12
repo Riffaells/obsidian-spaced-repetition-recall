@@ -49,6 +49,7 @@ export interface SRSettings {
         good: string;
         easy: string;
     };
+    compactReviewButtonsUndoTimeout: number; // milliseconds
     mixDue: number;
     mixNew: number;
     mixCardNote: boolean;
@@ -81,6 +82,18 @@ export interface SRSettings {
     sidebarViewMode: SidebarViewMode;
     sidebarInitialGroupsLimit: number;
     sidebarInitialNotesLimit: number;
+    sidebarSmartGroups: boolean;
+    showNextReviewInNotice: boolean;
+
+    // Deck icon customization
+    deckIconStyles: Record<string, {
+        icon?: string;
+        iconColor?: string;
+        textColor?: string;
+        backgroundColor?: string;
+        borderColor?: string;
+        emoji?: string;
+    }>;
 
     // algorithm
     algorithm: string;

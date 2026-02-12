@@ -311,18 +311,25 @@ export class Queue implements IQueue {
 
     remove(item: RepetitionItem, queue?: number[]) {
         if (queue == undefined) {
-            if (this.isQueued(item.ID, this.queue[item.deckName])) {
-                this.remove(item, this.queue[item.deckName]);
+            // Remove from deck-specific queue if it exists
+            const deckQueue = this.queue[item.deckName];
+            if (deckQueue && this.isQueued(item.ID, deckQueue)) {
+                this.remove(item, deckQueue);
                 this.remove(item, this.repeatQueue);
             }
-            if (this.isQueued(item.ID, this.queue[KEY_ALL])) {
-                this.remove(item, this.queue[KEY_ALL]);
+            
+            // Remove from global queue if it exists
+            const allQueue = this.queue[KEY_ALL];
+            if (allQueue && this.isQueued(item.ID, allQueue)) {
+                this.remove(item, allQueue);
             }
 
-            if (this.toDayLaterQueue[item.ID] !== null) {
+            // Clean up later queue
+            if (this.toDayLaterQueue[item.ID] !== undefined) {
                 delete this.toDayLaterQueue[item.ID];
             }
         } else {
+            // Direct queue removal - no recursion
             if (this.isQueued(item.ID, queue)) {
                 queue.remove(item.ID);
             }

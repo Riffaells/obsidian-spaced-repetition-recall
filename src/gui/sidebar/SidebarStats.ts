@@ -24,12 +24,15 @@ export class SidebarStats {
     }
 
     public render(): void {
-        this.containerEl.empty();
-        this.containerEl.addClass("sr-new-sidebar-stats");
-
+        // Abort old listeners before clearing container
         if (this.abortController) {
             this.abortController.abort();
         }
+
+        this.containerEl.empty();
+        this.containerEl.addClass("sr-new-sidebar-stats");
+
+        // Create new abort controller after aborting old one
         this.abortController = new AbortController();
 
         const dueLabel =
@@ -45,6 +48,11 @@ export class SidebarStats {
         this.stats = stats;
         this.viewMode = viewMode;
         this.render();
+    }
+
+    public updateCallbacks(onOpenRandomNew?: () => void, onOpenRandomDue?: () => void): void {
+        this.onOpenRandomNew = onOpenRandomNew || null;
+        this.onOpenRandomDue = onOpenRandomDue || null;
     }
 
     public destroy(): void {

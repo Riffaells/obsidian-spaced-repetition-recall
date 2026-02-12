@@ -86,7 +86,6 @@ export class CompactReviewButtons {
         button.addClass("sr-compact-btn", config.className);
 
         const label = t(config.labelKey);
-        // const hotkey = config.hotkey;
 
         let tooltip: string;
         const intervalKey =
@@ -97,10 +96,18 @@ export class CompactReviewButtons {
                   : "easy";
         const interval = this.options.intervals?.[intervalKey];
 
+        // Use specific tooltip keys for each button type
+        const tooltipKey =
+            response === ReviewResponse.Hard
+                ? "COMPACT_REVIEW_HARD_TOOLTIP"
+                : response === ReviewResponse.Good
+                  ? "COMPACT_REVIEW_GOOD_TOOLTIP"
+                  : "COMPACT_REVIEW_EASY_TOOLTIP";
+
         if (interval) {
-            tooltip = t("REVIEW_BUTTON_TOOLTIP_WITH_INTERVAL", { label, interval });
+            tooltip = t(tooltipKey, { interval });
         } else {
-            tooltip = t("REVIEW_BUTTON_TOOLTIP", { label });
+            tooltip = t(tooltipKey, { interval: "" }).replace(/\s+$/, ""); // Remove trailing space if no interval
         }
 
         button.setAttribute("aria-label", tooltip);

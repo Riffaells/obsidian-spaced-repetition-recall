@@ -6,14 +6,31 @@ import ConfirmModal from "src/gui/modals/confirm";
 import { t } from "src/lang/helpers";
 import SRPlugin from "src/main";
 import { applySettingsUpdate } from "src/gui/settings/utils";
+import { SettingsConstants } from "src/core/settings";
 
 // https://github.com/martin-jw/obsidian-recall/blob/main/src/settings.ts
 
+/**
+ * Default response button text for each algorithm.
+ * Uses translation keys to support internationalization.
+ */
 export const DEFAULT_responseOptionBtnsText: Record<string, string[]> = {
-    Default: [t("RESET"), t("HARD"), t("GOOD"), t("EASY")],
-    Fsrs: [t("RESET"), t("HARD"), t("GOOD"), t("EASY")],
-    Anki: [t("RESET"), t("HARD"), t("GOOD"), t("EASY")],
-    SM2: [t("BLACKOUT"), t("INCORRECT"), t("INCORRECT_EASY"), t("HARD"), t("GOOD"), t("EASY")],
+    [SettingsConstants.ALGORITHM_NAMES.DEFAULT]: [
+        t("RESET"),
+        t("HARD"),
+        t("GOOD"),
+        t("EASY"),
+    ],
+    [SettingsConstants.ALGORITHM_NAMES.FSRS]: [t("RESET"), t("HARD"), t("GOOD"), t("EASY")],
+    [SettingsConstants.ALGORITHM_NAMES.ANKI]: [t("RESET"), t("HARD"), t("GOOD"), t("EASY")],
+    [SettingsConstants.ALGORITHM_NAMES.SM2]: [
+        t("BLACKOUT"),
+        t("INCORRECT"),
+        t("INCORRECT_EASY"),
+        t("HARD"),
+        t("GOOD"),
+        t("EASY"),
+    ],
 };
 
 export function addAlgorithmSetting(containerEl: HTMLElement, plugin: SRPlugin) {

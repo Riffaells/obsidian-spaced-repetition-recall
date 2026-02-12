@@ -97,10 +97,67 @@ export class NoteGroupComponent {
                 signal: this.abortController.signal,
             });
 
+            // Add context menu for group header
+            groupHeader.addEventListener(
+                "contextmenu",
+                (event: MouseEvent) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.showGroupContextMenu(event);
+                },
+                { signal: this.abortController.signal },
+            );
+
             this.renderNotes(notesList);
         }
 
         return this.groupEl;
+    }
+
+    private showGroupContextMenu(event: MouseEvent): void {
+        const menu = new Menu();
+
+        menu.addItem((item) => {
+            item.setTitle(t("REVIEW_ALL_IN_GROUP"))
+                .setIcon("play")
+                .onClick(async () => {
+                    if (this.notes.length > 0) {
+                        const firstNote = this.notes[0];
+                        this.plugin.lastSelectedReviewDeck = this.deck.deckName;
+                        await this.plugin.app.workspace.getLeaf().openFile(firstNote.note);
+                    }
+                });
+        });
+
+        menu.addSeparator();
+
+        menu.addItem((item) => {
+            item.setTitle(this.expandedGroups.has(this.groupKey) ? t("COLLAPSE") : t("EXPAND"))
+                .setIcon(this.expandedGroups.has(this.groupKey) ? "chevron-up" : "chevron-down")
+                .onClick(() => {
+                    this.onToggleGroup(this.groupKey);
+                });
+        });
+
+        if (this.notes.length > this.plugin.data.settings.sidebarInitialNotesLimit) {
+            menu.addSeparator();
+
+            menu.addItem((item) => {
+                item.setTitle(this.showAllNotes ? t("SHOW_LESS") : t("SHOW_ALL"))
+                    .setIcon(this.showAllNotes ? "chevron-up" : "chevron-down")
+                    .onClick(() => {
+                        this.showAllNotes = !this.showAllNotes;
+                        const notesList = this.groupEl?.querySelector(
+                            ".sr-new-notes-list",
+                        ) as HTMLElement;
+                        if (notesList) {
+                            this.updateNotesList(notesList);
+                        }
+                    });
+            });
+        }
+
+        menu.showAtPosition({ x: event.pageX, y: event.pageY });
     }
 
     private removeElement(): void {

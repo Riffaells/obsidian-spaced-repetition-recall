@@ -20,6 +20,9 @@ export class SRSettingTab extends PluginSettingTab {
     display(): void {
         const { containerEl } = this;
 
+        // Save current active tab before clearing
+        const currentActiveTab = this.tabStructure?.activeTabId || this.lastPosition.tabName;
+
         containerEl.empty();
 
         const header = containerEl.createEl("h4", {
@@ -61,7 +64,7 @@ export class SRSettingTab extends PluginSettingTab {
                         HelpTab.render(containerElement, this.plugin),
                 },
             },
-            this.lastPosition.tabName,
+            currentActiveTab,
         );
 
         this.tabStructure.contentGeneratorPromises[this.tabStructure.activeTabId].then(() => {
@@ -84,7 +87,9 @@ export class SRSettingTab extends PluginSettingTab {
     private rememberLastPosition(containerElement: HTMLElement) {
         const lastPosition = this.lastPosition;
 
-        this.tabStructure.buttons[lastPosition.tabName].click();
+        // Update lastPosition.tabName to current active tab
+        lastPosition.tabName = this.tabStructure.activeTabId;
+
         containerElement.scrollTo({
             top: this.lastPosition.scrollPosition,
             behavior: "auto",
@@ -103,6 +108,18 @@ export class SRSettingTab extends PluginSettingTab {
     }
 
     redisplay(): void {
+        // Save current scroll position before redisplay
+        const currentScrollPosition = this.containerEl.scrollTop;
+        
         this.display();
+        
+        // Restore scroll position after redisplay
+        // Use setTimeout to ensure DOM is updated
+        setTimeout(() => {
+            this.containerEl.scrollTo({
+                top: currentScrollPosition,
+                behavior: "auto",
+            });
+        }, 0);
     }
 }

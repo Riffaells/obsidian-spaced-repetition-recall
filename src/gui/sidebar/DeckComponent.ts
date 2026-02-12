@@ -2,10 +2,16 @@ import { groupNotes } from "./grouping";
 import { calculateDaysUntilDue, createGroupKey, getGroupTitle, isNoteActive } from "./utils";
 import SRPlugin from "src/main";
 import { ReviewDeck, SchedNote } from "src/core/models/ReviewDeck";
-import { TFile } from "obsidian";
+import { TFile, Menu, MenuItem } from "obsidian";
 import { FilterType, NoteSortType } from "src/gui/sidebar/types";
 import { NoteGroupComponent } from "src/gui/sidebar/NoteGroupComponent";
 import { t } from "src/lang/helpers";
+import { 
+    DeckIconStyle, 
+    applyDeckStyle, 
+    removeDeckStyle,
+    parseColor,
+} from "./DeckIconConfig";
 
 export class DeckComponent {
     private readonly plugin: SRPlugin;
@@ -20,6 +26,9 @@ export class DeckComponent {
     private onToggleGroup: (groupKey: string) => void;
     private groupComponents: Map<string, NoteGroupComponent> = new Map();
     private deckEl: HTMLElement | null = null;
+    private headerEl: HTMLElement | null = null;
+    private titleEl: HTMLElement | null = null;
+    private iconEl: HTMLElement | null = null;
     private headerClickHandler: (() => void) | null = null;
     private noteSort: NoteSortType;
     private abortController = new AbortController();
@@ -239,9 +248,19 @@ export class DeckComponent {
 
     private renderHeader(deckEl: HTMLElement, isExpanded: boolean): HTMLElement {
         const header = deckEl.createDiv("sr-new-deck-header");
+        this.headerEl = header;
 
         const title = header.createDiv("sr-new-deck-title");
-        title.setText(this.deck.deckName);
+        this.titleEl = title;
+        
+        // Apply deck icon style from settings
+        this.applyDeckIconStyle();
+        
+        // Add deck name text after icon
+        const nameSpan = document.createElement("span");
+        nameSpan.addClass("sr-deck-name");
+        nameSpan.setText(this.deck.deckName);
+        title.appendChild(nameSpan);
 
         const stats = header.createDiv("sr-new-deck-stats");
 
@@ -258,7 +277,139 @@ export class DeckComponent {
             header.addClass("sr-deck-expanded");
         }
 
+        // Add context menu
+        header.addEventListener(
+            "contextmenu",
+            (event: MouseEvent) => {
+                event.preventDefault();
+                event.stopPropagation();
+                this.showDeckContextMenu(event);
+            },
+            { signal: this.abortController.signal },
+        );
+
         return header;
+    }
+
+    /**
+     * Applies icon and color styling to the deck based on settings
+     */
+    private applyDeckIconStyle(): void {
+        if (!this.headerEl || !this.titleEl) return;
+
+        // Remove existing style first
+        if (this.iconEl) {
+            this.iconEl.remove();
+            this.iconEl = null;
+        }
+        removeDeckStyle(this.headerEl, this.titleEl);
+
+        // Get style from settings
+        const deckStyles = this.plugin.data.settings.deckIconStyles || {};
+        const style = this.getDeckStyleFromSettings(deckStyles);
+
+        if (style && Object.keys(style).length > 0) {
+            this.iconEl = applyDeckStyle(this.headerEl, this.titleEl, style);
+        }
+    }
+
+    /**
+     * Gets the style configuration for this deck from settings
+     */
+    private getDeckStyleFromSettings(
+        styles: Record<string, DeckIconStyle>,
+    ): DeckIconStyle | null {
+        const deckName = this.deck.deckName;
+
+        // Check for exact match
+        if (styles[deckName]) {
+            return this.normalizeStyle(styles[deckName]);
+        }
+
+        // Check for pattern match with wildcard (e.g., "languages/*")
+        for (const [pattern, style] of Object.entries(styles)) {
+            if (pattern.endsWith("/*")) {
+                const prefix = pattern.slice(0, -2);
+                if (deckName.startsWith(prefix + "/") || deckName === prefix) {
+                    return this.normalizeStyle(style);
+                }
+            }
+            // Check for tag pattern (e.g., "#review" matches deck "review")
+            if (pattern.startsWith("#") && deckName === pattern.slice(1)) {
+                return this.normalizeStyle(style);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Normalizes style by parsing color values
+     */
+    private normalizeStyle(style: DeckIconStyle): DeckIconStyle {
+        const normalized: DeckIconStyle = { ...style };
+        
+        if (style.iconColor) normalized.iconColor = parseColor(style.iconColor);
+        if (style.textColor) normalized.textColor = parseColor(style.textColor);
+        if (style.backgroundColor) normalized.backgroundColor = parseColor(style.backgroundColor);
+        if (style.borderColor) normalized.borderColor = parseColor(style.borderColor);
+        
+        return normalized;
+    }
+
+    private showDeckContextMenu(event: MouseEvent): void {
+        const menu = new Menu();
+
+        menu.addItem((item: MenuItem) => {
+            item.setTitle(t("REVIEW_DECK"))
+                .setIcon("play")
+                .onClick(async () => {
+                    this.plugin.lastSelectedReviewDeck = this.deck.deckName;
+                    await this.plugin.reviewNextNote(this.deck.deckName);
+                });
+        });
+
+        menu.addSeparator();
+
+        menu.addItem((item: MenuItem) => {
+            item.setTitle(t("CUSTOMIZE_DECK"))
+                .setIcon("palette")
+                .onClick(() => {
+                    this.openDeckIconModal();
+                });
+        });
+
+
+
+        menu.showAtPosition({ x: event.pageX, y: event.pageY });
+    }
+
+    private openDeckIconModal(): void {
+        const { DeckIconModal } = require("src/gui/modals/DeckIconModal");
+        const currentStyles = this.plugin.data.settings.deckIconStyles || {};
+        const currentStyle = currentStyles[this.deck.deckName] || null;
+
+        new DeckIconModal(
+            this.plugin.app,
+            this.deck.deckName,
+            currentStyle,
+            async (style: DeckIconStyle | null) => {
+                const styles = { ...this.plugin.data.settings.deckIconStyles };
+
+                if (style === null) {
+                    // Clear style
+                    delete styles[this.deck.deckName];
+                } else {
+                    styles[this.deck.deckName] = style;
+                }
+
+                this.plugin.data.settings.deckIconStyles = styles;
+                await this.plugin.savePluginData();
+
+                // Re-apply style
+                this.applyDeckIconStyle();
+            },
+        ).open();
     }
 
     private calculateDetailedStats(): {
@@ -536,6 +687,14 @@ export class DeckComponent {
             this.showMoreButton.remove();
             this.showMoreButton = null;
         }
+
+        if (this.iconEl) {
+            this.iconEl.remove();
+            this.iconEl = null;
+        }
+
+        this.headerEl = null;
+        this.titleEl = null;
 
         if (this.deckEl) {
             this.deckEl.remove();

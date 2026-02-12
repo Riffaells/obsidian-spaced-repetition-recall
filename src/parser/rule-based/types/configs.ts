@@ -55,6 +55,14 @@ export interface InlineConfig {
     /** If true, the pattern must match from the start of the line */
     startOfLineOnly: boolean;
 
+    /**
+     * Optional: Alternative separators for context-aware lines (lists, callouts).
+     * When a line is detected as a list or callout, these separators will be tried
+     * in addition to the main separator.
+     * Example: ["-", "|", "?"] allows "- Q - A", "- Q | A", "- Q ? A"
+     */
+    contextAwareSeparators?: string[];
+
     /** Optional cloze processing settings */
     cloze?: ClozeSettings;
 }

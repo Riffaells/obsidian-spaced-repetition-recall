@@ -5,6 +5,7 @@ import { algorithms } from "src/algorithms/algorithms_switch";
 import { DataLocation } from "src/dataStore/dataLocation";
 import { DEFAULT_responseOptionBtnsText } from "src/gui/settings-views/algorithmSetting";
 import { SRSettings } from "./SRSettings";
+import * as C from "./SettingsConstants";
 
 export const DEFAULT_SETTINGS: SRSettings = {
     // flashcards
@@ -14,23 +15,23 @@ export const DEFAULT_SETTINGS: SRSettings = {
     flashcardRules: [
         // Default inline rule
         {
-            id: "default-inline-flashcards",
+            id: C.DEFAULT_RULE_IDS.INLINE,
             name: "Inline Flashcards",
-            tagPattern: "^#flashcards$",
+            tagPattern: `^${C.DEFAULT_TAGS.FLASHCARDS}$`,
             enabled: true,
             priority: 0,
             type: "inline",
             config: {
-                separator: "::",
-                separatorReverse: ":::",
+                separator: C.FLASHCARD_SEPARATORS.SINGLE_LINE,
+                separatorReverse: C.FLASHCARD_SEPARATORS.SINGLE_LINE_REVERSED,
                 startOfLineOnly: false,
             },
         },
         // Header-based rules with regex (h1-h6)
         {
-            id: "default-header-levels",
+            id: C.DEFAULT_RULE_IDS.HEADER_LEVELS,
             name: "Header Levels (h1-h6)",
-            tagPattern: "^#flashcards/h[1-6]$",
+            tagPattern: `^${C.DEFAULT_TAGS.FLASHCARDS}/h[1-6]$`,
             enabled: true,
             priority: 0,
             type: "header",
@@ -48,9 +49,9 @@ export const DEFAULT_SETTINGS: SRSettings = {
         },
         // Header-based rules with regex (ranges like h2-h3, h1-h4, etc.)
         {
-            id: "default-header-ranges",
+            id: C.DEFAULT_RULE_IDS.HEADER_RANGES,
             name: "Header Ranges (h1-h3, h2-h4, etc.)",
-            tagPattern: "^#flashcards/h[1-6]-h[1-6]$",
+            tagPattern: `^${C.DEFAULT_TAGS.FLASHCARDS}/h[1-6]-h[1-6]$`,
             enabled: true,
             priority: 0,
             type: "header",
@@ -68,32 +69,35 @@ export const DEFAULT_SETTINGS: SRSettings = {
         },
         // Default multiline rule
         {
-            id: "default-multiline-flashcards",
+            id: C.DEFAULT_RULE_IDS.MULTILINE,
             name: "Multiline Flashcards",
-            tagPattern: "^#flashcards$",
+            tagPattern: `^${C.DEFAULT_TAGS.FLASHCARDS}$`,
             enabled: true,
             priority: 0,
             type: "multiline",
             config: {
                 questionLinePattern: "",
-                stopCondition: { type: "separator", separator: "?" },
+                stopCondition: { 
+                    type: "separator", 
+                    separator: C.FLASHCARD_SEPARATORS.MULTILINE,
+                },
             },
         },
         // Default cloze rule
         {
-            id: "default-cloze-flashcards",
+            id: C.DEFAULT_RULE_IDS.CLOZE,
             name: "Cloze Flashcards",
-            tagPattern: "^#flashcards$",
+            tagPattern: `^${C.DEFAULT_TAGS.FLASHCARDS}$`,
             enabled: true,
             priority: 0,
             type: "inline",
             config: {
-                separator: "::",
-                separatorReverse: ":::",
+                separator: C.FLASHCARD_SEPARATORS.SINGLE_LINE,
+                separatorReverse: C.FLASHCARD_SEPARATORS.SINGLE_LINE_REVERSED,
                 startOfLineOnly: false,
                 cloze: {
                     enabled: true,
-                    patterns: [{ pattern: "==[123;;]answer[;;hint]==" }],
+                    patterns: [{ pattern: C.CLOZE_PATTERNS.DEFAULT }],
                 },
             },
         },
@@ -104,49 +108,50 @@ export const DEFAULT_SETTINGS: SRSettings = {
     burySiblingCardsByNoteReview: false,
     multiClozeCard: false,
     cardBlockID: false,
-    randomizeCardOrder: null,
-    flashcardCardOrder: "DueFirstRandom",
-    flashcardDeckOrder: "PrevDeckComplete_Sequential",
+    randomizeCardOrder: false,
+    flashcardCardOrder: C.FLASHCARD_ORDER.CARD.DUE_FIRST_RANDOM,
+    flashcardDeckOrder: C.FLASHCARD_ORDER.DECK.PREV_DECK_COMPLETE_SEQUENTIAL,
 
     convertHighlightsToClozes: true,
     convertBoldTextToClozes: false,
     convertCurlyBracketsToClozes: false,
-    clozePatterns: ["==[123;;]answer[;;hint]=="],
-    singleLineCardSeparator: "::",
-    singleLineReversedCardSeparator: ":::",
-    multilineCardSeparator: "?",
-    multilineReversedCardSeparator: "??",
-    multilineCardEndMarker: "",
-    editLaterTag: "#edit-later",
+    clozePatterns: C.DEFAULT_CLOZE_PATTERNS,
+    singleLineCardSeparator: C.FLASHCARD_SEPARATORS.SINGLE_LINE,
+    singleLineReversedCardSeparator: C.FLASHCARD_SEPARATORS.SINGLE_LINE_REVERSED,
+    multilineCardSeparator: C.FLASHCARD_SEPARATORS.MULTILINE,
+    multilineReversedCardSeparator: C.FLASHCARD_SEPARATORS.MULTILINE_REVERSED,
+    multilineCardEndMarker: C.FLASHCARD_SEPARATORS.MULTILINE_END_MARKER,
+    editLaterTag: C.DEFAULT_TAGS.EDIT_LATER,
     intervalShowHide: true,
 
     // notes
     enableNoteReviewPaneOnStartup: true,
-    tagsToReview: ["#review"],
-    noteFoldersToIgnore: ["**/*.excalidraw.md"],
+    tagsToReview: [C.DEFAULT_TAGS.REVIEW],
+    noteFoldersToIgnore: [C.FILE_PATTERNS.EXCALIDRAW],
     tagsToIgnore: [],
     openRandomNote: false,
     autoNextNote: false,
     showCompactReviewButtons: true,
     compactReviewButtonsCollapsed: false,
-    compactReviewButtonsPosition: "top-right",
+    compactReviewButtonsPosition: C.COMPACT_BUTTON_POSITIONS.TOP_RIGHT,
     compactReviewButtonsAutoHide: false,
-    compactReviewButtonsAutoHideDelay: 5,
+    compactReviewButtonsAutoHideDelay: C.TIMING_CONSTANTS.COMPACT_BUTTON_AUTO_HIDE_DELAY / 1000, // Convert to seconds
     compactReviewButtonsIcons: {
-        hard: "x",
-        good: "minus",
-        easy: "check",
+        hard: C.COMPACT_BUTTON_ICONS.HARD,
+        good: C.COMPACT_BUTTON_ICONS.GOOD,
+        easy: C.COMPACT_BUTTON_ICONS.EASY,
     },
-    mixDue: 3,
-    mixNew: 2,
+    compactReviewButtonsUndoTimeout: C.TIMING_CONSTANTS.COMPACT_BUTTON_UNDO_TIMEOUT,
+    mixDue: C.QUEUE_MIX_DEFAULTS.DUE,
+    mixNew: C.QUEUE_MIX_DEFAULTS.NEW,
     mixCardNote: false,
-    mixCard: 4,
-    mixNote: 1,
+    mixCard: C.QUEUE_MIX_DEFAULTS.CARD,
+    mixNote: C.QUEUE_MIX_DEFAULTS.NOTE,
     reviewResponseFloatBar: false,
-    responseBarPositionPercentage: 5,
+    responseBarPositionPercentage: C.RESPONSE_BAR_POSITION.DEFAULT_PERCENTAGE,
     reviewingNoteDirectly: false,
     disableFileMenuReviewOptions: false,
-    maxNDaysNotesReviewQueue: 365,
+    maxNDaysNotesReviewQueue: C.NOTE_REVIEW_SETTINGS.MAX_DAYS_REVIEW_QUEUE,
 
     // UI settings
     showRibbonIcon: true,
@@ -154,33 +159,41 @@ export const DEFAULT_SETTINGS: SRSettings = {
     initiallyExpandAllSubdecksInTree: false,
     showContextInCards: true,
     showIntervalInReviewButtons: true,
-    flashcardHeightPercentage: Platform.isMobile ? 100 : 80,
-    flashcardWidthPercentage: Platform.isMobile ? 100 : 40,
+    flashcardHeightPercentage: Platform.isMobile 
+        ? C.FLASHCARD_DIMENSIONS.MOBILE.HEIGHT 
+        : C.FLASHCARD_DIMENSIONS.DESKTOP.HEIGHT,
+    flashcardWidthPercentage: Platform.isMobile 
+        ? C.FLASHCARD_DIMENSIONS.MOBILE.WIDTH 
+        : C.FLASHCARD_DIMENSIONS.DESKTOP.WIDTH,
     flashcardEasyText: t("EASY"),
     flashcardGoodText: t("GOOD"),
     flashcardHardText: t("HARD"),
-    reviewButtonDelay: 0,
+    reviewButtonDelay: C.TIMING_CONSTANTS.REVIEW_BUTTON_DELAY,
     openViewInNewTab: false,
-    sidebarDateFormat: "ddd MMM DD.YY",
+    sidebarDateFormat: C.SIDEBAR_DATE_FORMATS.DEFAULT,
     sidebarShowRelativeDays: true,
     sidebarSortOrder: SortType.DATE_ASC,
     sidebarNoteSortOrder: NoteSortType.DEFAULT,
     sidebarCardSortOrder: CardSortType.DEFAULT,
     sidebarViewMode: SidebarViewMode.Notes,
-    sidebarInitialGroupsLimit: 20,
-    sidebarInitialNotesLimit: 10,
+    sidebarInitialGroupsLimit: C.SIDEBAR_LIMITS.INITIAL_GROUPS,
+    sidebarInitialNotesLimit: C.SIDEBAR_LIMITS.INITIAL_NOTES,
+    sidebarSmartGroups: false,
+    showNextReviewInNotice: true,
+
+    // Deck icon customization - empty by default, users can add their own
+    deckIconStyles: {},
 
     // algorithm
-    baseEase: 250,
-    lapsesIntervalChange: 0.5,
-    easyBonus: 1.3,
+    baseEase: C.ALGORITHM_PARAMS.BASE_EASE,
+    lapsesIntervalChange: C.ALGORITHM_PARAMS.LAPSES_INTERVAL_CHANGE,
+    easyBonus: C.ALGORITHM_PARAMS.EASY_BONUS,
     loadBalance: true,
-    maximumInterval: 36525,
-    maxLinkFactor: 1.0,
+    maximumInterval: C.ALGORITHM_PARAMS.MAXIMUM_INTERVAL,
+    maxLinkFactor: C.ALGORITHM_PARAMS.MAX_LINK_FACTOR,
 
     // storage
-    // dataStore: DataStoreName.NOTES,
-    dataStore: "NOTES",
+    dataStore: C.DATA_STORAGE.NOTES,
     cardCommentOnSameLine: false,
 
     // logging
@@ -190,7 +203,7 @@ export const DEFAULT_SETTINGS: SRSettings = {
     // trackfile: https://github.com/martin-jw/obsidian-recall/blob/main/src/settings.ts
     dataLocation: DataLocation.SaveOnNoteFile,
     customFolder: "",
-    maxNewPerDay: -1,
+    maxNewPerDay: C.NOTE_REVIEW_SETTINGS.MAX_NEW_PER_DAY_UNLIMITED,
     repeatItems: false,
     trackedNoteToDecks: false,
     untrackWithReviewTag: false,

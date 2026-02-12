@@ -13,6 +13,10 @@ import { MixQueSet } from "../dataStore/mixQueSet";
 import { RepetitionItem } from "../dataStore/repetitionItem";
 import { DataLocation } from "../dataStore/dataLocation";
 import { debug } from "../utils/utils_recall";
+import { Logger } from "../utils/Logger";
+import { handleError } from "../utils/ErrorHandler";
+
+const logger = Logger.create("ReviewManager");
 
 export class ReviewManager {
     private plugin: SRPlugin;
@@ -35,6 +39,12 @@ export class ReviewManager {
         if (!revnote.tagCheck(note)) {
             return;
         }
+
+        logger.debug("Saving review response", { 
+            path: note.path, 
+            response,
+            isNew: revnote.isNew 
+        });
 
         let ease: number;
         if (revnote.isNew && settings.algorithm !== algorithmNames.Fsrs) {
@@ -79,7 +89,24 @@ export class ReviewManager {
         this.plugin.app.workspace.trigger("sr:note-reviewed", note);
 
         if (!this.plugin.data.settings.reviewResponseFloatBar) {
-            new Notice(t("RESPONSE_RECEIVED"));
+            if (this.plugin.data.settings.showNextReviewInNotice && sNote.interval) {
+                const interval = sNote.interval;
+                let message: string;
+
+                if (interval >= 365) {
+                    const years = Math.round(interval / 365);
+                    message = t("RESPONSE_RECEIVED_NEXT_REVIEW_YEARS", { years });
+                } else if (interval >= 30) {
+                    const months = Math.round(interval / 30);
+                    message = t("RESPONSE_RECEIVED_NEXT_REVIEW_MONTHS", { months });
+                } else {
+                    message = t("RESPONSE_RECEIVED_NEXT_REVIEW_DAYS", { days: interval });
+                }
+
+                new Notice(message);
+            } else {
+                new Notice(t("RESPONSE_RECEIVED"));
+            }
         }
 
         // if (MixQueSet.isCard() && this.plugin.reviewFloatBar.openNextCardCB) {
@@ -187,7 +214,12 @@ export class ReviewManager {
                             msg,
                             `${deck.deckName} due cnt error: calc ${calcDueCnt}, dnc: ${deck.dueNotesCount}`,
                         );
-                        console.debug("schedNotes:", deck.scheduledNotes);
+                        logger.debug("Scheduled notes mismatch", { 
+                            deckName: deck.deckName,
+                            calculated: calcDueCnt,
+                            expected: deck.dueNotesCount,
+                            scheduledNotes: deck.scheduledNotes 
+                        });
                     }
                     const id = "obsidian-spaced-repetition-flow:view-item-info";
                     /**
@@ -223,7 +255,13 @@ export class ReviewManager {
                 show = true;
             } else {
                 // error
-                console.error("reviewNextNote: item or path is null");
+                handleError(
+                    new Error("Invalid item or path"),
+                    `reviewNextNote: item or path is null (deck: ${deckKey}, itemId: ${item?.ID}, path: ${path})`,
+                    {
+                        logLevel: "error",
+                    }
+                );
             }
         } else if (deck.newNotes.length > 0) {
             index = IReviewNote.getNextNoteIndex(

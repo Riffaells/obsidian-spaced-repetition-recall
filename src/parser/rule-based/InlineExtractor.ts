@@ -5,10 +5,13 @@
  * Implements separator detection, bidirectional card creation,
  * and position-based matching constraints.
  *
+ * Supports context-aware extraction for lists and callouts.
+ *
  * @module parser/rule-based/InlineExtractor
  */
 
 import { InlineConfig, ExtractedCard, ExtractionContext, Range } from "./types";
+import { ContextCleaner } from "./ContextCleaner";
 
 /**
  * Extracts flashcards from inline text using separator patterns
@@ -67,35 +70,43 @@ export class InlineExtractor {
     ): ExtractedCard[] {
         const cards: ExtractedCard[] = [];
 
-        // Check for reverse separator first (if defined)
-        if (config.separatorReverse) {
-            const reverseCard = this.extractCardWithSeparator(
-                line,
-                lineNumber,
-                config.separatorReverse,
-                config.startOfLineOnly,
-                context,
-                true, // bidirectional
-            );
+        // Detect if this is a context-aware line (list, callout)
+        const lineContext = ContextCleaner.detectContext(line);
+        const hasContext = lineContext.type !== "normal";
 
-            if (reverseCard) {
-                cards.push(...reverseCard);
-                return cards; // Only use first separator occurrence
+        // Build list of separators to try
+        const separatorsToTry: Array<{ separator: string; bidirectional: boolean }> = [];
+
+        // Add reverse separator first (higher priority)
+        if (config.separatorReverse) {
+            separatorsToTry.push({ separator: config.separatorReverse, bidirectional: true });
+        }
+
+        // Add main separator
+        separatorsToTry.push({ separator: config.separator, bidirectional: false });
+
+        // Add context-aware separators if this is a context line
+        if (hasContext && config.contextAwareSeparators) {
+            for (const sep of config.contextAwareSeparators) {
+                separatorsToTry.push({ separator: sep, bidirectional: false });
             }
         }
 
-        // Check for regular separator
-        const regularCard = this.extractCardWithSeparator(
-            line,
-            lineNumber,
-            config.separator,
-            config.startOfLineOnly,
-            context,
-            false, // unidirectional
-        );
+        // Try each separator in order
+        for (const { separator, bidirectional } of separatorsToTry) {
+            const result = this.extractCardWithSeparator(
+                line,
+                lineNumber,
+                separator,
+                config.startOfLineOnly,
+                context,
+                bidirectional,
+            );
 
-        if (regularCard) {
-            cards.push(...regularCard);
+            if (result) {
+                cards.push(...result);
+                return cards; // Only use first matching separator
+            }
         }
 
         return cards;
@@ -120,21 +131,35 @@ export class InlineExtractor {
         context: ExtractionContext,
         bidirectional: boolean,
     ): ExtractedCard[] | null {
-        // Find separator position
-        const separatorIndex = this.findSeparatorIndex(line, separator, startOfLineOnly);
+        // Detect line context (list, callout, etc.)
+        const lineContext = ContextCleaner.detectContext(line);
+
+        // For context-aware lines, we need to work with the cleaned version
+        // to find the separator, but preserve the original for proper splitting
+        const workingLine = lineContext.type !== "normal" 
+            ? line.substring(lineContext.prefix.length)
+            : line;
+
+        // Find separator position in the working line
+        const separatorIndex = this.findSeparatorIndex(workingLine, separator, startOfLineOnly);
 
         if (separatorIndex === -1) {
             return null;
         }
 
-        // Split line at separator
-        const front = line.substring(0, separatorIndex).trim();
-        const back = line.substring(separatorIndex + separator.length).trim();
+        // Split at separator
+        let front = workingLine.substring(0, separatorIndex).trim();
+        let back = workingLine.substring(separatorIndex + separator.length).trim();
 
         // Skip if either side is empty
         if (!front || !back) {
             return null;
         }
+
+        // Clean context prefixes while preserving rich markdown
+        const cleaned = ContextCleaner.cleanFlashcard(front, back, line);
+        front = cleaned.front;
+        back = cleaned.back;
 
         const cards: ExtractedCard[] = [];
 
